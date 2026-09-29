@@ -1,6 +1,6 @@
-import art1 from "@/assets/keepy-sample-1.png";
-import art2 from "@/assets/keepy-sample-2.png";
-import art3 from "@/assets/keepy-sample-3.png";
+import art1 from "@/assets/keepy-sample-1.webp";
+import art2 from "@/assets/keepy-sample-2.webp";
+import art3 from "@/assets/keepy-sample-3.webp";
 
 /** Fictional visual specimens only. Never eligible for draws, revenue or fulfillment. */
 export const KEEPY_SAMPLE_POOL_ID = "p-keepy-sample";
