@@ -1,0 +1,343 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * CU 女神卡 Design System
+ * 深靛藍與黑紫／霧白雙佈景、紫羅蘭主色、柔金高光；日系遊戲感、精緻不俗艷。
+ * 所有顏色以語意 token 定義於此，由 html.light / html.dark 統一切換。
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-ink: var(--ink);
+
+  /* 卡牌等級 C・U・R・RR・RRR・SR・SSR・HR・UR・O */
+  --color-rarity-c: var(--rarity-c);
+  --color-rarity-u: var(--rarity-u);
+  --color-rarity-r: var(--rarity-r);
+  --color-rarity-rr: var(--rarity-rr);
+  --color-rarity-rrr: var(--rarity-rrr);
+  --color-rarity-sr: var(--rarity-sr);
+  --color-rarity-ssr: var(--rarity-ssr);
+  --color-rarity-hr: var(--rarity-hr);
+  --color-rarity-ur: var(--rarity-ur);
+  --color-rarity-o: var(--rarity-o);
+
+  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-display: "Noto Sans TC", "PingFang TC", sans-serif;
+}
+
+:root {
+  --radius: 0.75rem;
+  color-scheme: light;
+
+  /* 淺色：霧白底、淡紫灰表面、高對比墨色文字 */
+  --background: oklch(0.975 0.008 292);
+  --foreground: oklch(0.235 0.04 292);
+  --card: oklch(0.995 0.004 292);
+  --card-foreground: oklch(0.235 0.04 292);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.235 0.04 292);
+
+  --primary: oklch(0.54 0.2 297);
+  --primary-foreground: oklch(0.99 0.005 300);
+  --secondary: oklch(0.925 0.025 292);
+  --secondary-foreground: oklch(0.3 0.055 292);
+  --muted: oklch(0.94 0.02 292);
+  --muted-foreground: oklch(0.48 0.035 292);
+  --accent: oklch(0.9 0.05 296);
+  --accent-foreground: oklch(0.29 0.07 296);
+
+  --destructive: oklch(0.54 0.2 22);
+  --destructive-foreground: oklch(0.99 0.005 300);
+  --border: oklch(0.38 0.035 292 / 18%);
+  --input: oklch(0.38 0.035 292 / 24%);
+  --ring: oklch(0.54 0.2 297 / 62%);
+
+  --gold: oklch(0.57 0.12 82);
+  --gold-soft: oklch(0.68 0.1 88);
+  --ink: oklch(0.1 0.03 292);
+  --ambient-primary: oklch(0.74 0.11 296 / 18%);
+  --ambient-accent: oklch(0.78 0.08 340 / 10%);
+  --panel-from: oklch(1 0 0 / 94%);
+  --panel-to: oklch(0.965 0.014 292 / 96%);
+  --panel-shadow: oklch(0.3 0.08 297 / 20%);
+
+  /* 卡牌品牌色在兩種模式保持一致 */
+  --rarity-c: oklch(0.55 0.03 270);
+  --rarity-u: oklch(0.55 0.13 152);
+  --rarity-r: oklch(0.56 0.15 240);
+  --rarity-rr: oklch(0.55 0.17 265);
+  --rarity-rrr: oklch(0.58 0.14 198);
+  --rarity-sr: oklch(0.55 0.2 300);
+  --rarity-ssr: oklch(0.62 0.13 78);
+  --rarity-hr: oklch(0.58 0.18 18);
+  --rarity-ur: oklch(0.58 0.17 340);
+  --rarity-o: oklch(0.64 0.1 88);
+}
+
+.dark {
+  color-scheme: dark;
+  --background: oklch(0.145 0.035 293);
+  --foreground: oklch(0.94 0.015 300);
+  --card: oklch(0.185 0.045 292);
+  --card-foreground: oklch(0.94 0.015 300);
+  --popover: oklch(0.17 0.045 292);
+  --popover-foreground: oklch(0.94 0.015 300);
+
+  /* 主色：紫羅蘭 */
+  --primary: oklch(0.63 0.21 297);
+  --primary-foreground: oklch(0.98 0.01 300);
+  --secondary: oklch(0.25 0.06 292);
+  --secondary-foreground: oklch(0.92 0.02 296);
+  --muted: oklch(0.23 0.05 292);
+  --muted-foreground: oklch(0.7 0.035 295);
+  --accent: oklch(0.3 0.08 296);
+  --accent-foreground: oklch(0.95 0.02 298);
+
+  --destructive: oklch(0.62 0.2 22);
+  --destructive-foreground: oklch(0.98 0.01 300);
+  --border: oklch(0.94 0.02 300 / 12%);
+  --input: oklch(0.94 0.02 300 / 16%);
+  --ring: oklch(0.63 0.21 297 / 60%);
+
+  /* 柔金高光 */
+  --gold: oklch(0.85 0.12 88);
+  --gold-soft: oklch(0.78 0.09 92);
+  --ink: oklch(0.1 0.03 292);
+  --ambient-primary: oklch(0.32 0.1 296 / 28%);
+  --ambient-accent: oklch(0.3 0.08 340 / 14%);
+  --panel-from: oklch(0.22 0.055 292 / 85%);
+  --panel-to: oklch(0.17 0.045 292 / 92%);
+  --panel-shadow: oklch(0.45 0.15 297 / 45%);
+
+  /* 卡牌等級色 */
+  --rarity-c: oklch(0.64 0.02 270);
+  --rarity-u: oklch(0.74 0.12 152);
+  --rarity-r: oklch(0.7 0.12 240);
+  --rarity-rr: oklch(0.67 0.15 265);
+  --rarity-rrr: oklch(0.75 0.13 198);
+  --rarity-sr: oklch(0.66 0.19 300);
+  --rarity-ssr: oklch(0.84 0.13 88);
+  --rarity-hr: oklch(0.71 0.17 18);
+  --rarity-ur: oklch(0.72 0.16 340);
+  --rarity-o: oklch(0.93 0.06 95);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    background-color: var(--color-background);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(1200px 600px at 15% -10%, var(--ambient-primary), transparent 60%),
+      radial-gradient(1000px 500px at 90% 0%, var(--ambient-accent), transparent 55%);
+    background-attachment: fixed;
+    transition: background-color 160ms ease, color 160ms ease;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    outline-color: transparent;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  :disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  ::selection {
+    background: oklch(0.63 0.21 297 / 40%);
+  }
+}
+
+@layer components {
+  /* ── 面板與玻璃質感 ─────────────────────────── */
+  .panel {
+    background: linear-gradient(160deg, var(--panel-from), var(--panel-to));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    backdrop-filter: blur(12px);
+  }
+
+  .panel-glow {
+    box-shadow:
+      0 0 0 1px oklch(0.63 0.21 297 / 14%),
+      0 18px 50px -24px var(--panel-shadow);
+  }
+
+  .hairline-gold {
+    border: 1px solid oklch(0.85 0.12 88 / 30%);
+  }
+
+  /* ── 卡牌等級漸層（卡框／主圖底） ───────────── */
+  .rarity-grad-c {
+    background: linear-gradient(150deg, oklch(0.4 0.02 270), oklch(0.26 0.02 270));
+  }
+  .rarity-grad-u {
+    background: linear-gradient(150deg, oklch(0.5 0.11 152), oklch(0.3 0.07 160));
+  }
+  .rarity-grad-r {
+    background: linear-gradient(150deg, oklch(0.55 0.13 240), oklch(0.34 0.09 250));
+  }
+  .rarity-grad-rr {
+    background: linear-gradient(150deg, oklch(0.52 0.15 265), oklch(0.32 0.1 270));
+  }
+  .rarity-grad-rrr {
+    background: linear-gradient(150deg, oklch(0.6 0.13 198), oklch(0.34 0.1 230));
+  }
+  .rarity-grad-sr {
+    background: linear-gradient(150deg, oklch(0.58 0.2 300), oklch(0.38 0.13 296));
+  }
+  .rarity-grad-ssr {
+    background: linear-gradient(150deg, oklch(0.8 0.13 88), oklch(0.5 0.11 70));
+  }
+  .rarity-grad-hr {
+    background: linear-gradient(150deg, oklch(0.68 0.17 18), oklch(0.42 0.13 8) 70%, oklch(0.78 0.12 60) 130%);
+  }
+  .rarity-grad-ur {
+    background: linear-gradient(150deg, oklch(0.68 0.17 340) 0%, oklch(0.55 0.19 310) 55%, oklch(0.8 0.12 88) 130%);
+  }
+  .rarity-grad-o {
+    background:
+      linear-gradient(150deg, oklch(0.9 0.07 95) 0%, oklch(0.72 0.16 320) 38%,
+        oklch(0.6 0.16 250) 66%, oklch(0.88 0.09 150) 100%);
+  }
+
+  /* ── 卡牌 2:3 框 ────────────────────────────── */
+  .card-frame {
+    aspect-ratio: 2 / 3;
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    box-shadow: 0 16px 40px -18px oklch(0.08 0.03 292 / 90%);
+  }
+
+  .card-frame::after {
+    /* 卡面柔金高光掃光 */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, oklch(0.95 0.05 95 / 18%) 46%, transparent 62%);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  .card-frame-gold-edge {
+    outline: 1px solid oklch(0.85 0.12 88 / 45%);
+    outline-offset: -1px;
+  }
+
+  .reveal-high-grade .card-frame {
+    animation: reveal-high-grade 650ms ease-out both;
+  }
+
+  @keyframes reveal-high-grade {
+    0% { box-shadow: 0 0 0 0 var(--gold); transform: scale(0.96); }
+    55% { box-shadow: 0 0 24px 3px var(--gold-soft); }
+    100% { box-shadow: 0 16px 40px -18px var(--gold); transform: scale(1); }
+  }
+
+  /* ── 標題與文字質感 ─────────────────────────── */
+  .text-gold-gradient {
+    background: linear-gradient(100deg, oklch(0.9 0.09 95), oklch(0.78 0.12 85) 60%, oklch(0.9 0.07 100));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-violet-gradient {
+    background: linear-gradient(100deg, oklch(0.8 0.14 300), oklch(0.68 0.2 297));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ── 示範標示 ───────────────────────────────── */
+  .demo-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 9999px;
+    border: 1px dashed oklch(0.85 0.12 88 / 55%);
+    color: var(--gold);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 0.125rem 0.5rem;
+    line-height: 1.4;
+  }
+
+  /* ── 互動 ───────────────────────────────────── */
+  .hover-lift {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 44px -20px oklch(0.5 0.16 297 / 55%);
+  }
+
+  .shimmer-line {
+    background: linear-gradient(90deg, transparent, oklch(0.85 0.12 88 / 55%), transparent);
+    height: 1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-high-grade .card-frame { animation: none; }
+  .hover-lift { transition: none; }
+}
