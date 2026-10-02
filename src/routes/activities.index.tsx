@@ -7,9 +7,9 @@ import { Progress } from "@/components/ui/progress";
 
 export const Route = createFileRoute("/activities/")({
   head: () => ({ meta: [
-    { title: "活動專區 — PEEKFUTURE 創作者收藏卡平台" },
+    { title: "活動專區 — KEEPY 創作者收藏卡平台" },
     { name: "description", content: "查看進行中、即將開始與已結束的收藏活動（Local Mock）。" },
-    { property: "og:title", content: "活動專區 — PEEKFUTURE 創作者收藏卡平台" },
+    { property: "og:title", content: "活動專區 — KEEPY 創作者收藏卡平台" },
     { property: "og:description", content: "查看收藏活動與解鎖進度。" },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
   ] }),

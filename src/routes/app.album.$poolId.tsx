@@ -8,9 +8,9 @@ import { useMockLoading } from "@/hooks/use-mock-loading";
 export const Route = createFileRoute("/app/album/$poolId")({
   head: () => ({
     meta: [
-      { title: "卡冊詳情 — CU 女神卡" },
+      { title: "卡冊詳情 — KEEPY" },
       { name: "description", content: "單一卡池的蒐集進度、十級完成度、女神完成度與卡牌格狀列表。" },
-      { property: "og:title", content: "卡冊詳情 — CU 女神卡" },
+      { property: "og:title", content: "卡冊詳情 — KEEPY" },
       { property: "og:description", content: "卡池蒐集進度、等級與女神完成度、卡牌一覽。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

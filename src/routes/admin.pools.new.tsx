@@ -48,13 +48,13 @@ export const Route = createFileRoute("/admin/pools/new")({
   }),
   head: () => ({
     meta: [
-      { title: "建立卡池精靈 — CU 女神卡管理後台" },
+      { title: "建立卡池精靈 — KEEPY管理後台" },
       {
         name: "description",
         content:
           "七步卡池建立精靈：基本資訊、期間與狀態、女神與卡牌、抽卡範圍與機率、合成條件、卡冊顯示、預覽與驗證，僅本地 Demo 草稿。",
       },
-      { property: "og:title", content: "建立卡池精靈 — CU 女神卡管理後台" },
+      { property: "og:title", content: "建立卡池精靈 — KEEPY管理後台" },
       { property: "og:description", content: "七步建立卡池 Demo 草稿，不會正式發布。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

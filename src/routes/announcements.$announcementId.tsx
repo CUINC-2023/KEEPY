@@ -11,8 +11,8 @@ export const Route = createFileRoute("/announcements/$announcementId")({
     return { item };
   },
   head: ({ loaderData }) => {
-    if (!loaderData) return { meta: [{ title: "找不到公告 — PEEKFUTURE" }, { name: "robots", content: "noindex" }] };
-    const t = `${loaderData.item.title} — 公告中心 · PEEKFUTURE`;
+    if (!loaderData) return { meta: [{ title: "找不到公告 — KEEPY" }, { name: "robots", content: "noindex" }] };
+    const t = `${loaderData.item.title} — 公告中心 · KEEPY`;
     return { meta: [
       { title: t }, { name: "description", content: loaderData.item.summary },
       { property: "og:title", content: t }, { property: "og:description", content: loaderData.item.summary },
@@ -30,7 +30,7 @@ function AnnouncementNotFound() {
 function AnnouncementDetailPage() {
   const { item: base } = Route.useLoaderData();
   const item = useContent().announcementById(base.id) ?? { ...base, visible: true };
-  useLocalHead(item.visible ? `${item.title} — 公告中心 · PEEKFUTURE` : "此內容目前未公開 — PEEKFUTURE", item.visible ? item.summary : "此內容已在本機後台示範中設為隱藏。");
+  useLocalHead(item.visible ? `${item.title} — 公告中心 · KEEPY` : "此內容目前未公開 — KEEPY", item.visible ? item.summary : "此內容已在本機後台示範中設為隱藏。");
   if (!item.visible) return <div className="mx-auto max-w-3xl space-y-4 py-10 text-center"><h1 className="text-2xl font-black">此內容目前未公開</h1><p className="text-sm text-muted-foreground">已在後台示範中設為隱藏（僅此瀏覽器本機設定）。</p><Link to="/announcements" className="inline-flex font-bold text-primary hover:underline">返回公告列表</Link></div>;
   return <article className="mx-auto max-w-3xl space-y-5 overflow-x-clip">
     <BackLink to="/announcements" label="返回公告列表" />

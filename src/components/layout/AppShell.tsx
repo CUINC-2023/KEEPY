@@ -75,49 +75,49 @@ const IconMoon = () => <svg {...iconProps}><path d="M20.5 14.3A8.5 8.5 0 0 1 9.7
 type NavItem = { to: string; label: string; Icon: () => ReactNode; copyKey?: CopyKey };
 
 const PUBLIC_NAV: NavItem[] = [
-  { to: "/", label: "首頁", Icon: IconHome },
+  { to: "/", label: "首頁", Icon: IconHome, copyKey: "home" },
   { to: "/pools", label: "卡池", Icon: IconLayers, copyKey: "pools" },
-  { to: "/activities", label: "活動", Icon: IconCalendar },
-  { to: "/leaderboards", label: "排行榜", Icon: IconTrophy },
+  { to: "/activities", label: "活動", Icon: IconCalendar, copyKey: "activities" },
+  { to: "/leaderboards", label: "排行榜", Icon: IconTrophy, copyKey: "rankings" },
   { to: "/physical-collection", label: "實體卡", Icon: IconBox, copyKey: "physical" },
-  { to: "/announcements", label: "公告", Icon: IconBell },
-  { to: "/seasons/next", label: "下一季預告", Icon: IconSparkle },
-  { to: "/wish-pools", label: "許願卡池", Icon: IconCrown },
-  { to: "/recruitment", label: "卡池募集", Icon: IconUsers },
-  { to: "/goddesses", label: "女神系列", Icon: IconUsers },
-  { to: "/partner", label: "女神合作申請", Icon: IconCrown },
-  { to: "/rules", label: "遊戲規則", Icon: IconBook },
+  { to: "/announcements", label: "公告", Icon: IconBell, copyKey: "announcements" },
+  { to: "/seasons/next", label: "下一季預告", Icon: IconSparkle, copyKey: "nextSeason" },
+  { to: "/wish-pools", label: "許願卡池", Icon: IconCrown, copyKey: "wishPools" },
+  { to: "/recruitment", label: "卡池募集", Icon: IconUsers, copyKey: "recruitment" },
+  { to: "/goddesses", label: "女神系列", Icon: IconUsers, copyKey: "goddessSeries" },
+  { to: "/partner", label: "女神合作申請", Icon: IconCrown, copyKey: "creatorApply" },
+  { to: "/rules", label: "遊戲規則", Icon: IconBook, copyKey: "rules" },
   { to: "/faq", label: "常見問題 FAQ", Icon: IconBook, copyKey: "faq" },
 ];
 
 const PLAYER_NAV: NavItem[] = [
-  { to: "/app", label: "玩家首頁", Icon: IconHome },
+  { to: "/app", label: "玩家首頁", Icon: IconHome, copyKey: "playerHome" },
   { to: "/app/album", label: "卡冊", Icon: IconCards, copyKey: "album" },
-  { to: "/app/achievements", label: "成就與徽章", Icon: IconTrophy },
-  { to: "/app/growth", label: "指定卡成長", Icon: IconSparkle },
-  { to: "/app/synthesis", label: "合成工坊", Icon: IconFlask },
+  { to: "/app/achievements", label: "成就與徽章", Icon: IconTrophy, copyKey: "achievements" },
+  { to: "/app/growth", label: "指定卡成長", Icon: IconSparkle, copyKey: "growth" },
+  { to: "/app/synthesis", label: "合成工坊", Icon: IconFlask, copyKey: "synthesis" },
   { to: "/physical-collection", label: "實體卡", Icon: IconBox, copyKey: "physical" },
-  { to: "/app/wallet", label: "KP 錢包", Icon: IconGem },
-  { to: "/app/history", label: "抽卡／消費紀錄", Icon: IconBook },
-  { to: "/app/settings/privacy", label: "公開頁設定", Icon: IconUsers },
-  { to: "/app/settings", label: "玩家設定", Icon: IconSettings },
+  { to: "/app/wallet", label: "KP 錢包", Icon: IconGem, copyKey: "wallet" },
+  { to: "/app/history", label: "抽卡／消費紀錄", Icon: IconBook, copyKey: "history" },
+  { to: "/app/settings/privacy", label: "公開頁設定", Icon: IconUsers, copyKey: "privacy" },
+  { to: "/app/settings", label: "玩家設定", Icon: IconSettings, copyKey: "settings" },
 ];
 
 const ADMIN_NAV: NavItem[] = [
-  { to: "/admin", label: "營運總覽", Icon: IconHome },
-  { to: "/admin/pools", label: "卡池管理", Icon: IconLayers },
-  { to: "/admin/pools/templates", label: "卡池範本", Icon: IconSparkle },
-  { to: "/admin/album-templates", label: "卡冊範本", Icon: IconCards },
-  { to: "/admin/goddesses", label: "女神與申請管理", Icon: IconUsers },
-  { to: "/admin/content", label: "內容管理（示範）", Icon: IconCards },
+  { to: "/admin", label: "營運總覽", Icon: IconHome, copyKey: "overview" },
+  { to: "/admin/pools", label: "卡池管理", Icon: IconLayers, copyKey: "poolAdmin" },
+  { to: "/admin/pools/templates", label: "卡池範本", Icon: IconSparkle, copyKey: "poolTemplates" },
+  { to: "/admin/album-templates", label: "卡冊範本", Icon: IconCards, copyKey: "albumTemplates" },
+  { to: "/admin/goddesses", label: "女神與申請管理", Icon: IconUsers, copyKey: "creatorAdmin" },
+  { to: "/admin/content", label: "內容管理（示範）", Icon: IconCards, copyKey: "contentAdmin" },
 ];
 
 const GODDESS_NAV: NavItem[] = [
-  { to: "/goddess", label: "女神後台總覽", Icon: IconHome },
-  { to: "/goddess/dashboard", label: "女神儀表板", Icon: IconCrown },
-  { to: "/goddess/revenue", label: "凍結收益（Demo）", Icon: IconGem },
-  { to: "/goddess/contracts", label: "數位合約", Icon: IconBook },
-  { to: "/goddess/profile", label: "公開資料", Icon: IconUsers },
+  { to: "/goddess", label: "女神後台總覽", Icon: IconHome, copyKey: "creatorHome" },
+  { to: "/goddess/dashboard", label: "女神儀表板", Icon: IconCrown, copyKey: "creatorDashboard" },
+  { to: "/goddess/revenue", label: "凍結收益（Demo）", Icon: IconGem, copyKey: "frozenRevenue" },
+  { to: "/goddess/contracts", label: "數位合約", Icon: IconBook, copyKey: "agreements" },
+  { to: "/goddess/profile", label: "公開資料", Icon: IconUsers, copyKey: "profile" },
 ];
 
 type Area = "public" | "player" | "admin" | "goddess";

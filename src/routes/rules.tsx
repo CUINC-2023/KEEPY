@@ -11,13 +11,13 @@ import { RarityBadge } from "@/components/ui/rarity-badge";
 export const Route = createFileRoute("/rules")({
   head: () => ({
     meta: [
-      { title: "遊戲規則摘要 — CU 女神卡" },
+      { title: "遊戲規則摘要 — KEEPY" },
       {
         name: "description",
         content:
           "卡牌等級、抽卡機率與保底、重複卡成長 10%、隨機卡牌合成成功與失敗結果、合成保底與商城道具說明。",
       },
-      { property: "og:title", content: "遊戲規則摘要 — CU 女神卡" },
+      { property: "og:title", content: "遊戲規則摘要 — KEEPY" },
       {
         property: "og:description",
         content:

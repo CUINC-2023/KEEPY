@@ -31,9 +31,9 @@ import {
 export const Route = createFileRoute("/app/settings/privacy")({
   head: () => ({
     meta: [
-      { title: "公開頁與隱私設定 — PEEKFUTURE 創作者收藏卡平台" },
+      { title: "公開頁與隱私設定 — KEEPY 創作者收藏卡平台" },
       { name: "description", content: "設定公開收藏頁的顯示名稱、介紹與展示區塊，設定只保存在此瀏覽器。" },
-      { property: "og:title", content: "公開頁與隱私設定 — PEEKFUTURE 創作者收藏卡平台" },
+      { property: "og:title", content: "公開頁與隱私設定 — KEEPY 創作者收藏卡平台" },
       { property: "og:description", content: "管理公開收藏頁展示內容的 Local Mock 設定頁。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

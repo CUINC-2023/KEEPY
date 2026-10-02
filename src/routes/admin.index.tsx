@@ -9,9 +9,9 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
-      { title: "營運總覽 — CU 女神卡管理後台" },
+      { title: "營運總覽 — KEEPY管理後台" },
       { name: "description", content: "卡池草稿與發布狀態、最後修改者與修改時間的營運總覽骨架。（Demo）" },
-      { property: "og:title", content: "營運總覽 — CU 女神卡管理後台" },
+      { property: "og:title", content: "營運總覽 — KEEPY管理後台" },
       { property: "og:description", content: "卡池草稿與發布狀態、最後修改者與修改時間的營運總覽骨架。（Demo）" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

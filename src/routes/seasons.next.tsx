@@ -7,8 +7,8 @@ import { seasonCountdown, seasonNodeState, useSeasonClock } from "@/lib/season-t
 
 export const Route = createFileRoute("/seasons/next")({
   head: () => ({ meta: [
-    { title: "下一季預告 — PEEKFUTURE 創作者收藏卡平台" }, { name: "description", content: "查看下一季主題與 T-30 至 T-1 解鎖節點。" },
-    { property: "og:title", content: "下一季預告 — PEEKFUTURE 創作者收藏卡平台" }, { property: "og:description", content: "查看下一季主題與解鎖節點。" },
+    { title: "下一季預告 — KEEPY 創作者收藏卡平台" }, { name: "description", content: "查看下一季主題與 T-30 至 T-1 解鎖節點。" },
+    { property: "og:title", content: "下一季預告 — KEEPY 創作者收藏卡平台" }, { property: "og:description", content: "查看下一季主題與解鎖節點。" },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
   ] }), component: NextSeasonPage,
 });

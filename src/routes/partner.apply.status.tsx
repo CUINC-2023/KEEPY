@@ -18,12 +18,12 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/partner/apply/status")({
   head: () => ({
     meta: [
-      { title: "申請進度 — CU 女神卡" },
+      { title: "申請進度 — KEEPY" },
       {
         name: "description",
         content: "查看合作申請的審核時間軸、補件說明、核准結果與女神身分開通狀態。（Demo）",
       },
-      { property: "og:title", content: "申請進度 — CU 女神卡" },
+      { property: "og:title", content: "申請進度 — KEEPY" },
       { property: "og:description", content: "從送出到女神身分開通的完整進度追蹤。（Demo）" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

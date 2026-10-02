@@ -12,9 +12,9 @@ import { useMockLoading } from "@/hooks/use-mock-loading";
 export const Route = createFileRoute("/app/history")({
   head: () => ({
     meta: [
-      { title: "紀錄 — CU 女神卡" },
+      { title: "紀錄 — KEEPY" },
       { name: "description", content: "抽卡紀錄、點數異動與訂單紀錄（Demo 資料）。" },
-      { property: "og:title", content: "紀錄 — CU 女神卡" },
+      { property: "og:title", content: "紀錄 — KEEPY" },
       { property: "og:description", content: "玩家抽卡與點數異動紀錄原型。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

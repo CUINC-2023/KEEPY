@@ -24,10 +24,10 @@ export const Route = createFileRoute("/goddesses/$goddessId")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "找不到女神 — CU 女神卡" }, { name: "robots", content: "noindex" }],
+        meta: [{ title: "找不到女神 — KEEPY" }, { name: "robots", content: "noindex" }],
       };
     }
-    const title = `${loaderData.name}・${loaderData.title} — CU 女神卡`;
+    const title = `${loaderData.name}・${loaderData.title} — KEEPY`;
     return {
       meta: [
         { title },

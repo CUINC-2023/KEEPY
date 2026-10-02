@@ -18,9 +18,9 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/admin/pools/$poolId/synthesis-settings")({
   head: () => ({
     meta: [
-      { title: "合成條件設定 — CU 女神卡管理後台" },
+      { title: "合成條件設定 — KEEPY管理後台" },
       { name: "description", content: "單一卡池合成素材張數、基礎成功率、道具加成與連續失敗保底設定面板。（Demo）" },
-      { property: "og:title", content: "合成條件設定 — CU 女神卡管理後台" },
+      { property: "og:title", content: "合成條件設定 — KEEPY管理後台" },
       { property: "og:description", content: "單一卡池合成素材張數、基礎成功率、道具加成與連續失敗保底設定面板。（Demo）" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

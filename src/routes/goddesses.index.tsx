@@ -11,9 +11,9 @@ import { useMockLoading } from "@/hooks/use-mock-loading";
 export const Route = createFileRoute("/goddesses/")({
   head: () => ({
     meta: [
-      { title: "女神列表 — CU 女神卡" },
+      { title: "女神列表 — KEEPY" },
       { name: "description", content: "認識所有合作女神創作者，查看代表卡等級與公開檔案。" },
-      { property: "og:title", content: "女神列表 — CU 女神卡" },
+      { property: "og:title", content: "女神列表 — KEEPY" },
       { property: "og:description", content: "認識所有合作女神創作者，查看代表卡等級與公開檔案。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

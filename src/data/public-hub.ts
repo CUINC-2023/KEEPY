@@ -7,7 +7,7 @@ import {
   poolCollectProgress,
 } from "@/data/mock";
 
-export const PLATFORM_NAME = "PEEKFUTURE 創作者收藏卡平台";
+export const PLATFORM_NAME = "KEEPY 創作者收藏卡平台";
 export const SERIES_NAME = "女神系列 Goddess Series";
 
 const nextPool = POOLS.find((pool) => pool.id === "p-starlight");
@@ -91,7 +91,7 @@ export const IMPORTANT_NOTICES = IMPORTANT_NOTICE_IDS.flatMap((id) => {
 });
 
 export const EXISTING_POOL_RANKING = POOL_RANKING;
-export const APP_VERSION = "0.13.0（預覽版）";
+export const APP_VERSION = "0.14.0（預覽版）";
 
 // ── 0.9.0 官方內容詳情（Local Mock，列表／首頁／詳情同源）──────────────
 export type ContentLink = { label: string; kind: "pool" | "activity" | "season" | "announcement" | "rules"; id?: string };

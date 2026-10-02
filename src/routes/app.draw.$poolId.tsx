@@ -1,3 +1,4 @@
+import { QaHint } from "@/components/content/QaHint";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { POOLS, SPLIT_SOURCE_NOTE, isHighGrade, poolById } from "@/data/mock";
@@ -27,9 +28,9 @@ import { useToast } from "@/components/ui/toast";
 export const Route = createFileRoute("/app/draw/$poolId")({
   head: () => ({
     meta: [
-      { title: "抽卡 — CU 女神卡" },
+      { title: "抽卡 — KEEPY" },
       { name: "description", content: "KEEPY 單抽與十抽送一抽的固定結果 Demo；點數、機率與保底並非正式規則。" },
-      { property: "og:title", content: "抽卡 — CU 女神卡" },
+      { property: "og:title", content: "抽卡 — KEEPY" },
       { property: "og:description", content: "抽卡流程原型，結果為預先定義的 Mock 資料。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -152,6 +153,7 @@ function DrawPage() {
                 模擬網路中斷
               </label>
             </div>
+      <QaHint id="ten-plus-one" />
             {submitting && (
               <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
                 <span className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />

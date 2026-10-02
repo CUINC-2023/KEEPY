@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/wish-pools")({
   head: () => ({ meta: [
-    { title: "許願卡池 — PEEKFUTURE 創作者收藏卡平台" }, { name: "description", content: "瀏覽官方候選許願卡池、候選說明與示範投票規則。" },
-    { property: "og:title", content: "許願卡池 — PEEKFUTURE 創作者收藏卡平台" }, { property: "og:description", content: "官方候選許願卡池與示範投票規則。" },
+    { title: "許願卡池 — KEEPY 創作者收藏卡平台" }, { name: "description", content: "瀏覽官方候選許願卡池、候選說明與示範投票規則。" },
+    { property: "og:title", content: "許願卡池 — KEEPY 創作者收藏卡平台" }, { property: "og:description", content: "官方候選許願卡池與示範投票規則。" },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
   ] }), component: WishPoolsPage,
 });

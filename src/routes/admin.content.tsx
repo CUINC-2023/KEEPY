@@ -18,9 +18,9 @@ import { useToast } from "@/components/ui/toast";
 
 export const Route = createFileRoute("/admin/content")({
   head: () => ({ meta: [
-    { title: "內容管理（後台示範）— PEEKFUTURE 管理後台" },
+    { title: "內容管理（後台示範）— KEEPY 管理後台" },
     { name: "description", content: "編輯公告、活動、首頁區塊、卡池、許願與排行榜展示文案，僅存於此瀏覽器（Local Mock）。" },
-    { property: "og:title", content: "內容管理（後台示範）— PEEKFUTURE" },
+    { property: "og:title", content: "內容管理（後台示範）— KEEPY" },
     { property: "og:description", content: "本機 Demo 內容編輯與前台預覽。" },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
   ] }),

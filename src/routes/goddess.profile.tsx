@@ -16,9 +16,9 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/goddess/profile")({
   head: () => ({
     meta: [
-      { title: "公開資料與素材 — CU 女神卡" },
+      { title: "公開資料與素材 — KEEPY" },
       { name: "description", content: "女神公開資料、社群連結、形象圖與卡牌素材狀態，全部為 Mock。" },
-      { property: "og:title", content: "公開資料與素材 — CU 女神卡" },
+      { property: "og:title", content: "公開資料與素材 — KEEPY" },
       { property: "og:description", content: "女神公開資料、社群連結、形象圖與卡牌素材狀態，全部為 Mock。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

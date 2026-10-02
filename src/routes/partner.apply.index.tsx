@@ -25,12 +25,12 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/partner/apply/")({
   head: () => ({
     meta: [
-      { title: "填寫合作申請 — CU 女神卡" },
+      { title: "填寫合作申請 — KEEPY" },
       {
         name: "description",
         content: "分步填寫藝名、公開社群、創作資料、素材與合作規則確認，送出後進入官方審核。（Demo）",
       },
-      { property: "og:title", content: "填寫合作申請 — CU 女神卡" },
+      { property: "og:title", content: "填寫合作申請 — KEEPY" },
       {
         property: "og:description",
         content: "六個步驟完成合作女神申請，不收集敏感個資，全流程為 Demo。",

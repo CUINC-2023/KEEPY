@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/app/preview/collector")({
   head: () => ({
     meta: [
-      { title: "本人預覽公開收藏頁 — PEEKFUTURE 創作者收藏卡平台" },
+      { title: "本人預覽公開收藏頁 — KEEPY 創作者收藏卡平台" },
       { name: "description", content: "以訪客視角預覽自己的公開收藏頁，並快速前往展示內容管理（Demo）。" },
       { property: "og:title", content: "本人預覽公開收藏頁" },
       { property: "og:description", content: "預覽公開收藏頁並管理展示卡與徽章（Demo）。" },

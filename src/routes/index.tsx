@@ -82,7 +82,7 @@ function HomePage() {
       </section>
 
       {content.homeSections.filter((s) => s.visible).map((s) => <Fragment key={s.key}>{blocks[s.key]}</Fragment>)}
-      <footer className="border-t border-border py-8 text-sm text-muted-foreground"><p className="font-bold text-foreground">{PLATFORM_NAME}</p><p className="mt-1">{SERIES_NAME} · 組織歸屬 PEEKFUTURE · 正式母品牌待決策</p><p className="mt-3 text-xs">本網站為 Local Mock UI 原型，無後端、真實登入、金流、抽卡、通知、上傳或履約。</p></footer>
+      <footer className="border-t border-border py-8 text-sm text-muted-foreground"><p className="font-bold text-foreground">{PLATFORM_NAME}</p><p className="mt-1">{SERIES_NAME} · 收藏喜歡，留下創作時刻</p><p className="mt-3 text-xs">本網站為 Local Mock UI 原型，無後端、真實登入、金流、抽卡、通知、上傳或履約。</p></footer>
     </>}
   </div>;
 }

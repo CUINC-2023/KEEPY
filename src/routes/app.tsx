@@ -4,9 +4,9 @@ import { PLAYER, POINT_DEDUCT_NOTE } from "@/data/player";
 export const Route = createFileRoute("/app")({
   head: () => ({
     meta: [
-      { title: "玩家中心 — CU 女神卡" },
-      { name: "description", content: "CU 女神卡玩家模式：抽卡、卡冊、成長、合成、錢包與設定（Demo 原型）。" },
-      { property: "og:title", content: "玩家中心 — CU 女神卡" },
+      { title: "玩家中心 — KEEPY" },
+      { name: "description", content: "KEEPY玩家模式：抽卡、卡冊、成長、合成、錢包與設定（Demo 原型）。" },
+      { property: "og:title", content: "玩家中心 — KEEPY" },
       { property: "og:description", content: "抽卡、卡冊、卡牌成長與隨機合成的玩家核心流程原型。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

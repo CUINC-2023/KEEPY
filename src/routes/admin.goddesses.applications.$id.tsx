@@ -13,12 +13,12 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/admin/goddesses/applications/$id")({
   head: () => ({
     meta: [
-      { title: "申請詳情 — CU 女神卡管理後台" },
+      { title: "申請詳情 — KEEPY管理後台" },
       {
         name: "description",
         content: "申請資料、公開社群、創作類型、素材狀態、規則確認與審核操作紀錄。（Demo）",
       },
-      { property: "og:title", content: "申請詳情 — CU 女神卡管理後台" },
+      { property: "og:title", content: "申請詳情 — KEEPY管理後台" },
       { property: "og:description", content: "開始審核、要求補件、核准與未通過皆為 Demo 操作。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

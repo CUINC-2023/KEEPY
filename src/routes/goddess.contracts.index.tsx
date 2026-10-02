@@ -1,3 +1,4 @@
+import { QaHint } from "@/components/content/QaHint";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CONTRACTS, SETTLE_DEMO_NOTE, GODDESS_TBD } from "@/data/goddess-backstage";
@@ -10,9 +11,9 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/goddess/contracts/")({
   head: () => ({
     meta: [
-      { title: "數位合約 — CU 女神卡" },
+      { title: "數位合約 — KEEPY" },
       { name: "description", content: "合作合約列表、版本、有效期間與簽署狀態。簽署與下載皆為 Demo。" },
-      { property: "og:title", content: "數位合約 — CU 女神卡" },
+      { property: "og:title", content: "數位合約 — KEEPY" },
       { property: "og:description", content: "合作合約列表、版本、有效期間與簽署狀態。簽署與下載皆為 Demo。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -39,6 +40,7 @@ function ContractList() {
         </p>
       </header>
 
+      <QaHint id="agreement" />
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (
         <StatePlaceholder state={state} emptyTitle="尚無合約" emptyDescription="通過合作審核後，這裡會顯示合約版本與簽署狀態。" />

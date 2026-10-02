@@ -32,7 +32,7 @@ export const Route = createFileRoute("/pools/$poolId")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "找不到卡池 — CU 女神卡" }, { name: "robots", content: "noindex" }],
+        meta: [{ title: "找不到卡池 — KEEPY" }, { name: "robots", content: "noindex" }],
       };
     }
     const title = `${loaderData.poolName} 卡池 — KEEPY`;

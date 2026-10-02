@@ -15,9 +15,9 @@ import { missingCardDisplay, useAlbumVisibility } from "@/lib/album-visibility";
 export const Route = createFileRoute("/cards/$cardId")({
   head: () => ({
     meta: [
-      { title: "卡牌詳情 — PEEKFUTURE 創作者收藏卡平台" },
+      { title: "卡牌詳情 — KEEPY 創作者收藏卡平台" },
       { name: "description", content: "查看卡面、稀有度、所屬卡池、取得方式與 Local Mock 收藏狀態。" },
-      { property: "og:title", content: "卡牌詳情 — PEEKFUTURE 創作者收藏卡平台" },
+      { property: "og:title", content: "卡牌詳情 — KEEPY 創作者收藏卡平台" },
       { property: "og:description", content: "卡牌詳情頁：卡面放大檢視、卡牌資訊與收藏狀態 Local Mock。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -12,9 +12,9 @@ import { useMockLoading } from "@/hooks/use-mock-loading";
 export const Route = createFileRoute("/rankings")({
   head: () => ({
     meta: [
-      { title: "排行榜 — CU 女神卡" },
+      { title: "排行榜 — KEEPY" },
       { name: "description", content: "公開排行榜：卡池蒐集排行與玩家等級排行。" },
-      { property: "og:title", content: "排行榜 — CU 女神卡" },
+      { property: "og:title", content: "排行榜 — KEEPY" },
       { property: "og:description", content: "公開排行榜：卡池蒐集排行與玩家等級排行。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

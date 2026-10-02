@@ -30,9 +30,9 @@ export const Route = createFileRoute("/leaderboards")({
   },
   head: () => ({
     meta: [
-      { title: "排行榜 — PEEKFUTURE 創作者收藏卡平台" },
+      { title: "排行榜 — KEEPY 創作者收藏卡平台" },
       { name: "description", content: "收藏總榜與單一卡池排行榜（Demo 示範排名），只顯示公開收藏家資料，不顯示消費金額。" },
-      { property: "og:title", content: "排行榜 — PEEKFUTURE 創作者收藏卡平台" },
+      { property: "og:title", content: "排行榜 — KEEPY 創作者收藏卡平台" },
       { property: "og:description", content: "收藏總榜與單一卡池排行榜，Demo 示範排名。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

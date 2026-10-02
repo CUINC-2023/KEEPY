@@ -12,9 +12,9 @@ import { useToast } from "@/components/ui/toast";
 export const Route = createFileRoute("/app/wallet")({
   head: () => ({
     meta: [
-      { title: "錢包 — CU 女神卡" },
+      { title: "錢包 — KEEPY" },
       { name: "description", content: "付費點數、贈送點數、Demo 儲值方案與訂單紀錄。" },
-      { property: "og:title", content: "錢包 — CU 女神卡" },
+      { property: "og:title", content: "錢包 — KEEPY" },
       { property: "og:description", content: "點數與儲值方案原型，付款與退款全部為 Demo。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

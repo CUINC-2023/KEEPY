@@ -7,9 +7,9 @@ import { useToast } from "@/components/ui/toast";
 export const Route = createFileRoute("/app/settings/")({
   head: () => ({
     meta: [
-      { title: "玩家設定 — CU 女神卡" },
+      { title: "玩家設定 — KEEPY" },
       { name: "description", content: "基本資料、Reduce Motion、通知與隱私設定的介面原型。" },
-      { property: "og:title", content: "玩家設定 — CU 女神卡" },
+      { property: "og:title", content: "玩家設定 — KEEPY" },
       { property: "og:description", content: "玩家設定原型，包含動畫、通知與隱私選項。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

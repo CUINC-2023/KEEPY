@@ -18,9 +18,9 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/admin/pools/$poolId/draw-settings")({
   head: () => ({
     meta: [
-      { title: "抽卡機率設定 — CU 女神卡管理後台" },
+      { title: "抽卡機率設定 — KEEPY管理後台" },
       { name: "description", content: "單一卡池十級機率、等級啟用、卡牌抽取範圍與同等級權重設定面板。（Demo）" },
-      { property: "og:title", content: "抽卡機率設定 — CU 女神卡管理後台" },
+      { property: "og:title", content: "抽卡機率設定 — KEEPY管理後台" },
       { property: "og:description", content: "單一卡池十級機率、等級啟用、卡牌抽取範圍與同等級權重設定面板。（Demo）" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

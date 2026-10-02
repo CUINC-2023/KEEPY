@@ -24,9 +24,9 @@ import { useToast } from "@/components/ui/toast";
 export const Route = createFileRoute("/app/synthesis")({
   head: () => ({
     meta: [
-      { title: "隨機合成 — CU 女神卡" },
+      { title: "隨機合成 — KEEPY" },
       { name: "description", content: "同卡池、同等級卡牌的隨機合成：成功率、道具加成與連續失敗保底進度。" },
-      { property: "og:title", content: "隨機合成 — CU 女神卡" },
+      { property: "og:title", content: "隨機合成 — KEEPY" },
       { property: "og:description", content: "隨機合成流程原型，合成不產生女神分潤。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -14,9 +14,9 @@ import { useToast } from "@/components/ui/toast";
 export const Route = createFileRoute("/app/growth")({
   head: () => ({
     meta: [
-      { title: "指定卡成長 — CU 女神卡" },
+      { title: "指定卡成長 — KEEPY" },
       { name: "description", content: "同女神、同等級、同卡牌的每張重複卡 +10% 成長值，累積 10 張可升一級。" },
-      { property: "og:title", content: "指定卡成長 — CU 女神卡" },
+      { property: "og:title", content: "指定卡成長 — KEEPY" },
       { property: "og:description", content: "使用重複卡累積成長值並升級指定卡牌（Demo）。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

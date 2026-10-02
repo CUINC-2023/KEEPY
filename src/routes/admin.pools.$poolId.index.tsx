@@ -10,9 +10,9 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/admin/pools/$poolId/")({
   head: () => ({
     meta: [
-      { title: "卡池營運 — CU 女神卡管理後台" },
+      { title: "卡池營運 — KEEPY管理後台" },
       { name: "description", content: "單一卡池的營運資訊、草稿與發布狀態、預覽與發布確認骨架。（Demo）" },
-      { property: "og:title", content: "卡池營運 — CU 女神卡管理後台" },
+      { property: "og:title", content: "卡池營運 — KEEPY管理後台" },
       { property: "og:description", content: "單一卡池的營運資訊、草稿與發布狀態、預覽與發布確認骨架。（Demo）" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

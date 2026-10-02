@@ -78,12 +78,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "PEEKFUTURE 創作者收藏卡平台" },
+      { title: "KEEPY 創作者收藏卡平台" },
       {
         name: "description",
         content: "創作者收藏卡平台；目前展示女神系列 Local Mock。",
       },
-      { property: "og:title", content: "PEEKFUTURE 創作者收藏卡平台" },
+      { property: "og:title", content: "KEEPY 創作者收藏卡平台" },
       {
         property: "og:description",
         content: "收藏真人創作者、VTuber、原創角色與聯名 IP 的創作時刻。",

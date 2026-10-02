@@ -1,3 +1,4 @@
+import { QaHint } from "@/components/content/QaHint";
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SPLIT_POLICY_NOTE } from "@/data/mock";
@@ -20,9 +21,9 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/goddess/revenue/")({
   head: () => ({
     meta: [
-      { title: "收益與分潤 — CU 女神卡" },
+      { title: "收益與分潤 — KEEPY" },
       { name: "description", content: "依日期、卡池、訂單與結算狀態篩選分潤明細，全部以新台幣顯示。（Demo）" },
-      { property: "og:title", content: "收益與分潤 — CU 女神卡" },
+      { property: "og:title", content: "收益與分潤 — KEEPY" },
       { property: "og:description", content: "依日期、卡池、訂單與結算狀態篩選分潤明細，全部以新台幣顯示。（Demo）" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -83,6 +84,7 @@ function GoddessRevenue() {
           {REVENUE_CALC_NOTE}
         </p>
       </header>
+      <QaHint id="revenue" />
 
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (

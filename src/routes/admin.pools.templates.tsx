@@ -21,9 +21,9 @@ import { StatePlaceholder, StateSwitcher, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/admin/pools/templates")({
   head: () => ({
     meta: [
-      { title: "卡池建立範本 — CU 女神卡管理後台" },
+      { title: "卡池建立範本 — KEEPY管理後台" },
       { name: "description", content: "常駐、期間限定、合作企劃與復刻四種卡池建立範本，預覽欄位並以 Demo 草稿建立。" },
-      { property: "og:title", content: "卡池建立範本 — CU 女神卡管理後台" },
+      { property: "og:title", content: "卡池建立範本 — KEEPY管理後台" },
       { property: "og:description", content: "四種卡池建立範本與七步建立流程（Demo）。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

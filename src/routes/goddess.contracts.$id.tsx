@@ -11,9 +11,9 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/goddess/contracts/$id")({
   head: () => ({
     meta: [
-      { title: "合約詳情 — CU 女神卡" },
+      { title: "合約詳情 — KEEPY" },
       { name: "description", content: "合約版本、有效期間、條款內容與簽署狀態。簽署與下載皆為 Demo。" },
-      { property: "og:title", content: "合約詳情 — CU 女神卡" },
+      { property: "og:title", content: "合約詳情 — KEEPY" },
       { property: "og:description", content: "合約版本、有效期間、條款內容與簽署狀態。簽署與下載皆為 Demo。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

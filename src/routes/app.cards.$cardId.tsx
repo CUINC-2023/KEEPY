@@ -14,9 +14,9 @@ import { poolById } from "@/data/mock";
 export const Route = createFileRoute("/app/cards/$cardId")({
   head: () => ({
     meta: [
-      { title: "卡片觀看器 — CU 女神卡" },
+      { title: "卡片觀看器 — KEEPY" },
       { name: "description", content: "滿版檢視卡面、卡牌資料、取得時間、持有數與成長值。" },
-      { property: "og:title", content: "卡片觀看器 — CU 女神卡" },
+      { property: "og:title", content: "卡片觀看器 — KEEPY" },
       { property: "og:description", content: "滿版卡片觀看器，支援縮放示意與前後切換。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

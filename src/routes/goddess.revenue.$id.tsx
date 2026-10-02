@@ -19,9 +19,9 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/goddess/revenue/$id")({
   head: () => ({
     meta: [
-      { title: "結算期明細 — CU 女神卡" },
+      { title: "結算期明細 — KEEPY" },
       { name: "description", content: "單一結算期的付費抽卡訂單、符合分潤消費與新台幣分潤明細。（Demo）" },
-      { property: "og:title", content: "結算期明細 — CU 女神卡" },
+      { property: "og:title", content: "結算期明細 — KEEPY" },
       { property: "og:description", content: "單一結算期的付費抽卡訂單、符合分潤消費與新台幣分潤明細。（Demo）" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

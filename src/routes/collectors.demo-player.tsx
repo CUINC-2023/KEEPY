@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/collectors/demo-player")({
   head: () => ({
     meta: [
-      { title: "橘子收藏家的公開收藏頁 — PEEKFUTURE 創作者收藏卡平台" },
+      { title: "橘子收藏家的公開收藏頁 — KEEPY 創作者收藏卡平台" },
       { name: "description", content: "橘子收藏家的公開展示卡、徽章、卡冊進度與實體典藏紀錄。" },
       { property: "og:title", content: "橘子收藏家的公開收藏頁" },
       { property: "og:description", content: "查看展示卡、收藏徽章與當季收藏進度。" },

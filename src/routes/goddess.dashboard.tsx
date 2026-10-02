@@ -20,9 +20,9 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/goddess/dashboard")({
   head: () => ({
     meta: [
-      { title: "女神儀表板 — CU 女神卡" },
+      { title: "女神儀表板 — KEEPY" },
       { name: "description", content: "合作狀態、上架卡池、有效付費抽卡與新台幣分潤摘要。（Demo）" },
-      { property: "og:title", content: "女神儀表板 — CU 女神卡" },
+      { property: "og:title", content: "女神儀表板 — KEEPY" },
       { property: "og:description", content: "合作狀態、上架卡池、有效付費抽卡與新台幣分潤摘要。（Demo）" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

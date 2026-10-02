@@ -16,9 +16,9 @@ import { StatePlaceholder, StateSwitcher, useDemoState } from "@/components/ui/s
 
 export const Route = createFileRoute("/app/")({
   head: () => ({ meta: [
-    { title: "玩家私人儀表板 — PEEKFUTURE 創作者收藏卡平台" },
+    { title: "玩家私人儀表板 — KEEPY 創作者收藏卡平台" },
     { name: "description", content: "查看點數、當季卡冊、收藏任務、實體典藏資格與近期通知的 Local Mock。" },
-    { property: "og:title", content: "玩家私人儀表板 — PEEKFUTURE 創作者收藏卡平台" },
+    { property: "og:title", content: "玩家私人儀表板 — KEEPY 創作者收藏卡平台" },
     { property: "og:description", content: "玩家專屬收藏進度、卡牌成長與近期提醒。" },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
   ] }), component: PlayerHome,

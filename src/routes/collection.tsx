@@ -18,9 +18,9 @@ import { useToast } from "@/components/ui/toast";
 export const Route = createFileRoute("/collection")({
   head: () => ({
     meta: [
-      { title: "收藏圖鑑 — CU 女神卡" },
+      { title: "收藏圖鑑 — KEEPY" },
       { name: "description", content: "瀏覽你持有的女神卡、卡牌等級與成長進度。" },
-      { property: "og:title", content: "收藏圖鑑 — CU 女神卡" },
+      { property: "og:title", content: "收藏圖鑑 — KEEPY" },
       { property: "og:description", content: "瀏覽你持有的女神卡、卡牌等級與成長進度。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

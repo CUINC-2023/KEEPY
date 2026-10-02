@@ -10,13 +10,13 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/partner/")({
   head: () => ({
     meta: [
-      { title: "女神合作說明 — CU 女神卡" },
+      { title: "女神合作說明 — KEEPY" },
       {
         name: "description",
         content:
           "合作女神以卡牌 IP 曝光與付費抽卡新台幣分潤為核心；了解合作流程、分潤來源與申請方式。（Demo）",
       },
-      { property: "og:title", content: "女神合作說明 — CU 女神卡" },
+      { property: "og:title", content: "女神合作說明 — KEEPY" },
       {
         property: "og:description",
         content: "卡牌 IP 曝光與付費抽卡分潤，合作流程從申請到女神身分開通一次看懂。（Demo）",

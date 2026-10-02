@@ -12,8 +12,8 @@ export const Route = createFileRoute("/activities/$activityId")({
     return { item };
   },
   head: ({ loaderData }) => {
-    if (!loaderData) return { meta: [{ title: "找不到活動 — PEEKFUTURE" }, { name: "robots", content: "noindex" }] };
-    const t = `${loaderData.item.title} — 活動專區 · PEEKFUTURE`;
+    if (!loaderData) return { meta: [{ title: "找不到活動 — KEEPY" }, { name: "robots", content: "noindex" }] };
+    const t = `${loaderData.item.title} — 活動專區 · KEEPY`;
     return { meta: [
       { title: t }, { name: "description", content: loaderData.item.subtitle },
       { property: "og:title", content: t }, { property: "og:description", content: loaderData.item.subtitle },
@@ -31,7 +31,7 @@ function ActivityNotFound() {
 function ActivityDetailPage() {
   const { item: base } = Route.useLoaderData();
   const item = useContent().activityById(base.id) ?? { ...base, visible: true };
-  useLocalHead(item.visible ? `${item.title} — 活動專區 · PEEKFUTURE` : "此內容目前未公開 — PEEKFUTURE", item.visible ? item.subtitle : "此內容已在本機後台示範中設為隱藏。");
+  useLocalHead(item.visible ? `${item.title} — 活動專區 · KEEPY` : "此內容目前未公開 — KEEPY", item.visible ? item.subtitle : "此內容已在本機後台示範中設為隱藏。");
   if (!item.visible) return <div className="mx-auto max-w-3xl space-y-4 py-10 text-center"><h1 className="text-2xl font-black">此內容目前未公開</h1><p className="text-sm text-muted-foreground">已在後台示範中設為隱藏（僅此瀏覽器本機設定）。</p><Link to="/activities" className="inline-flex font-bold text-primary hover:underline">返回活動列表</Link></div>;
   const tone = item.status === "進行中" ? "live" : item.status === "即將開始" ? "gold" : "default";
   return <article className="mx-auto max-w-3xl space-y-5 overflow-x-clip">

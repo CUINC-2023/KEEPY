@@ -20,9 +20,9 @@ import { useMode } from "@/components/layout/AppShell";
 export const Route = createFileRoute("/goddess/")({
   head: () => ({
     meta: [
-      { title: "女神後台總覽 — CU 女神卡" },
+      { title: "女神後台總覽 — KEEPY" },
       { name: "description", content: "合作女神後台總覽：合作狀態、分潤來源與新台幣收益摘要。（Demo）" },
-      { property: "og:title", content: "女神後台總覽 — CU 女神卡" },
+      { property: "og:title", content: "女神後台總覽 — KEEPY" },
       { property: "og:description", content: "合作女神後台總覽：合作狀態、分潤來源與新台幣收益摘要。（Demo）" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -17,9 +17,9 @@ import { ACHIEVEMENTS, COMPLETED_ACHIEVEMENTS, TOTAL_ACHIEVEMENT_POINTS, type Ac
 export const Route = createFileRoute("/app/achievements")({
   head: () => ({
     meta: [
-      { title: "成就與徽章 — CU 女神卡" },
+      { title: "成就與徽章 — KEEPY" },
       { name: "description", content: "玩家成就與徽章總覽，可篩選分類／狀態並設定展示徽章（Local Mock）。" },
-      { property: "og:title", content: "成就與徽章 — CU 女神卡" },
+      { property: "og:title", content: "成就與徽章 — KEEPY" },
       { property: "og:description", content: "玩家成就與徽章總覽，可篩選分類／狀態並設定展示徽章（Local Mock）。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

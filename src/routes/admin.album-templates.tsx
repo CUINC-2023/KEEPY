@@ -11,9 +11,9 @@ import { StatePlaceholder, StateSwitcher, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/admin/album-templates")({
   head: () => ({
     meta: [
-      { title: "卡冊 UI 範本 — CU 女神卡管理後台" },
+      { title: "卡冊 UI 範本 — KEEPY管理後台" },
       { name: "description", content: "標準卡冊、限定卡冊與紀念完成卡冊三種 UI 範本預覽。" },
-      { property: "og:title", content: "卡冊 UI 範本 — CU 女神卡管理後台" },
+      { property: "og:title", content: "卡冊 UI 範本 — KEEPY管理後台" },
       { property: "og:description", content: "三種卡冊 UI 範本的封面、進度欄、卡格狀態與鎖定規則（Demo）。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

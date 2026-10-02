@@ -1,3 +1,4 @@
+import { QaHint } from "@/components/content/QaHint";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SUSPEND_DEMO_NOTE, partnerGoddessById } from "@/data/partner";
@@ -12,12 +13,12 @@ import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/s
 export const Route = createFileRoute("/admin/goddesses/$id")({
   head: () => ({
     meta: [
-      { title: "合作女神詳情 — CU 女神卡管理後台" },
+      { title: "合作女神詳情 — KEEPY管理後台" },
       {
         name: "description",
         content: "合作女神的合作狀態、參與卡池、卡牌數、合約版本與 Demo 狀態操作。",
       },
-      { property: "og:title", content: "合作女神詳情 — CU 女神卡管理後台" },
+      { property: "og:title", content: "合作女神詳情 — KEEPY管理後台" },
       { property: "og:description", content: "合作狀態與卡池指派一覽，暫停與結束僅為 Demo 狀態。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -70,6 +71,7 @@ function AdminGoddessDetail() {
           合作起始 {g.since}｜負責人 {g.owner}｜公開頁{g.publicPage ? "已上線" : "未上線"}
         </p>
       </header>
+      <QaHint id="license-payment" />
 
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (

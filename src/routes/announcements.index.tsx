@@ -6,8 +6,8 @@ import { FilterBar } from "@/components/ui/filter-bar";
 
 export const Route = createFileRoute("/announcements/")({
   head: () => ({ meta: [
-    { title: "公告中心 — PEEKFUTURE 創作者收藏卡平台" }, { name: "description", content: "平台維護、機率、活動與兌換公告列表。" },
-    { property: "og:title", content: "公告中心 — PEEKFUTURE 創作者收藏卡平台" }, { property: "og:description", content: "平台維護、機率、活動與兌換公告列表。" },
+    { title: "公告中心 — KEEPY 創作者收藏卡平台" }, { name: "description", content: "平台維護、機率、活動與兌換公告列表。" },
+    { property: "og:title", content: "公告中心 — KEEPY 創作者收藏卡平台" }, { property: "og:description", content: "平台維護、機率、活動與兌換公告列表。" },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
   ] }), component: AnnouncementsPage,
 });

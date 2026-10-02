@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/recruitment")({
   head: () => ({ meta: [
-    { title: "卡池募集 — PEEKFUTURE 創作者收藏卡平台" }, { name: "description", content: "查看創作者、VTuber、原創角色與聯名 IP 卡池募集資格。" },
-    { property: "og:title", content: "卡池募集 — PEEKFUTURE 創作者收藏卡平台" }, { property: "og:description", content: "查看卡池募集資格與合作流程。" },
+    { title: "卡池募集 — KEEPY 創作者收藏卡平台" }, { name: "description", content: "查看創作者、VTuber、原創角色與聯名 IP 卡池募集資格。" },
+    { property: "og:title", content: "卡池募集 — KEEPY 創作者收藏卡平台" }, { property: "og:description", content: "查看卡池募集資格與合作流程。" },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
   ] }), component: RecruitmentPage,
 });

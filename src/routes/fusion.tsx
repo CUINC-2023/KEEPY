@@ -19,9 +19,9 @@ import { useAuth } from "@/components/layout/AppShell";
 export const Route = createFileRoute("/fusion")({
   head: () => ({
     meta: [
-      { title: "合成工坊 — CU 女神卡" },
+      { title: "合成工坊 — KEEPY" },
       { name: "description", content: "重複卡成長與隨機卡牌合成，連續失敗 10 次觸發保底升級。" },
-      { property: "og:title", content: "合成工坊 — CU 女神卡" },
+      { property: "og:title", content: "合成工坊 — KEEPY" },
       { property: "og:description", content: "重複卡成長與隨機卡牌合成，連續失敗 10 次觸發保底升級。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
