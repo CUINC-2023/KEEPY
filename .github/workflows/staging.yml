@@ -25,6 +25,8 @@ jobs:
         with:
           node-version: '24.19.0'
           cache: npm
+      - name: Use the verified npm version
+        run: npm install --global npm@11.9.0
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npm run build
