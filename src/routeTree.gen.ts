@@ -47,6 +47,7 @@ import { Route as AppGrowthRouteImport } from './routes/app.growth'
 import { Route as AppHistoryRouteImport } from './routes/app.history'
 import { Route as AppLevelsRouteImport } from './routes/app.levels'
 import { Route as AppParticipationLevelRouteImport } from './routes/app.participation-level'
+import { Route as AppPlayRouteImport } from './routes/app.play'
 import { Route as AppRankingsRouteImport } from './routes/app.rankings'
 import { Route as AppReadingRouteImport } from './routes/app.reading'
 import { Route as AppSynthesisRouteImport } from './routes/app.synthesis'
@@ -282,6 +283,11 @@ const AppLevelsRoute = AppLevelsRouteImport.update({
 const AppParticipationLevelRoute = AppParticipationLevelRouteImport.update({
   id: '/participation-level',
   path: '/participation-level',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPlayRoute = AppPlayRouteImport.update({
+  id: '/play',
+  path: '/play',
   getParentRoute: () => AppRoute,
 } as any)
 const AppRankingsRoute = AppRankingsRouteImport.update({
@@ -549,6 +555,7 @@ export interface FileRoutesByFullPath {
   '/app/history': typeof AppHistoryRoute
   '/app/levels': typeof AppLevelsRoute
   '/app/participation-level': typeof AppParticipationLevelRoute
+  '/app/play': typeof AppPlayRoute
   '/app/rankings': typeof AppRankingsRoute
   '/app/reading': typeof AppReadingRoute
   '/app/synthesis': typeof AppSynthesisRoute
@@ -629,6 +636,7 @@ export interface FileRoutesByTo {
   '/app/history': typeof AppHistoryRoute
   '/app/levels': typeof AppLevelsRoute
   '/app/participation-level': typeof AppParticipationLevelRoute
+  '/app/play': typeof AppPlayRoute
   '/app/rankings': typeof AppRankingsRoute
   '/app/reading': typeof AppReadingRoute
   '/app/synthesis': typeof AppSynthesisRoute
@@ -714,6 +722,7 @@ export interface FileRoutesById {
   '/app/history': typeof AppHistoryRoute
   '/app/levels': typeof AppLevelsRoute
   '/app/participation-level': typeof AppParticipationLevelRoute
+  '/app/play': typeof AppPlayRoute
   '/app/rankings': typeof AppRankingsRoute
   '/app/reading': typeof AppReadingRoute
   '/app/synthesis': typeof AppSynthesisRoute
@@ -801,6 +810,7 @@ export interface FileRouteTypes {
     | '/app/history'
     | '/app/levels'
     | '/app/participation-level'
+    | '/app/play'
     | '/app/rankings'
     | '/app/reading'
     | '/app/synthesis'
@@ -881,6 +891,7 @@ export interface FileRouteTypes {
     | '/app/history'
     | '/app/levels'
     | '/app/participation-level'
+    | '/app/play'
     | '/app/rankings'
     | '/app/reading'
     | '/app/synthesis'
@@ -965,6 +976,7 @@ export interface FileRouteTypes {
     | '/app/history'
     | '/app/levels'
     | '/app/participation-level'
+    | '/app/play'
     | '/app/rankings'
     | '/app/reading'
     | '/app/synthesis'
@@ -1316,6 +1328,13 @@ declare module '@tanstack/react-router' {
       path: '/participation-level'
       fullPath: '/app/participation-level'
       preLoaderRoute: typeof AppParticipationLevelRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/play': {
+      id: '/app/play'
+      path: '/play'
+      fullPath: '/app/play'
+      preLoaderRoute: typeof AppPlayRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/rankings': {
@@ -1712,6 +1731,7 @@ interface AppRouteChildren {
   AppHistoryRoute: typeof AppHistoryRoute
   AppLevelsRoute: typeof AppLevelsRoute
   AppParticipationLevelRoute: typeof AppParticipationLevelRoute
+  AppPlayRoute: typeof AppPlayRoute
   AppRankingsRoute: typeof AppRankingsRoute
   AppReadingRoute: typeof AppReadingRoute
   AppSynthesisRoute: typeof AppSynthesisRoute
@@ -1735,6 +1755,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppHistoryRoute: AppHistoryRoute,
   AppLevelsRoute: AppLevelsRoute,
   AppParticipationLevelRoute: AppParticipationLevelRoute,
+  AppPlayRoute: AppPlayRoute,
   AppRankingsRoute: AppRankingsRoute,
   AppReadingRoute: AppReadingRoute,
   AppSynthesisRoute: AppSynthesisRoute,

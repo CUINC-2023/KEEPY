@@ -23,6 +23,9 @@ export function CollectionHome({
     <section data-collection-home className="panel min-w-0 space-y-4 p-5">
       <h2 className="text-2xl font-bold break-words">{p.displayName}</h2>
       <CollectionNextStep me={me} />
+      <Link className="text-primary underline" to="/app/play">
+        {t("收藏遊玩中心（無消耗／無獎勵）", "Collection play centre (no costs or rewards)")}
+      </Link>
       <Link className="text-primary underline" to="/app/curations">
         {t("編排本人私人收藏策展", "Arrange your private collection curations")}
       </Link>
