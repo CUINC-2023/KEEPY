@@ -24,8 +24,12 @@ export function KnowledgePlay({
     [difficulty, setDifficulty] = useState("easy"),
     [round, setRound] = useState<QuizRound | null>(null),
     [error, setError] = useState(""),
-    [hint, setHint] = useState(false);
-  const questions = playQuestions({ ...me, cards: me.cards.slice(0, 120) }, catalogue, mode).filter(
+    [hint, setHint] = useState(false),
+    [pool, setPool] = useState("all"),
+    [roundCards, setRoundCards] = useState(me.cards.slice(0, 120)),
+    [feedback, setFeedback] = useState<number | null>(null);
+  const candidates = me.cards.filter((c) => pool === "all" || c.poolId === pool).slice(0, 120);
+  const questions = playQuestions({ ...me, cards: candidates }, catalogue, mode).filter(
       (q) =>
         mode === "knowledge" || Boolean(cardsByPool(q.poolId).find((c) => c.id === q.cardId)?.art),
     ),
@@ -39,10 +43,16 @@ export function KnowledgePlay({
     if (step < 0) return;
     root.current
       ?.querySelector<HTMLButtonElement>(
-        paused ? "[data-play-pause]" : complete ? "[data-play-save] button" : "button[data-answer]",
+        paused
+          ? "[data-play-pause]"
+          : feedback !== null
+            ? "[data-answer-next]"
+            : complete
+              ? "[data-play-save] button"
+              : "button[data-answer]",
       )
       ?.focus({ preventScroll: true });
-  }, [step, paused, complete]);
+  }, [step, paused, complete, feedback]);
   return (
     <section
       ref={root}
@@ -62,6 +72,27 @@ export function KnowledgePlay({
           "Questions use your eligible held designs and current public definitions for series relations and rarity, without inventing interview answers. Every question retains its source and version.",
         )}
       </p>
+      {mode === "knowledge" && (
+        <label className="block">
+          {t("題組系列", "Question series")}{" "}
+          <select
+            aria-label="Knowledge series"
+            className="rounded border bg-background p-2"
+            value={pool}
+            disabled={!!round && !round.complete}
+            onChange={(e) => setPool(e.target.value)}
+          >
+            <option value="all">{t("目前合法系列", "Eligible series")}</option>
+            {catalogue.pools
+              .filter((p) => me.cards.some((c) => c.poolId === p.poolId))
+              .map((p) => (
+                <option key={p.poolId} value={p.poolId}>
+                  {p.title[locale]}
+                </option>
+              ))}
+          </select>
+        </label>
+      )}
       <label>
         {t("難度", "Difficulty")}{" "}
         <select
@@ -110,6 +141,8 @@ export function KnowledgePlay({
               );
               setError("");
               setHint(false);
+              setFeedback(null);
+              setRoundCards(candidates);
             } catch {
               setRound(null);
               setError(
@@ -135,6 +168,7 @@ export function KnowledgePlay({
       {round?.paused ? (
         <p role="status">{t("已暫停，題目已遮蔽。", "Paused; question concealed.")}</p>
       ) : (
+        feedback === null &&
         q && (
           <article
             className="space-y-3"
@@ -202,6 +236,7 @@ export function KnowledgePlay({
                   data-answer={o.id}
                   variant="outline"
                   onClick={() => {
+                    setFeedback(round!.answers.length);
                     setRound(quizAnswer(round!, o.id));
                     setHint(false);
                   }}
@@ -213,7 +248,26 @@ export function KnowledgePlay({
           </article>
         )
       )}
-      {round?.complete && (
+      {feedback !== null && round && !round.paused && (
+        <section data-answer-feedback className="rounded border p-3 space-y-3" aria-live="polite">
+          <h3 className="font-bold">{t("本題解說", "Answer explanation")}</h3>
+          <p>{round.questions[feedback]!.prompt[locale]}</p>
+          <p>
+            {
+              round.questions[feedback]!.options.find((o) => o.id === round.answers[feedback])
+                ?.label[locale]
+            }{" "}
+            → {round.questions[feedback]!.explanation[locale]}
+          </p>
+          <p>
+            {round.questions[feedback]!.source} · v{round.questions[feedback]!.sourceVersion}
+          </p>
+          <Button data-answer-next onClick={() => setFeedback(null)}>
+            {t("繼續／查看完成回顧", "Continue / review completion")}
+          </Button>
+        </section>
+      )}
+      {round?.complete && feedback === null && (
         <section data-play-complete>
           <SavePlayResult
             key={round.seed}
@@ -224,8 +278,8 @@ export function KnowledgePlay({
               ruleVersion: round.ruleVersion,
               seed: round.seed,
               visibilityKey: me.visibilityKey,
-              cardIds: me.cards.slice(0, 120).map((c) => c.cardId),
-              cardVersions: me.cards.slice(0, 120).map((c) => c.cardVersion),
+              cardIds: roundCards.map((c) => c.cardId),
+              cardVersions: roundCards.map((c) => c.cardVersion),
               events: round.answers,
             }}
           />
@@ -250,6 +304,49 @@ export function KnowledgePlay({
               </li>
             ))}
           </ol>
+          {mode === "knowledge" &&
+            round.questions.some((question, i) => question.answer !== round.answers[i]) && (
+              <Button
+                variant="outline"
+                data-wrong-practice
+                onClick={() => {
+                  if (hasPendingDiscovery("/play/commands")) {
+                    setError(
+                      t("請先確認原遊玩操作。", "Confirm the original play operation first."),
+                    );
+                    return;
+                  }
+                  const ids = new Set(
+                    round.questions
+                      .filter((question, i) => question.answer !== round.answers[i])
+                      .map((question) => question.cardId),
+                  );
+                  const cards = roundCards.filter((c) => ids.has(c.cardId));
+                  try {
+                    setRound(
+                      quizStart(
+                        playQuestions({ ...me, cards }, catalogue, mode),
+                        "easy",
+                        crypto.getRandomValues(new Uint32Array(1))[0] || 1,
+                      ),
+                    );
+                    setRoundCards(cards);
+                    setFeedback(null);
+                    setHint(false);
+                    setError("");
+                  } catch {
+                    setError(
+                      t(
+                        "錯題卡牌的已核對題目不足，請核對來源後重玩；不補造題目。",
+                        "Not enough verified questions for the missed cards. Check sources before replaying; no questions are invented.",
+                      ),
+                    );
+                  }
+                }}
+              >
+                {t("以錯題卡牌再練習", "Practice with missed cards")}
+              </Button>
+            )}
         </section>
       )}
     </section>

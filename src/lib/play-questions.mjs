@@ -8,9 +8,17 @@ export function playQuestions(owner, catalogue, mode = "knowledge") {
   )
     return [];
   const visible = new Map(catalogue.cards.map((c) => [c.cardId, c]));
-  const held = owner.cards.filter(
-      (c) => c.count > 0 && visible.get(c.cardId)?.cardVersion === c.cardVersion,
-    ),
+  const seen = new Set();
+  const held = owner.cards.filter((c) => {
+      if (
+        seen.has(c.cardId) ||
+        c.count <= 0 ||
+        visible.get(c.cardId)?.cardVersion !== c.cardVersion
+      )
+        return false;
+      seen.add(c.cardId);
+      return true;
+    }),
     rarities = [...new Set(catalogue.cards.map((c) => c.rarity))],
     questions = [];
   for (const card of held) {
