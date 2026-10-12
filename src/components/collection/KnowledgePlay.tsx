@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cardsByPool } from "@/data/mock";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
@@ -27,12 +27,25 @@ export function KnowledgePlay({
         mode === "knowledge" || Boolean(cardsByPool(q.poolId).find((c) => c.id === q.cardId)?.art),
     ),
     q = round?.questions[round.answers.length];
+  const root = useRef<HTMLElement>(null),
+    step = round?.answers.length ?? -1,
+    paused = round?.paused ?? false,
+    complete = round?.complete ?? false;
+  useEffect(() => {
+    if (step < 0) return;
+    root.current
+      ?.querySelector<HTMLButtonElement>(
+        paused ? "[data-play-pause]" : complete ? "[data-play-save] button" : "button[data-answer]",
+      )
+      ?.focus({ preventScroll: true });
+  }, [step, paused, complete]);
   return (
     <section
+      ref={root}
       id={"play-" + mode}
       data-knowledge-play={mode === "knowledge" ? true : undefined}
       data-observation-play={mode === "observation" ? true : undefined}
-      className="panel space-y-4 p-4 motion-reduce:transition-none"
+      className="play-surface panel space-y-4 p-4 motion-reduce:transition-none"
     >
       <h2 className="text-xl font-bold">
         {mode === "knowledge"
@@ -94,7 +107,11 @@ export function KnowledgePlay({
             : t("開始／重新觀察", "Start / reshuffle observations")}
         </Button>
         {round && !round.complete && (
-          <Button variant="outline" onClick={() => setRound({ ...round, paused: !round.paused })}>
+          <Button
+            data-play-pause
+            variant="outline"
+            onClick={() => setRound({ ...round, paused: !round.paused })}
+          >
             {round.paused ? t("繼續答題", "Resume questions") : t("暫停答題", "Pause questions")}
           </Button>
         )}
@@ -104,7 +121,15 @@ export function KnowledgePlay({
         <p role="status">{t("已暫停，題目已遮蔽。", "Paused; question concealed.")}</p>
       ) : (
         q && (
-          <article className="space-y-3" data-play-question>
+          <article
+            className="space-y-3"
+            data-play-question
+            data-play-question-step={round?.answers.length ?? 0}
+          >
+            <p role="status">
+              {t("目前題目", "Current question")}: {(round?.answers.length ?? 0) + 1}/
+              {round?.questions.length}
+            </p>
             {mode === "observation" && (
               <figure
                 className="max-w-xs rounded-xl border border-primary p-3"

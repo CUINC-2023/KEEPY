@@ -114,7 +114,7 @@ export function CollectionPlay() {
               {t("探索公開內容", "Explore public content")}
             </Link>
           </section>
-          <section className="grid gap-3 sm:grid-cols-3" data-play-entrances>
+          <section className="grid min-w-0 gap-5 xl:grid-cols-2" data-play-entrances>
             {d.catalogue && (
               <KnowledgePlay
                 key={

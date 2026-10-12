@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { CollectionCard } from "@/lib/collection-store";
 import { memoryStart, memoryAction, type MemoryRound } from "@/lib/collection-play.mjs";
 import { useDiscoveryText } from "@/lib/discovery-copy";
@@ -18,6 +18,21 @@ export function MemoryPlay({
     [difficulty, setDifficulty] = useState("easy"),
     [round, setRound] = useState<MemoryRound | null>(null),
     [error, setError] = useState("");
+  const root = useRef<HTMLElement>(null),
+    step = round?.events.length ?? -1,
+    paused = round?.paused ?? false,
+    complete = round?.complete ?? false;
+  useEffect(() => {
+    if (step < 0) return;
+    const selector = paused
+      ? "[data-play-pause]"
+      : complete
+        ? "[data-play-save] button"
+        : round?.open.length === 2
+          ? "[data-next-pair]"
+          : "[data-memory-index]:not([disabled])";
+    root.current?.querySelector<HTMLButtonElement>(selector)?.focus({ preventScroll: true });
+  }, [step, paused, complete, round?.open.length]);
   const start = () => {
     try {
       setRound(
@@ -39,7 +54,12 @@ export function MemoryPlay({
     }
   };
   return (
-    <section className="panel space-y-4 p-4" id="play-memory" data-memory-play>
+    <section
+      ref={root}
+      className="play-surface panel space-y-4 p-4"
+      id="play-memory"
+      data-memory-play
+    >
       <h2 className="text-xl font-bold">{t("收藏記憶配對", "Collection memory pairs")}</h2>
       <label>
         {t("難度", "Difficulty")}{" "}
@@ -61,6 +81,7 @@ export function MemoryPlay({
         </Button>
         {round && !round.complete && (
           <Button
+            data-play-pause
             variant="outline"
             onClick={() => setRound(memoryAction(round, { type: "pause" }))}
           >
@@ -95,6 +116,7 @@ export function MemoryPlay({
                     round.paused ||
                     round.complete ||
                     round.matched.includes(i) ||
+                    round.open.includes(i) ||
                     round.open.length === 2
                   }
                   aria-label={
@@ -125,7 +147,10 @@ export function MemoryPlay({
             })}
           </div>
           {round.open.length === 2 && !round.paused && (
-            <Button onClick={() => setRound(memoryAction(round, { type: "continue" }))}>
+            <Button
+              data-next-pair
+              onClick={() => setRound(memoryAction(round, { type: "continue" }))}
+            >
               {t("繼續下一對", "Continue with the next pair")}
             </Button>
           )}

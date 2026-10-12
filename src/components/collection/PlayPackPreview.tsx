@@ -44,7 +44,7 @@ export function PlayPackPreview() {
   const packs = data?.scope === scope ? data.packs : [],
     pack = packs.find((p) => p.id === selected);
   return (
-    <section data-play-pack-preview className="panel space-y-4 p-4">
+    <section data-play-pack-preview className="play-surface panel space-y-4 p-4">
       <h2 className="text-xl font-bold">
         {t(
           "可玩內容包：官方示意題組預覽",

@@ -320,7 +320,7 @@ function Editor({ me }: { me: CollectionMe }) {
           {t("確認公開範圍與預覽", "Check public scope and preview")}
         </Link>
       </div>
-      <details className="panel space-y-4 p-4" data-private-exhibition-preview>
+      <details className="play-surface panel space-y-4 p-4" data-private-exhibition-preview>
         <summary>
           {t("目前草稿私人展覽預覽", "Private exhibition preview of the current draft")}
         </summary>
