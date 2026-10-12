@@ -13,6 +13,9 @@ import { playQuestions, quizStart, quizAnswer } from "../src/lib/play-questions.
 import { validStoredPlaySettings } from "../src/lib/play-contract.mjs";
 import {
   PUZZLE_RULE_VERSION,
+  SEQUENCE_RULE_VERSION,
+  sequenceStart,
+  sequenceAction,
   puzzleStart,
   puzzleAction,
 } from "../src/lib/collection-extra-play.mjs";
@@ -321,6 +324,9 @@ export function playCommand(d, token, input, key) {
             validMemoryConfig(proof.memoryConfig)) ||
           (proof.mode === "puzzle" &&
             proof.ruleVersion === PUZZLE_RULE_VERSION &&
+            proof.memoryConfig === undefined) ||
+          (proof.mode === "sequence" &&
+            proof.ruleVersion === SEQUENCE_RULE_VERSION &&
             proof.memoryConfig === undefined)
         ) ||
         !PLAY_MODES.includes(proof.mode) ||
@@ -350,7 +356,16 @@ export function playCommand(d, token, input, key) {
         fail(d, 422, "Only current eligible held designs");
       let state;
       try {
-        if (proof.mode === "puzzle") {
+        if (proof.mode === "sequence") {
+          state = sequenceStart(proof.cardIds, proof.difficulty, proof.seed);
+          for (const event of proof.events) {
+            if (!event || Object.keys(event).some((key) => !["type", "id"].includes(key)))
+              throw Error("Invalid sequence event");
+            const next = sequenceAction(state, event);
+            if (next === state) throw Error("Invalid sequence event");
+            state = next;
+          }
+        } else if (proof.mode === "puzzle") {
           state = puzzleStart(proof.cardIds, proof.difficulty, proof.seed);
           for (const event of proof.events) {
             if (!event || Object.keys(event).some((key) => !["type", "from", "to"].includes(key)))
@@ -402,19 +417,23 @@ export function playCommand(d, token, input, key) {
           : {}),
         sourceVersion: cat.version,
         sourceIds: proof.cardIds,
-        moves: ["memory", "puzzle"].includes(proof.mode) ? state.moves : null,
+        moves: ["memory", "puzzle", "sequence"].includes(proof.mode) ? state.moves : null,
         correct:
-          proof.mode === "puzzle"
-            ? state.tiles.length
-            : proof.mode === "memory"
-              ? state.cardIds.length
-              : state.answers.filter((a, i) => a === state.questions[i].answer).length,
+          proof.mode === "sequence"
+            ? state.sequence.length
+            : proof.mode === "puzzle"
+              ? state.tiles.length
+              : proof.mode === "memory"
+                ? state.cardIds.length
+                : state.answers.filter((a, i) => a === state.questions[i].answer).length,
         total:
-          proof.mode === "puzzle"
-            ? state.tiles.length
-            : proof.mode === "memory"
-              ? state.cardIds.length
-              : state.questions.length,
+          proof.mode === "sequence"
+            ? state.sequence.length
+            : proof.mode === "puzzle"
+              ? state.tiles.length
+              : proof.mode === "memory"
+                ? state.cardIds.length
+                : state.questions.length,
       };
       const id = randomUUID();
       d.db

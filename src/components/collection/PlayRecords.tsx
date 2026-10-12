@@ -171,7 +171,9 @@ export function PlayRecords({
           ? t("收藏觀察", "Collection observation")
           : id === "puzzle"
             ? t("卡牌拼圖", "Card puzzle")
-            : t("全部", "All");
+            : id === "sequence"
+              ? t("順序記憶", "Sequence memory")
+              : t("全部", "All");
   useEffect(() => {
     const c = new AbortController(),
       epoch = localSessionGeneration();
@@ -458,7 +460,7 @@ export function PlayRecords({
                 })
               }
             >
-              {["memory", "knowledge", "observation"].map((id) => (
+              {PLAY_MODES.map((id) => (
                 <option key={id} value={id}>
                   {modeLabel(id)}
                 </option>

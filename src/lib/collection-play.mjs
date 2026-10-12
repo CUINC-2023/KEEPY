@@ -10,7 +10,7 @@ export function validMemoryConfig(v) {
     typeof v.allowHints === "boolean"
   );
 }
-export const PLAY_MODES = ["memory", "knowledge", "observation", "puzzle"];
+export const PLAY_MODES = ["memory", "knowledge", "observation", "puzzle", "sequence"];
 export const PLAY_DIFFICULTIES = ["easy", "standard", "hard"];
 export function shuffle(items, seed) {
   if (!Number.isInteger(seed) || seed < 1 || seed > 0xffffffff)
