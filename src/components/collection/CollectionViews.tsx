@@ -712,7 +712,7 @@ function CollectionDraftPreview({ draft, version }: { draft: CollectionProfile; 
             style={{ maxWidth: viewport === "full" ? "100%" : `${viewport}px` }}
           >
             <h3>{current.projection.displayName}</h3>
-            <ShowcaseContent data={current.projection} />
+            <ShowcaseContent data={current.projection} anchorPrefix="preview-exhibition" />
           </div>
         ) : (
           <p role="status">
@@ -726,7 +726,13 @@ function CollectionDraftPreview({ draft, version }: { draft: CollectionProfile; 
   );
 }
 
-function ShowcaseContent({ data }: { data: PublicCollection }) {
+function ShowcaseContent({
+  data,
+  anchorPrefix = "public-exhibition",
+}: {
+  data: PublicCollection;
+  anchorPrefix?: string;
+}) {
   const { locale } = useLocale(),
     t = useDiscoveryText();
   const sections = {
@@ -788,9 +794,37 @@ function ShowcaseContent({ data }: { data: PublicCollection }) {
       {!!data.curations?.length && (
         <section data-public-curations className="space-y-4">
           <h2>{t("本人允許的公開策展", "Owner-permitted public curations")}</h2>
+          <nav
+            aria-label={t("展覽分區導覽", "Exhibition section navigation")}
+            data-exhibition-navigation
+          >
+            <ol className="flex flex-wrap gap-3">
+              {data.curations.map((g, n) => (
+                <li key={n}>
+                  <a
+                    className="inline-flex min-h-11 items-center text-primary underline"
+                    href={"#" + anchorPrefix + "-" + (n + 1)}
+                    onClick={() => {
+                      requestAnimationFrame(() =>
+                        document.getElementById(anchorPrefix + "-" + (n + 1))?.focus(),
+                      );
+                    }}
+                  >
+                    {n + 1} · {g.title}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
           {data.curations.map((g, n) => (
             <article key={n} className="space-y-3 rounded-xl border p-4">
-              <h3 className="font-bold break-words">{g.title}</h3>
+              <h3
+                id={anchorPrefix + "-" + (n + 1)}
+                tabIndex={-1}
+                className="scroll-mt-20 font-bold break-words focus-visible:outline-2 focus-visible:outline-primary"
+              >
+                {g.title}
+              </h3>
               <p className="whitespace-pre-wrap break-words">{g.note}</p>
               <Cards cards={g.cards} />
               <nav
