@@ -205,7 +205,9 @@ export function playMe(d, token, params = {}) {
     .all(...queryArgs, (p - 1) * 20)
     .map(unpack);
   const best = [];
-  for (const kind of PLAY_MODES)
+  // Only these original modes ever accepted local-play-v1 result proofs.
+  // Puzzle/sequence use their own version groups in analysis, not legacy bests.
+  for (const kind of ["memory", "knowledge", "observation"])
     for (const level of PLAY_DIFFICULTIES) {
       if (mode !== "all" && mode !== kind) continue;
       const result = d.db
