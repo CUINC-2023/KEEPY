@@ -1,3 +1,4 @@
+import { validPlanningOrder } from "../src/lib/collection-planning.mjs";
 import { validCollectionNotes, noteSubjectAllowed } from "../src/lib/collection-notes.mjs";
 import { validReadingGuide } from "../src/lib/collection-reading-guide.mjs";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
@@ -333,6 +334,7 @@ function validateProfile(d, u, p) {
             "collectionSearch",
             "readingGuide",
             "notes",
+            "planningOrder",
           ].includes(k),
       )
       .sort()
@@ -362,6 +364,8 @@ function validateProfile(d, u, p) {
     if (p.notes.some((n) => !noteSubjectAllowed(n, subjects)))
       fail("Only currently authorized note subjects");
   }
+  if (p.planningOrder !== undefined && !validPlanningOrder(p.planningOrder))
+    fail("Invalid controlled private planning order");
   if (p.collectionSearch !== undefined) {
     const cat = collectionCatalogue(d);
     if (

@@ -77,7 +77,8 @@
     "test:practice-plan": "node tests/practice-plan.test.mjs",
     "test:play-analysis": "node tests/play-analysis.test.mjs",
     "test:reading-guide": "node tests/reading-guide.test.mjs",
-    "test:collection-notes": "node tests/collection-notes.test.mjs"
+    "test:collection-notes": "node tests/collection-notes.test.mjs",
+    "test:collection-planning": "node tests/collection-planning.test.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -155,5 +156,5 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
   },
-  "version": "0.22.181"
+  "version": "0.22.182"
 }
