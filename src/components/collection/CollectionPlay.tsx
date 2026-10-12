@@ -3,6 +3,7 @@ import { useCollection, refreshCollection, refreshCollectionMe } from "@/lib/col
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import { useLocale } from "@/lib/keepy-i18n-shared";
 import { Button } from "@/components/ui/button";
+import { MemoryPlay } from "./MemoryPlay";
 export function CollectionPlay() {
   const d = useCollection(),
     t = useDiscoveryText(),
@@ -105,8 +106,15 @@ export function CollectionPlay() {
             </Link>
           </section>
           <section className="grid gap-3 sm:grid-cols-3" data-play-entrances>
+            <MemoryPlay
+              key={
+                legal.actorId +
+                legal.visibilityKey +
+                legal.cards.map((c) => c.cardId + ":" + c.cardVersion).join(",")
+              }
+              cards={legal.cards}
+            />
             {[
-              ["memory", "收藏記憶", "Collection memory"],
               ["knowledge", "卡冊知識", "Album knowledge"],
               ["observation", "收藏觀察", "Collection observation"],
             ].map(([id, zh, en]) => (

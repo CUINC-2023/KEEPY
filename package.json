@@ -60,7 +60,8 @@
     "test:collection-history": "node tests/collection-history.test.mjs",
     "test:collection-recap": "node tests/collection-recap.test.mjs",
     "test:collection-contract": "node tests/collection-contract.test.mjs",
-    "test:reading-layout": "node tests/reading-layout.test.mjs"
+    "test:reading-layout": "node tests/reading-layout.test.mjs",
+    "test:collection-play": "node tests/collection-play.test.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -138,5 +139,5 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
   },
-  "version": "0.22.111"
+  "version": "0.22.112"
 }

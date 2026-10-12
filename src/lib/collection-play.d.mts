@@ -1,0 +1,37 @@
+export const PLAY_RULE_VERSION: string;
+export const PLAY_MODES: string[];
+export const PLAY_DIFFICULTIES: string[];
+export interface MemoryRound {
+  schema: 1;
+  ruleVersion: string;
+  mode: "memory";
+  difficulty: string;
+  seed: number;
+  cardIds: string[];
+  deck: string[];
+  open: number[];
+  matched: number[];
+  moves: number;
+  paused: boolean;
+  complete: boolean;
+  events: { type: string; index?: number }[];
+}
+export function shuffle<T>(items: T[], seed: number): T[];
+export function memoryStart(ids: string[], difficulty?: string, seed?: number): MemoryRound;
+export function memoryAction(
+  state: MemoryRound,
+  event: { type: string; index?: number },
+): MemoryRound;
+export function replayMemory(proof: {
+  cardIds: string[];
+  difficulty: string;
+  seed: number;
+  events: MemoryRound["events"];
+}): {
+  mode: string;
+  difficulty: string;
+  ruleVersion: string;
+  moves: number;
+  correct: number;
+  total: number;
+};
