@@ -6,6 +6,8 @@ import { useLocale } from "@/lib/keepy-i18n-shared";
 import { CollectionNextStep } from "./CollectionNextStep";
 import { AcquisitionTimeline } from "./AcquisitionTimeline";
 import { HomeReadingLayout } from "./HomeReadingLayout";
+import { PlayRecords } from "./PlayRecords";
+import { useLocalTest } from "@/lib/local-test-client";
 export function CollectionHome({
   me,
   renderCard,
@@ -19,6 +21,7 @@ export function CollectionHome({
     { locale } = useLocale(),
     p = me.profile.data;
   const main = me.cards.find((c) => c.cardId === p.mainCardId);
+  const local = useLocalTest();
   return (
     <section data-collection-home className="panel min-w-0 space-y-4 p-5">
       <h2 className="text-2xl font-bold break-words">{p.displayName}</h2>
@@ -86,6 +89,60 @@ export function CollectionHome({
         me={me}
         timeline={<AcquisitionTimeline key={me.actorId} me={me} />}
         growth={growth}
+        play={
+          local.summary?.user.role === "member" ? (
+            <>
+              <PlayRecords
+                key={
+                  "home-play:" +
+                  me.actorId +
+                  me.visibilityKey +
+                  me.cards.map((c) => c.cardId).join(",")
+                }
+                actor={me.actorId}
+                visibilityKey={me.visibilityKey}
+              />
+              <Link className="underline" to="/app/play">
+                {t("接續本人無獎遊玩", "Continue your no-reward play")}
+              </Link>
+            </>
+          ) : (
+            <p>
+              {t(
+                "私人遊玩摘要需要會員測試身分。",
+                "Private play summaries require a member test identity.",
+              )}
+            </p>
+          )
+        }
+        curations={
+          <section data-home-curation-summary className="space-y-3">
+            <h3 className="font-bold">{t("本人策展展區", "Your curation sections")}</h3>
+            {p.curations?.length ? (
+              <ul>
+                {p.curations.map((g) => (
+                  <li key={g.id}>
+                    {g.title} · {g.cardIds.length} ·{" "}
+                    {g.showPublic && p.isPublic && p.showCards
+                      ? t(
+                          "允許公开，仍按目前合法來源投影",
+                          "Public permitted, subject to current eligible sources",
+                        )
+                      : t(
+                          "私人／尚未允许整體公開",
+                          "Private / overall public permission not granted",
+                        )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>{t("尚無本人策展展區。", "No personal curation sections.")}</p>
+            )}
+            <Link className="underline" to="/app/curations">
+              {t("編排本人展覽", "Arrange your exhibition")}
+            </Link>
+          </section>
+        }
         awards={
           <>
             <h3 className="font-bold">{t("已取得成就精選", "Earned achievements")}</h3>

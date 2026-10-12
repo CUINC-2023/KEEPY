@@ -335,7 +335,7 @@ function validateProfile(d, u, p) {
       Object.keys(p.readingLayout).sort().join() !== "first,mode,schema" ||
       p.readingLayout.schema !== 1 ||
       !["full", "compact"].includes(p.readingLayout.mode) ||
-      !["timeline", "awards", "growth"].includes(p.readingLayout.first))
+      !["timeline", "awards", "growth", "play", "curations"].includes(p.readingLayout.first))
   )
     fail("Invalid private reading layout");
   if (p.journeyPaused !== undefined && typeof p.journeyPaused !== "boolean")

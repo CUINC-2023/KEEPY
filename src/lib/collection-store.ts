@@ -39,7 +39,11 @@ export interface CollectionAward {
 }
 export interface CollectionProfile {
   collectionSearch?: import("./collection-workbench.mjs").WorkbenchPreference;
-  readingLayout?: { schema: 1; mode: "full" | "compact"; first: "timeline" | "awards" | "growth" };
+  readingLayout?: {
+    schema: 1;
+    mode: "full" | "compact";
+    first: "timeline" | "awards" | "growth" | "play" | "curations";
+  };
   curations?: { id: string; title: string; note: string; cardIds: string[]; showPublic: boolean }[];
   journeyPaused?: boolean;
   growthPreview?: { player: boolean; platform: boolean };
