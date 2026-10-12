@@ -437,6 +437,128 @@ export const COLLECTION_THEMES = [
       ],
     },
   ],
+  ...[
+    {
+      id: "local-demo-176-seam",
+      coverTone: "garden",
+      title: {
+        "zh-TW": "縫線札記 · 虛構範本",
+        en: "Seam Notes · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "線條沿著想像中的縫線轉折，將三個閱讀位置串成一頁。 全部為本機幾何與文字企劃，沒有真人照片、合作、日期或營運成果。",
+        en: "Lines follow imagined seams to connect three reading positions. All material is a local geometric and textual concept, without real photographs, collaborators, dates or performance claims.",
+      },
+      guide: {
+        "zh-TW":
+          "先讀背景與三章，再查看不同款式。完整／部分／空收藏僅隔離測試，不自動成為可抽卡池。",
+        en: "Read the background and three chapters, then distinct designs. Full / partial / empty collections are isolated tests; never automatically draw pools.",
+      },
+      bio: {
+        "zh-TW": "以縫線札記整理自己的閱讀路徑。",
+        en: "Arrange my reading path through Seam Notes.",
+      },
+      badge: {
+        "zh-TW": "縫線札記 · 視覺範本，非正式成就",
+        en: "Seam Notes · Visual sample, not a formal achievement",
+      },
+      cardStories: [
+        {
+          "zh-TW": "縫線札記一：入口以線條建立方向。",
+          en: "Seam Notes I: lines set the entrance direction.",
+        },
+        {
+          "zh-TW": "縫線札記二：間隔將相鄰文字分開。",
+          en: "Seam Notes II: intervals separate adjacent text.",
+        },
+        {
+          "zh-TW": "縫線札記三：留白連接下一段閱讀。",
+          en: "Seam Notes III: open space connects the next passage.",
+        },
+      ],
+    },
+    {
+      id: "local-demo-176-compass",
+      coverTone: "orbit",
+      title: {
+        "zh-TW": "羅盤書籤 · 虛構範本",
+        en: "Compass Bookmarks · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "以方向與幾何符號整理閱讀順序，不對真實旅程或地點作出聲明。 全部為本機幾何與文字企劃，沒有真人照片、合作、日期或營運成果。",
+        en: "Direction and geometric symbols order the reading without claiming a real journey or location. All material is a local geometric and textual concept, without real photographs, collaborators, dates or performance claims.",
+      },
+      guide: {
+        "zh-TW":
+          "先讀背景與三章，再查看不同款式。完整／部分／空收藏僅隔離測試，不自動成為可抽卡池。",
+        en: "Read the background and three chapters, then distinct designs. Full / partial / empty collections are isolated tests; never automatically draw pools.",
+      },
+      bio: {
+        "zh-TW": "以羅盤書籤整理自己的閱讀路徑。",
+        en: "Arrange my reading path through Compass Bookmarks.",
+      },
+      badge: {
+        "zh-TW": "羅盤書籤 · 視覺範本，非正式成就",
+        en: "Compass Bookmarks · Visual sample, not a formal achievement",
+      },
+      cardStories: [
+        {
+          "zh-TW": "羅盤書籤一：入口以線條建立方向。",
+          en: "Compass Bookmarks I: lines set the entrance direction.",
+        },
+        {
+          "zh-TW": "羅盤書籤二：間隔將相鄰文字分開。",
+          en: "Compass Bookmarks II: intervals separate adjacent text.",
+        },
+        {
+          "zh-TW": "羅盤書籤三：留白連接下一段閱讀。",
+          en: "Compass Bookmarks III: open space connects the next passage.",
+        },
+      ],
+    },
+    {
+      id: "local-demo-176-echo",
+      coverTone: "tide",
+      title: {
+        "zh-TW": "回聲色階 · 虛構範本",
+        en: "Echo Gradients · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "用重複色带和間隔構想一段回聲，安靜區域留給讀者決定下一步。 全部為本機幾何與文字企劃，沒有真人照片、合作、日期或營運成果。",
+        en: "Repeated bands and intervals suggest an echo, leaving quiet space for the reader to choose what follows. All material is a local geometric and textual concept, without real photographs, collaborators, dates or performance claims.",
+      },
+      guide: {
+        "zh-TW":
+          "先讀背景與三章，再查看不同款式。完整／部分／空收藏僅隔離測試，不自動成為可抽卡池。",
+        en: "Read the background and three chapters, then distinct designs. Full / partial / empty collections are isolated tests; never automatically draw pools.",
+      },
+      bio: {
+        "zh-TW": "以回聲色階整理自己的閱讀路徑。",
+        en: "Arrange my reading path through Echo Gradients.",
+      },
+      badge: {
+        "zh-TW": "回聲色階 · 視覺範本，非正式成就",
+        en: "Echo Gradients · Visual sample, not a formal achievement",
+      },
+      cardStories: [
+        {
+          "zh-TW": "回聲色階一：入口以線條建立方向。",
+          en: "Echo Gradients I: lines set the entrance direction.",
+        },
+        {
+          "zh-TW": "回聲色階二：間隔將相鄰文字分開。",
+          en: "Echo Gradients II: intervals separate adjacent text.",
+        },
+        {
+          "zh-TW": "回聲色階三：留白連接下一段閱讀。",
+          en: "Echo Gradients III: open space connects the next passage.",
+        },
+      ],
+    },
+  ],
 ].map((t) => ({
   ...t,
   synthetic: true,
