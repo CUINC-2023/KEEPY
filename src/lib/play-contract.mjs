@@ -1,4 +1,5 @@
 import { validPracticeStored, validPracticeProjection } from "./play-practice.mjs";
+import { validPlayAnalysis } from "./play-analysis.mjs";
 import { PLAY_MODES, PLAY_DIFFICULTIES } from "./collection-play.mjs";
 import { MEMORY_RULE_VERSION, validMemoryConfig } from "./collection-play.mjs";
 const exact = (v, keys) =>
@@ -56,6 +57,7 @@ const row = (v) =>
     "correct",
     "total",
     ...(v?.ruleVersion === MEMORY_RULE_VERSION ? ["memoryConfig", "hintsUsed"] : []),
+    ...(v?.assistance !== undefined ? ["assistance"] : []),
   ]) &&
   text(v.id, 128) &&
   text(v.at, 64) &&
@@ -68,6 +70,12 @@ const row = (v) =>
       validMemoryConfig(v.memoryConfig) &&
       integer(v.hintsUsed) &&
       v.hintsUsed <= 3)) &&
+  (v.assistance === undefined ||
+    (exact(v.assistance, ["hintsUsed", "mistakes"]) &&
+      (v.assistance.hintsUsed === null ||
+        (integer(v.assistance.hintsUsed) && v.assistance.hintsUsed <= 3)) &&
+      (v.assistance.mistakes === null ||
+        (integer(v.assistance.mistakes) && v.assistance.mistakes <= 500)))) &&
   integer(v.sourceVersion) &&
   integer(v.correct) &&
   integer(v.total, 1) &&
@@ -93,7 +101,9 @@ export function isPlayProjection(v) {
       "officialXP",
       "ranking",
       "rewards",
+      ...(v?.analysis !== undefined ? ["analysis"] : []),
     ]) &&
+    (v.analysis === undefined || validPlayAnalysis(v.analysis)) &&
     v.schema === 1 &&
     v.source === "local-SQLite-private-play" &&
     text(v.actorId, 128) &&

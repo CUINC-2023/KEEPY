@@ -200,7 +200,7 @@ export const IMPORTANT_NOTICES = IMPORTANT_NOTICE_IDS.flatMap((id) => {
 });
 
 export const EXISTING_POOL_RANKING = POOL_RANKING;
-export const APP_VERSION = "0.22.174（本機內容測試版）";
+export const APP_VERSION = "0.22.175（本機內容測試版）";
 
 // ── 0.9.0 官方內容詳情（Local Mock，列表／首頁／詳情同源）──────────────
 export type ContentLink = {

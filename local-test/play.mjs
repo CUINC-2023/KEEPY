@@ -190,6 +190,7 @@ export function playMe(d, token, params = {}) {
       ...(r.ruleVersion === MEMORY_RULE_VERSION
         ? { memoryConfig: r.memoryConfig, hintsUsed: r.hintsUsed }
         : {}),
+      ...(r.assistance !== undefined ? { assistance: r.assistance } : {}),
       moves: r.moves,
       correct: r.correct,
       total: r.total,
@@ -216,6 +217,21 @@ export function playMe(d, token, params = {}) {
         .get(u.id, allowed, PLAY_RULE_VERSION, kind, level);
       if (result) best.push(project(unpack(result)));
     }
+  const statistics = d.db
+    .prepare(
+      "SELECT json_extract(payload,'$.mode') mode,json_extract(payload,'$.difficulty') difficulty,json_extract(payload,'$.ruleVersion') ruleVersion,COALESCE(json_extract(payload,'$.memoryConfig.variant'),'original') configuration,COALESCE(json_extract(payload,'$.assistance.hintsUsed'),json_extract(payload,'$.hintsUsed'),-1) hints,COUNT(*) rounds,SUM(json_extract(payload,'$.correct')) correct,SUM(json_extract(payload,'$.total')) total,MIN(json_extract(payload,'$.moves')) bestMoves FROM play_results WHERE " +
+        selected +
+        " GROUP BY mode,difficulty,ruleVersion,configuration,hints ORDER BY mode,difficulty,ruleVersion,configuration,hints LIMIT 101",
+    )
+    .all(...queryArgs);
+  const analysis = {
+    schema: 1,
+    coverage: "current-authorized-local-results",
+    truncated: statistics.length > 100,
+    groups: statistics
+      .slice(0, 100)
+      .map(({ hints, ...group }) => ({ ...group, hintsUsed: hints < 0 ? null : hints })),
+  };
   const privateSettings = settings(d, u.id);
   const journey = journeyProjection(d, u.id, privateSettings.data.journey, owner);
   const practice = practiceProjection(d, u.id, privateSettings.data.practice, owner);
@@ -238,6 +254,7 @@ export function playMe(d, token, params = {}) {
     pages,
     total,
     rows: rows.map(project),
+    analysis,
     best,
     officialXP: false,
     ranking: false,
@@ -493,6 +510,17 @@ export function playCommand(d, token, input, key) {
         ...(state.memoryConfig
           ? { memoryConfig: state.memoryConfig, hintsUsed: state.hintsUsed }
           : {}),
+        assistance: {
+          hintsUsed: ["memory", "puzzle", "sequence"].includes(proof.mode)
+            ? (state.hintsUsed ?? 0)
+            : null,
+          mistakes:
+            proof.mode === "sequence"
+              ? state.mistakes
+              : ["knowledge", "observation"].includes(proof.mode)
+                ? state.answers.filter((a, i) => a !== state.questions[i].answer).length
+                : null,
+        },
         sourceVersion: cat.version,
         sourceIds: proof.cardIds,
         moves: ["memory", "puzzle", "sequence"].includes(proof.mode) ? state.moves : null,

@@ -62,7 +62,9 @@ export interface PlayPrivate {
     sourceVersion: number;
     memoryConfig?: import("@/lib/collection-play.mjs").MemoryConfig;
     hintsUsed?: number;
+    assistance?: { hintsUsed: number | null; mistakes: number | null };
   }[];
+  analysis?: import("@/lib/play-analysis.mjs").PlayAnalysis;
   best: PlayPrivate["rows"];
   officialXP: false;
   ranking: false;
@@ -544,6 +546,43 @@ export function PlayRecords({
             </ol>
           ) : (
             <p>{t("目前沒有合法本人遊玩紀錄。", "No currently eligible personal play records.")}</p>
+          )}
+          {snapshot.analysis && (
+            <section data-private-play-analysis className="space-y-3 rounded border p-3">
+              <h3 className="font-bold">{t("私人分規則結果分析", "Private results by rule")}</h3>
+              <p>
+                {t(
+                  "依規則版本／玩法／難度／配置與已記錄提示次数分開；只讀目前合法來源，與正式XP／排行無關。舊紀錄沒有提示或原題明細時標未知，不補造。",
+                  "Separated by rule, mode, difficulty, configuration and recorded hints. Only currently eligible sources count; no official XP or rankings. Missing historical hint or question detail is unknown, never invented.",
+                )}
+              </p>
+              {snapshot.analysis.groups.length ? (
+                <ul>
+                  {snapshot.analysis.groups.map((g) => (
+                    <li
+                      key={[g.mode, g.difficulty, g.ruleVersion, g.configuration, g.hintsUsed].join(
+                        ":",
+                      )}
+                    >
+                      {modeLabel(g.mode)} / {g.difficulty} · {g.ruleVersion} / {g.configuration} ·{" "}
+                      {t("提示", "Hints")}: {g.hintsUsed ?? t("未記錄", "Unrecorded")} · {g.rounds}
+                      {t("局", " rounds")} · {g.correct}/{g.total} ·{" "}
+                      {t("最少操作", "Fewest actions")}: {g.bestMoves ?? "—"}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>{t("沒有目前合法本人結果。", "No currently eligible personal results.")}</p>
+              )}
+              {snapshot.analysis.truncated && (
+                <p>
+                  {t(
+                    "分析有界，顯示前100組；不是完整未列資料的統計。",
+                    "Analysis is bounded to 100 groups; omitted data is not presented as complete.",
+                  )}
+                </p>
+              )}
+            </section>
           )}
           <details>
             <summary>{t("原規則個人最佳", "Personal bests under the original rules")}</summary>
