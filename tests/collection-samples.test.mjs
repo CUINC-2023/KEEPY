@@ -23,11 +23,16 @@ for (const t of CREATOR_CONTENT_TEMPLATES) {
   assert.equal(t.shootDate, null);
 }
 assert.equal(JSON.stringify(base), before);
-assert.equal(COLLECTION_THEMES.length, 15);
-assert.equal(new Set(COLLECTION_THEMES.map((t) => t.id)).size, 15);
+assert.equal(COLLECTION_THEMES.length, 18);
+assert.equal(new Set(COLLECTION_THEMES.map((t) => t.id)).size, 18);
 assert.ok(
-  COLLECTION_THEMES.slice(12).every(
+  COLLECTION_THEMES.slice(12, 15).every(
     (t) => t.id.startsWith("local-demo-121-") && t.cardStories.length === 3,
+  ),
+);
+assert.ok(
+  COLLECTION_THEMES.slice(15).every(
+    (t) => t.id.startsWith("local-demo-156-") && t.cardStories.length === 3,
   ),
 );
 assert.deepEqual(

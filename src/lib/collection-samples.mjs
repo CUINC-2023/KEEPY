@@ -315,6 +315,128 @@ export const COLLECTION_THEMES = [
       bi("三角：尖端指向下一段閱讀。", "Triangle: a point directs the next reading."),
     ],
   },
+  ...[
+    {
+      id: "local-demo-156-map",
+      coverTone: "orbit",
+      title: {
+        "zh-TW": "地圖摺頁 · 虛構範本",
+        en: "Folded Maps · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "將路徑畫成線條，讓轉折與留白帶出閱讀順序。 三章以本機文字與幾何版型呈現；沒有真人合作、外部圖片、拍攝日期或營運成果。",
+        en: "Draw paths as lines, using turns and open space to guide reading. Three chapters use local text and geometric templates, without real collaborators, external images, shoot dates or performance claims.",
+      },
+      guide: {
+        "zh-TW":
+          "先閱讀三章，再核對公開不同款式；完整、部分與空收藏僅隔離情境，範本不成為可抽卡池。",
+        en: "Read the three chapters, then check distinct public designs. Full, partial and empty collections are isolated scenarios; templates never become draw pools.",
+      },
+      bio: {
+        "zh-TW": "以地圖摺頁記錄自己的閱讀節奏。",
+        en: "Keep my own reading rhythm through Folded Maps.",
+      },
+      badge: {
+        "zh-TW": "地圖摺頁視覺範本，不是已取得成就。",
+        en: "Folded Maps visual sample, not an earned achievement.",
+      },
+      cardStories: [
+        {
+          "zh-TW": "章節一：線條建立閱讀入口。",
+          en: "Chapter one: lines establish a reading entrance.",
+        },
+        {
+          "zh-TW": "章節二：留白分開相鄰的訊息。",
+          en: "Chapter two: space separates adjacent messages.",
+        },
+        {
+          "zh-TW": "章節三：排列引導下一段閱讀。",
+          en: "Chapter three: arrangement guides the next passage.",
+        },
+      ],
+    },
+    {
+      id: "local-demo-156-rhythm",
+      coverTone: "garden",
+      title: {
+        "zh-TW": "節奏標本 · 虛構範本",
+        en: "Rhythm Studies · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "用重複與間隔排列文字，比較寬窄不同的節拍。 三章以本機文字與幾何版型呈現；沒有真人合作、外部圖片、拍攝日期或營運成果。",
+        en: "Arrange text through repetition and intervals, comparing broad and narrow beats. Three chapters use local text and geometric templates, without real collaborators, external images, shoot dates or performance claims.",
+      },
+      guide: {
+        "zh-TW":
+          "先閱讀三章，再核對公開不同款式；完整、部分與空收藏僅隔離情境，範本不成為可抽卡池。",
+        en: "Read the three chapters, then check distinct public designs. Full, partial and empty collections are isolated scenarios; templates never become draw pools.",
+      },
+      bio: {
+        "zh-TW": "以節奏標本記錄自己的閱讀節奏。",
+        en: "Keep my own reading rhythm through Rhythm Studies.",
+      },
+      badge: {
+        "zh-TW": "節奏標本視覺範本，不是已取得成就。",
+        en: "Rhythm Studies visual sample, not an earned achievement.",
+      },
+      cardStories: [
+        {
+          "zh-TW": "章節一：線條建立閱讀入口。",
+          en: "Chapter one: lines establish a reading entrance.",
+        },
+        {
+          "zh-TW": "章節二：留白分開相鄰的訊息。",
+          en: "Chapter two: space separates adjacent messages.",
+        },
+        {
+          "zh-TW": "章節三：排列引導下一段閱讀。",
+          en: "Chapter three: arrangement guides the next passage.",
+        },
+      ],
+    },
+    {
+      id: "local-demo-156-prism",
+      coverTone: "tide",
+      title: {
+        "zh-TW": "稜鏡便箋 · 虛構範本",
+        en: "Prism Notes · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "以幾何色帶構想折射的閱讀層次，不描述真實攝影。 三章以本機文字與幾何版型呈現；沒有真人合作、外部圖片、拍攝日期或營運成果。",
+        en: "Use geometric bands to imagine layers of refraction without describing real photography. Three chapters use local text and geometric templates, without real collaborators, external images, shoot dates or performance claims.",
+      },
+      guide: {
+        "zh-TW":
+          "先閱讀三章，再核對公開不同款式；完整、部分與空收藏僅隔離情境，範本不成為可抽卡池。",
+        en: "Read the three chapters, then check distinct public designs. Full, partial and empty collections are isolated scenarios; templates never become draw pools.",
+      },
+      bio: {
+        "zh-TW": "以稜鏡便箋記錄自己的閱讀節奏。",
+        en: "Keep my own reading rhythm through Prism Notes.",
+      },
+      badge: {
+        "zh-TW": "稜鏡便箋視覺範本，不是已取得成就。",
+        en: "Prism Notes visual sample, not an earned achievement.",
+      },
+      cardStories: [
+        {
+          "zh-TW": "章節一：線條建立閱讀入口。",
+          en: "Chapter one: lines establish a reading entrance.",
+        },
+        {
+          "zh-TW": "章節二：留白分開相鄰的訊息。",
+          en: "Chapter two: space separates adjacent messages.",
+        },
+        {
+          "zh-TW": "章節三：排列引導下一段閱讀。",
+          en: "Chapter three: arrangement guides the next passage.",
+        },
+      ],
+    },
+  ],
 ].map((t) => ({
   ...t,
   synthetic: true,
