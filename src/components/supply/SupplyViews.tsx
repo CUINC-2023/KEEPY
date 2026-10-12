@@ -1,5 +1,6 @@
 import { FeedbackEditor, SupplyFeedback } from "./SupplyFeedback";
 import { SupplyTemplateReuse } from "./SupplyTemplateReuse";
+import { SupplyPlayReuse } from "./SupplyPlayReuse";
 import type { ReviewFeedback } from "@/lib/supply-feedback.mjs";
 import type { TaskFilters } from "@/lib/supply-tasks.mjs";
 import { SupplyWorkList } from "./SupplyWorkList";
@@ -737,6 +738,14 @@ export function SupplyPage({ official = false }: { official?: boolean }) {
           )}
           {official && current && (
             <ReviewReadiness pack={current} target={comparisonTarget} blocked={reviewBlocked} />
+          )}
+          {!official && (
+            <SupplyPlayReuse
+              key={"play-outline:" + d.actor + ":" + (current?.data.id ?? id)}
+              value={value}
+              disabled={busy || awaiting}
+              onChange={update}
+            />
           )}
           {current && (
             <SupplyComparison
