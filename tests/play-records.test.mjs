@@ -7,6 +7,7 @@ import { loadCatalog } from "../local-test/catalog.mjs";
 import { playMe, playCommand, privatePlaySummary } from "../local-test/play.mjs";
 import { memoryStart, memoryAction, PLAY_RULE_VERSION } from "../src/lib/collection-play.mjs";
 import { playQuestions, quizStart } from "../src/lib/play-questions.mjs";
+import { isPlayProjection } from "../src/lib/play-contract.mjs";
 const file = join(mkdtempSync(join(tmpdir(), "keepy-play-")), "qa.sqlite"),
   cat = await loadCatalog();
 let fault = false,
@@ -37,6 +38,22 @@ try {
         ].map((t) => d.db.prepare("SELECT * FROM " + t + " ORDER BY rowid").all()),
       ),
     before = assets();
+  const projection = playMe(d, a);
+  assert.equal(isPlayProjection(projection), true);
+  for (const key of ["session", "proofHash", "cardIds", "privateEvidence"])
+    assert.equal(isPlayProjection({ ...projection, [key]: [] }), false);
+  assert.equal(isPlayProjection({ ...projection, officialXP: true }), false);
+  assert.equal(isPlayProjection({ ...projection, page: 2 }), false);
+  assert.equal(
+    isPlayProjection({
+      ...projection,
+      settings: {
+        ...projection.settings,
+        data: { schema: 2, lastMode: "memory", difficulty: "easy" },
+      },
+    }),
+    false,
+  );
   let round = memoryStart(
     cards.map((c) => c.cardId),
     "easy",

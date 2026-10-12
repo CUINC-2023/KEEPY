@@ -1,0 +1,79 @@
+import { PLAY_MODES, PLAY_DIFFICULTIES } from "./collection-play.mjs";
+const exact = (v, keys) =>
+  !!v &&
+  typeof v === "object" &&
+  !Array.isArray(v) &&
+  Object.keys(v).sort().join() === keys.slice().sort().join();
+const integer = (v, min = 0) => Number.isSafeInteger(v) && v >= min;
+const text = (v, max = 512) => typeof v === "string" && v.length > 0 && v.length <= max;
+const row = (v) =>
+  exact(v, [
+    "id",
+    "at",
+    "mode",
+    "difficulty",
+    "ruleVersion",
+    "sourceVersion",
+    "moves",
+    "correct",
+    "total",
+  ]) &&
+  text(v.id, 128) &&
+  text(v.at, 64) &&
+  Number.isFinite(Date.parse(v.at)) &&
+  PLAY_MODES.includes(v.mode) &&
+  PLAY_DIFFICULTIES.includes(v.difficulty) &&
+  text(v.ruleVersion, 128) &&
+  integer(v.sourceVersion) &&
+  integer(v.correct) &&
+  integer(v.total, 1) &&
+  v.total <= 120 &&
+  v.correct <= v.total &&
+  (v.mode === "memory" ? integer(v.moves, 1) && v.moves <= 500 : v.moves === null);
+/** Read-only projection whitelist; legacy rule labels are retained, never promoted to current rules. */
+export function isPlayProjection(v) {
+  return (
+    exact(v, [
+      "schema",
+      "source",
+      "actorId",
+      "visibilityKey",
+      "settings",
+      "page",
+      "pages",
+      "total",
+      "rows",
+      "best",
+      "officialXP",
+      "ranking",
+      "rewards",
+    ]) &&
+    v.schema === 1 &&
+    v.source === "local-SQLite-private-play" &&
+    text(v.actorId, 128) &&
+    text(v.visibilityKey) &&
+    exact(v.settings, ["version", "data"]) &&
+    integer(v.settings.version) &&
+    exact(v.settings.data, ["schema", "lastMode", "difficulty"]) &&
+    v.settings.data.schema === 1 &&
+    PLAY_MODES.includes(v.settings.data.lastMode) &&
+    PLAY_DIFFICULTIES.includes(v.settings.data.difficulty) &&
+    integer(v.page, 1) &&
+    integer(v.pages, 1) &&
+    v.page <= v.pages &&
+    integer(v.total) &&
+    v.pages === Math.max(1, Math.ceil(v.total / 20)) &&
+    Array.isArray(v.rows) &&
+    v.rows.length <= 20 &&
+    v.rows.every(row) &&
+    v.rows.length === Math.min(20, Math.max(0, v.total - (v.page - 1) * 20)) &&
+    new Set(v.rows.map((r) => r.id)).size === v.rows.length &&
+    Array.isArray(v.best) &&
+    v.best.length <= 9 &&
+    v.best.every(row) &&
+    new Set(v.best.map((r) => r.mode + ":" + r.difficulty)).size === v.best.length &&
+    v.officialXP === false &&
+    v.ranking === false &&
+    v.rewards === false
+  );
+}

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import { localApi, localSessionGeneration, localTestState } from "@/lib/local-test-client";
+import { isPlayProjection } from "@/lib/play-contract.mjs";
 import {
   discoveryCommand,
   retryDiscoveryCommand,
@@ -20,6 +21,7 @@ export interface PlayProof {
 }
 export interface PlayPrivate {
   schema: 1;
+  source: "local-SQLite-private-play";
   actorId: string;
   visibilityKey: string;
   settings: { version: number; data: { schema: 1; lastMode: string; difficulty: string } };
@@ -59,6 +61,12 @@ export function SavePlayResult({ proof, actor }: { proof: PlayProof; actor: stri
       else {
         const me = await localApi<PlayPrivate>("/play/me");
         if (!current()) return;
+        if (
+          !isPlayProjection(me) ||
+          me.actorId !== actor ||
+          me.visibilityKey !== proof.visibilityKey
+        )
+          throw new Error("Play source projection mismatch");
         await discoveryCommand("/play/commands", {
           action: "result",
           expectedVersion: me.settings.version,
@@ -134,13 +142,10 @@ export function PlayRecords({ actor, visibilityKey }: { actor: string; visibilit
       c.signal,
     )
       .then((v) => {
-        if (
-          !c.signal.aborted &&
-          epoch === localSessionGeneration() &&
-          v.actorId === actor &&
-          v.visibilityKey === visibilityKey
-        )
-          setSnapshot(v);
+        if (c.signal.aborted || epoch !== localSessionGeneration()) return;
+        if (!isPlayProjection(v) || v.actorId !== actor || v.visibilityKey !== visibilityKey)
+          throw new Error("Play source projection mismatch");
+        setSnapshot(v);
       })
       .catch(() => {
         if (!c.signal.aborted) setError(true);
