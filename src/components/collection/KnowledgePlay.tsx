@@ -7,6 +7,7 @@ import { useLocale } from "@/lib/keepy-i18n-shared";
 import type { CollectionMe, CollectionCatalogue } from "@/lib/collection-store";
 import { playQuestions, quizStart, quizAnswer, type QuizRound } from "@/lib/play-questions.mjs";
 import { SavePlayResult } from "./PlayRecords";
+import { hasPendingDiscovery } from "@/lib/discovery-store";
 export function KnowledgePlay({
   me,
   catalogue,
@@ -81,6 +82,15 @@ export function KnowledgePlay({
       <div className="flex flex-wrap gap-3">
         <Button
           onClick={() => {
+            if (hasPendingDiscovery("/play/commands")) {
+              setError(
+                t(
+                  "請先確認原遊玩操作，保留目前結果後再重玩。",
+                  "Confirm the original play operation before replaying; the current result is retained.",
+                ),
+              );
+              return;
+            }
             try {
               setRound(
                 quizStart(

@@ -5,6 +5,7 @@ import { useDiscoveryText } from "@/lib/discovery-copy";
 import { Button } from "@/components/ui/button";
 import { cardsByPool } from "@/data/mock";
 import { SavePlayResult } from "./PlayRecords";
+import { hasPendingDiscovery } from "@/lib/discovery-store";
 export function MemoryPlay({
   cards,
   actor,
@@ -34,6 +35,15 @@ export function MemoryPlay({
     root.current?.querySelector<HTMLButtonElement>(selector)?.focus({ preventScroll: true });
   }, [step, paused, complete, round?.open.length]);
   const start = () => {
+    if (hasPendingDiscovery("/play/commands")) {
+      setError(
+        t(
+          "請先確認原遊玩操作，保留目前結果後再重玩。",
+          "Confirm the original play operation before replaying; the current result is retained.",
+        ),
+      );
+      return;
+    }
     try {
       setRound(
         memoryStart(

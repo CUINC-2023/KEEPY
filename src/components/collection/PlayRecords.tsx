@@ -182,6 +182,19 @@ export function PlayRecords({ actor, visibilityKey }: { actor: string; visibilit
       if (epoch === localSessionGeneration()) setBusy(false);
     }
   };
+  const confirmOriginal = async () => {
+    if (busy) return;
+    const epoch = localSessionGeneration();
+    setBusy(true);
+    try {
+      await retryDiscoveryCommand("/play/commands");
+      if (epoch === localSessionGeneration()) setRetry((n) => n + 1);
+    } catch {
+      if (epoch === localSessionGeneration()) setError(true);
+    } finally {
+      if (epoch === localSessionGeneration()) setBusy(false);
+    }
+  };
   return (
     <section className="panel space-y-3 p-4" data-private-play-records>
       <h2 className="text-xl font-bold">
@@ -222,14 +235,7 @@ export function PlayRecords({ actor, visibilityKey }: { actor: string; visibilit
             {t("重讀遊玩紀錄", "Reload play records")}
           </Button>
           {pending && (
-            <Button
-              disabled={busy}
-              onClick={() =>
-                void retryDiscoveryCommand("/play/commands")
-                  .then(() => setRetry((n) => n + 1))
-                  .catch(() => setError(true))
-              }
-            >
+            <Button disabled={busy} onClick={() => void confirmOriginal()}>
               {t("確認原遊玩操作", "Confirm original play operation")}
             </Button>
           )}
