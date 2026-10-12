@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useBlocker } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { CollectionCardView } from "./CollectionCardView";
 import {
   useCollection,
   refreshCollectionMe,
@@ -118,6 +119,30 @@ function Editor({ me }: { me: CollectionMe }) {
           <legend>
             {t("策展分組", "Curation group")} {index + 1}
           </legend>
+          <div className="flex flex-wrap gap-3">
+            <Button
+              variant="outline"
+              disabled={busy || index === 0}
+              onClick={() => {
+                const next = [...groups];
+                [next[index - 1], next[index]] = [next[index]!, next[index - 1]!];
+                setGroups(next);
+              }}
+            >
+              {t("展區上移", "Move exhibition section up")}
+            </Button>
+            <Button
+              variant="outline"
+              disabled={busy || index === groups.length - 1}
+              onClick={() => {
+                const next = [...groups];
+                [next[index + 1], next[index]] = [next[index]!, next[index + 1]!];
+                setGroups(next);
+              }}
+            >
+              {t("展區下移", "Move exhibition section down")}
+            </Button>
+          </div>
           <label>
             {t("主題", "Theme")}
             <input
@@ -227,6 +252,43 @@ function Editor({ me }: { me: CollectionMe }) {
           {t("確認公開範圍與預覽", "Check public scope and preview")}
         </Link>
       </div>
+      <details className="panel space-y-4 p-4" data-private-exhibition-preview>
+        <summary>
+          {t("目前草稿私人展覽預覽", "Private exhibition preview of the current draft")}
+        </summary>
+        <p>
+          {t(
+            "尚未保存的分區、介紹與敘事順序；這不是匿名公開投影，也不代表同意公開。只有目前合法持卡可見。",
+            "Unsaved sections, introductions and narrative order. This is not the anonymous public projection or public consent. Only currently eligible held cards are shown.",
+          )}
+        </p>
+        {groups.map((g, i) => (
+          <section key={"preview:" + g.id} className="space-y-3">
+            <h3 className="text-lg font-bold">
+              {i + 1} · {g.title || t("未命名展區", "Untitled section")}
+            </h3>
+            <p className="whitespace-pre-wrap break-words">{g.note}</p>
+            <p>
+              {g.showPublic
+                ? t(
+                    "本組已勾選允許，仍須本人整體公開與持卡公開設定才能展示。",
+                    "Group permission selected; overall profile and card permissions are still required.",
+                  )
+                : t("本組保持私人。", "This group remains private.")}
+            </p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {g.cardIds
+                .filter((id) => valid.has(id))
+                .map((id) => (
+                  <CollectionCardView key={id} card={me.cards.find((c) => c.cardId === id)!} />
+                ))}
+            </div>
+            {!g.cardIds.some((id) => valid.has(id)) && (
+              <p>{t("目前沒有合法展出選卡。", "No eligible cards selected for this section.")}</p>
+            )}
+          </section>
+        ))}
+      </details>
       {error && (
         <div role="alert">
           <p>{error}</p>
