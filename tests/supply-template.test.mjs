@@ -35,6 +35,17 @@ assert.equal(JSON.stringify(value), before);
 for (const key of Object.keys(value).filter((k) => !["editorial", "articleIds"].includes(k)))
   assert.deepEqual(outline[key], value[key]);
 assert.equal(outline.editorial.articles.at(-1).blocks.length, 31);
+const puzzleOutline = reusePlayOutline(
+  value,
+  PLAY_CONTENT_PACKS.find((p) => p.puzzleMaterials).id,
+  "local-play-puzzle-outline-qa",
+);
+assert.equal(puzzleOutline.editorial.articles.at(-1).blocks.length, 34);
+assert.ok(
+  puzzleOutline.editorial.articles
+    .at(-1)
+    .blocks.some((b) => b.text?.en.includes("publication does not activate player materials")),
+);
 assert.throws(() => reusePlayOutline(value, "unknown", "local-play-outline-qa"));
 assert.throws(() => reusePlayOutline(outline, PLAY_CONTENT_PACKS[0].id, "local-play-outline-qa"));
 const db = new LocalDatabase(

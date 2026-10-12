@@ -28,6 +28,37 @@ export function reusePlayOutline(value, packId, articleId) {
           "Local sample use only; social and print rights unconfirmed. No rewards or official XP.",
         ),
       },
+      ...(pack.puzzleMaterials ?? []).map((m) => ({
+        type: "paragraph",
+        text: pair(
+          "拼圖素材 " +
+            m.id +
+            " · " +
+            m.size +
+            "×" +
+            m.size +
+            " · " +
+            m.alt["zh-TW"] +
+            " · 來源 " +
+            m.sourceRef.templateId +
+            " v" +
+            m.sourceRef.version +
+            "；僅本機示意，發布不啟用玩家素材。",
+          "Puzzle material " +
+            m.id +
+            " · " +
+            m.size +
+            "×" +
+            m.size +
+            " · " +
+            m.alt.en +
+            " · Source " +
+            m.sourceRef.templateId +
+            " v" +
+            m.sourceRef.version +
+            "; local sample only, publication does not activate player materials.",
+        ),
+      })),
       ...pack.questions.flatMap((q, i) => [
         {
           type: "heading",
