@@ -52,7 +52,7 @@ export function CollectionPlay() {
         <Link className="underline text-primary" to="/app/curations">
           {t("本人策展", "Your curations")}
         </Link>
-        <Link className="underline text-primary" to="/app/collection" hash="collection-recap">
+        <Link className="underline text-primary" to="/app/recap">
           {t("本人期間回顧", "Your period recap")}
         </Link>
       </nav>
@@ -69,6 +69,12 @@ export function CollectionPlay() {
         </Link>
         <Link className="text-primary underline" to="/app/achievements">
           {t("回顧已取得成就", "Review earned achievements")}
+        </Link>
+        <Link className="text-primary underline" to="/app/planning">
+          {t("整理目標與練習優先順序", "Arrange goal and practice priorities")}
+        </Link>
+        <Link className="text-primary underline" to="/app/notes">
+          {t("記下本人收藏故事", "Note your collection stories")}
         </Link>
         <Link className="text-primary underline" to="/app/settings/privacy">
           {t("明確選擇公開展示", "Choose your public display")}
