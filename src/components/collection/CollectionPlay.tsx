@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { MemoryPlay } from "./MemoryPlay";
 import { KnowledgePlay } from "./KnowledgePlay";
 import { PlayRecords } from "./PlayRecords";
+import { PlayRoundGuard } from "./PlayRoundGuard";
 export function CollectionPlay() {
   const d = useCollection(),
     t = useDiscoveryText(),
@@ -103,6 +104,10 @@ export function CollectionPlay() {
         </p>
       ) : (
         <>
+          <PlayRoundGuard
+            key={"round-guard:" + legal.actorId + legal.visibilityKey}
+            actor={legal.actorId}
+          />
           <section className="panel space-y-3 p-4" data-play-source>
             <h2 className="text-xl font-bold">
               {t("目前適用素材", "Currently eligible material")}

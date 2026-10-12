@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { cardsByPool } from "@/data/mock";
 import { SavePlayResult } from "./PlayRecords";
 import { hasPendingDiscovery } from "@/lib/discovery-store";
+import { usePlayRoundLifecycle } from "@/lib/play-round-lifecycle";
+import { RoundStartControl } from "./RoundStartControl";
 export function MemoryPlay({
   cards,
   actor,
@@ -63,6 +65,7 @@ export function MemoryPlay({
       );
     }
   };
+  usePlayRoundLifecycle(actor, "memory", !!round && !round.complete);
   return (
     <section
       ref={root}
@@ -86,9 +89,13 @@ export function MemoryPlay({
         </select>
       </label>
       <div className="flex flex-wrap gap-3">
-        <Button onClick={start}>
-          {round ? t("重新洗牌遊玩", "Shuffle and replay") : t("開始記憶玩法", "Start memory play")}
-        </Button>
+        <RoundStartControl
+          active={!!round && !round.complete}
+          label={
+            round ? t("重新洗牌遊玩", "Shuffle and replay") : t("開始記憶玩法", "Start memory play")
+          }
+          onStart={start}
+        />
         {round && !round.complete && (
           <Button
             data-play-pause

@@ -8,6 +8,8 @@ import type { CollectionMe, CollectionCatalogue } from "@/lib/collection-store";
 import { playQuestions, quizStart, quizAnswer, type QuizRound } from "@/lib/play-questions.mjs";
 import { SavePlayResult } from "./PlayRecords";
 import { hasPendingDiscovery } from "@/lib/discovery-store";
+import { usePlayRoundLifecycle } from "@/lib/play-round-lifecycle";
+import { RoundStartControl } from "./RoundStartControl";
 export function KnowledgePlay({
   me,
   catalogue,
@@ -28,6 +30,7 @@ export function KnowledgePlay({
         mode === "knowledge" || Boolean(cardsByPool(q.poolId).find((c) => c.id === q.cardId)?.art),
     ),
     q = round?.questions[round.answers.length];
+  usePlayRoundLifecycle(me.actorId, mode, !!round && !round.complete);
   const root = useRef<HTMLElement>(null),
     step = round?.answers.length ?? -1,
     paused = round?.paused ?? false,
@@ -80,8 +83,14 @@ export function KnowledgePlay({
         </select>
       </label>
       <div className="flex flex-wrap gap-3">
-        <Button
-          onClick={() => {
+        <RoundStartControl
+          active={!!round && !round.complete}
+          label={
+            mode === "knowledge"
+              ? t("開始／重新洗題", "Start / reshuffle questions")
+              : t("開始／重新觀察", "Start / reshuffle observations")
+          }
+          onStart={() => {
             if (hasPendingDiscovery("/play/commands")) {
               setError(
                 t(
@@ -111,11 +120,7 @@ export function KnowledgePlay({
               );
             }
           }}
-        >
-          {mode === "knowledge"
-            ? t("開始／重新洗題", "Start / reshuffle questions")
-            : t("開始／重新觀察", "Start / reshuffle observations")}
-        </Button>
+        />
         {round && !round.complete && (
           <Button
             data-play-pause
