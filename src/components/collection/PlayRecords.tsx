@@ -315,8 +315,8 @@ export function PlayRecords({
             <h3 className="font-bold">{t("私人混合遊玩旅程", "Private mixed play journey")}</h3>
             <p>
               {t(
-                "版本local-mixed-journey-v1；只計開始後依順序保存的合法結果，不把過去紀錄當新進度。暫停時保存不計階段；無消耗、獎勵或正式XP。",
-                "Rule local-mixed-journey-v1 counts only eligible results saved in order after starting. Earlier records do not count; saves while paused do not advance stages. No consumption, rewards or official XP.",
+                "原三玩法為local-mixed-journey-v1，新玩法闖關為local-theme-journey-v2；只計開始後依順序保存的合法結果，不把過去紀錄當新進度。暫停時保存不計階段；無消耗、獎勵或正式XP。",
+                "Original modes use local-mixed-journey-v1; new-mode routes use local-theme-journey-v2. Both count only eligible results saved in order after starting. Earlier records do not count; saves while paused do not advance stages. No consumption, rewards or official XP.",
               )}
             </p>
             <label>
@@ -331,6 +331,8 @@ export function PlayRecords({
                   "memory,knowledge,observation",
                   "knowledge,observation",
                   "observation,knowledge,memory",
+                  "puzzle,sequence,observation",
+                  "knowledge,sequence,puzzle",
                 ].map((order) => (
                   <option key={order} value={order}>
                     {order.split(",").map(modeLabel).join(" → ")}

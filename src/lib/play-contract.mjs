@@ -26,7 +26,7 @@ export function validStoredPlaySettings(v) {
     j === undefined ||
     (exact(j, ["schema", "ruleVersion", "modes", "startedAt", "paused", "resultIds"]) &&
       j.schema === 1 &&
-      j.ruleVersion === "local-mixed-journey-v1" &&
+      ["local-mixed-journey-v1", "local-theme-journey-v2"].includes(j.ruleVersion) &&
       Array.isArray(j.modes) &&
       j.modes.length >= 2 &&
       j.modes.length <= 3 &&
@@ -114,7 +114,9 @@ export function isPlayProjection(v) {
         "invalidated",
       ]) &&
         v.settings.data.journey.schema === 1 &&
-        v.settings.data.journey.ruleVersion === "local-mixed-journey-v1" &&
+        ["local-mixed-journey-v1", "local-theme-journey-v2"].includes(
+          v.settings.data.journey.ruleVersion,
+        ) &&
         Array.isArray(v.settings.data.journey.modes) &&
         v.settings.data.journey.modes.length >= 2 &&
         v.settings.data.journey.modes.length <= 3 &&

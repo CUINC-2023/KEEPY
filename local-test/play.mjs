@@ -114,7 +114,7 @@ function journeyProjection(d, id, journey, owner) {
   });
   return {
     schema: 1,
-    ruleVersion: "local-mixed-journey-v1",
+    ruleVersion: journey.ruleVersion,
     modes: journey.modes,
     startedAt: journey.startedAt,
     paused: journey.paused,
@@ -291,7 +291,9 @@ export function playCommand(d, token, input, key) {
       const journey = v.restart
         ? {
             schema: 1,
-            ruleVersion: "local-mixed-journey-v1",
+            ruleVersion: v.modes.some((mode) => ["puzzle", "sequence"].includes(mode))
+              ? "local-theme-journey-v2"
+              : "local-mixed-journey-v1",
             modes: v.modes,
             startedAt: d.at(),
             paused: v.paused,
