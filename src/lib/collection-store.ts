@@ -44,7 +44,14 @@ export interface CollectionProfile {
     mode: "full" | "compact";
     first: "timeline" | "awards" | "growth" | "play" | "curations";
   };
-  curations?: { id: string; title: string; note: string; cardIds: string[]; showPublic: boolean }[];
+  curations?: {
+    id: string;
+    title: string;
+    note: string;
+    tags?: string[];
+    cardIds: string[];
+    showPublic: boolean;
+  }[];
   journeyPaused?: boolean;
   growthPreview?: { player: boolean; platform: boolean };
   goalPoolIds?: string[];

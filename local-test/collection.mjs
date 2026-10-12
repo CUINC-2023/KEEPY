@@ -348,7 +348,15 @@ function validateProfile(d, u, p) {
       p.curations.some(
         (g) =>
           !g ||
-          Object.keys(g).sort().join() !== "cardIds,id,note,showPublic,title" ||
+          Object.keys(g)
+            .filter((key) => key !== "tags")
+            .sort()
+            .join() !== "cardIds,id,note,showPublic,title" ||
+          (g.tags !== undefined &&
+            (!Array.isArray(g.tags) ||
+              g.tags.length > 8 ||
+              new Set(g.tags).size !== g.tags.length ||
+              g.tags.some((tag) => typeof tag !== "string" || !tag.trim() || tag.length > 20))) ||
           typeof g.id !== "string" ||
           !/^curation-[a-z0-9-]{1,40}$/.test(g.id) ||
           typeof g.title !== "string" ||

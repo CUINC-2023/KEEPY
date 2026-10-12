@@ -63,6 +63,8 @@ function Editor({ me }: { me: CollectionMe }) {
     [groups, setGroups] = useState<Groups>(saved),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
+    [query, setQuery] = useState(""),
+    [tagInputs, setTagInputs] = useState<Record<string, string>>({}),
     [pages, setPages] = useState<Record<string, number>>({}),
     [batch, setBatch] = useState<{ id: string; ids: string[] } | null>(null);
   const dirty = JSON.stringify(groups) !== JSON.stringify(saved),
@@ -129,8 +131,45 @@ function Editor({ me }: { me: CollectionMe }) {
         {t("新增私人分組", "Add private group")}
       </Button>
       {!groups.length && <p>{t("尚無本人策展分組。", "No personal curation groups yet.")}</p>}
+      <label className="block">
+        {t(
+          "查找本人分組／註記／私人標籤（不放入URL）",
+          "Find your groups / notes / private tags (kept out of URLs)",
+        )}
+        <input
+          aria-label="Private curation query"
+          className="block w-full rounded border bg-background p-2"
+          maxLength={100}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </label>
+      {query.trim() &&
+        !groups.some((g) =>
+          [g.title, g.note, ...(g.tags ?? [])]
+            .join(" ")
+            .toLocaleLowerCase()
+            .includes(query.trim().toLocaleLowerCase()),
+        ) && (
+          <p role="status">
+            {t(
+              "沒有符合條件的本人分組；清除查找可繼續編輯。",
+              "No matching personal groups. Clear the query to keep editing.",
+            )}
+          </p>
+        )}
       {groups.map((g, index) => (
-        <fieldset key={g.id} className="panel space-y-3 p-4">
+        <fieldset
+          key={g.id}
+          hidden={
+            !!query.trim() &&
+            ![g.title, g.note, ...(g.tags ?? [])]
+              .join(" ")
+              .toLocaleLowerCase()
+              .includes(query.trim().toLocaleLowerCase())
+          }
+          className="panel space-y-3 p-4"
+        >
           <legend>
             {t("策展分組", "Curation group")} {index + 1}
           </legend>
@@ -178,6 +217,34 @@ function Editor({ me }: { me: CollectionMe }) {
               value={g.note}
               disabled={busy}
               onChange={(e) => change(g.id, { note: e.target.value })}
+            />
+          </label>
+          <label className="block">
+            {t(
+              "私人標籤（最多8個，每個20字；不公開）",
+              "Private tags (up to 8, 20 characters each; never public)",
+            )}
+            <input
+              aria-label={"Private curation tags " + index}
+              className="block w-full rounded border bg-background p-2"
+              maxLength={167}
+              value={tagInputs[g.id] ?? (g.tags ?? []).join(",")}
+              disabled={busy}
+              onChange={(e) => {
+                setTagInputs({ ...tagInputs, [g.id]: e.target.value });
+                change(g.id, {
+                  tags: [
+                    ...new Set(
+                      e.target.value
+                        .split(",")
+                        .map((tag) => tag.trim())
+                        .filter(Boolean),
+                    ),
+                  ]
+                    .slice(0, 8)
+                    .map((tag) => tag.slice(0, 20)),
+                });
+              }}
             />
           </label>
           <fieldset>
@@ -320,6 +387,7 @@ function Editor({ me }: { me: CollectionMe }) {
           disabled={busy || !dirty}
           onClick={() => {
             setGroups(saved);
+            setTagInputs({});
             setError("");
           }}
         >

@@ -37,10 +37,39 @@ try {
     );
   const before = assets();
   let me = d.collectionMe(a);
+  for (const tags of [
+    ["dup", "dup"],
+    ["a".repeat(21)],
+    [""],
+    Array.from({ length: 9 }, (_, i) => String(i)),
+  ])
+    assert.throws(() =>
+      d.collectionProfile(
+        a,
+        {
+          expectedVersion: me.profile.version,
+          data: {
+            ...me.profile.data,
+            curations: [
+              {
+                id: "curation-invalid",
+                title: "QA",
+                note: "",
+                cardIds: [],
+                showPublic: false,
+                tags,
+              },
+            ],
+          },
+        },
+        "qa-invalid-tags",
+      ),
+    );
   const group = {
       id: "curation-qa",
       title: "Private proof",
       note: "Owner note",
+      tags: ["private-only-tag"],
       cardIds: [first.cardId, second.cardId],
       showPublic: false,
     },
@@ -73,6 +102,8 @@ try {
   let pub = d.publicCollection(me.profile.handle);
   assert.equal(pub.curations[0].cards.length, 2);
   assert.ok(!JSON.stringify(pub).includes("curation-qa"));
+  assert.ok(!JSON.stringify(pub).includes("private-only-tag"));
+  assert.deepEqual(d.collectionMe(a).profile.data.curations[0].tags, ["private-only-tag"]);
   assert.ok(pub.curations[0].cards.every((c) => !Object.hasOwn(c, "count")));
   assert.equal(isCollectionProjection(pub, "showcase"), true);
   assert.equal(
