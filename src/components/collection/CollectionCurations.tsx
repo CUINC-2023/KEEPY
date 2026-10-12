@@ -32,7 +32,19 @@ export function CollectionCurations() {
           <Button onClick={() => void refreshCollectionMe()}>{t("重新讀取", "Reload")}</Button>
         </div>
       ) : d.me ? (
-        <Editor key={d.me.actorId + ":" + d.me.profile.version} me={d.me} />
+        <Editor
+          key={
+            "curations:" +
+            d.me.actorId +
+            ":" +
+            d.me.profile.version +
+            ":" +
+            d.me.visibilityKey +
+            ":" +
+            d.me.cards.map((c) => c.cardId).join(",")
+          }
+          me={d.me}
+        />
       ) : (
         <p>
           {t(
@@ -49,7 +61,9 @@ function Editor({ me }: { me: CollectionMe }) {
     saved = me.profile.data.curations ?? [],
     [groups, setGroups] = useState<Groups>(saved),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [pages, setPages] = useState<Record<string, number>>({}),
+    [batch, setBatch] = useState<{ id: string; ids: string[] } | null>(null);
   const dirty = JSON.stringify(groups) !== JSON.stringify(saved),
     valid = new Set(me.cards.map((c) => c.cardId));
   const blocker = useBlocker({
@@ -172,7 +186,31 @@ function Editor({ me }: { me: CollectionMe }) {
                 "Currently eligible held designs (selection order)",
               )}
             </legend>
-            {me.cards.map((c) => (
+            <div className="flex flex-wrap gap-3">
+              <Button
+                disabled={busy || !(g.cardIds.filter((id) => valid.has(id)).length < 12)}
+                variant="outline"
+                onClick={() => {
+                  const existing = new Set(g.cardIds.filter((id) => valid.has(id)));
+                  const ids = me.cards
+                    .slice((pages[g.id] ?? 0) * 20, ((pages[g.id] ?? 0) + 1) * 20)
+                    .map((c) => c.cardId)
+                    .filter((id) => !existing.has(id))
+                    .slice(0, 12 - existing.size);
+                  setBatch({ id: g.id, ids });
+                }}
+              >
+                {t("預覽本頁批次加入", "Preview adding this page in bulk")}
+              </Button>
+              <Button
+                disabled={busy || !g.cardIds.some((id) => valid.has(id))}
+                variant="outline"
+                onClick={() => change(g.id, { cardIds: [] })}
+              >
+                {t("清空本組選卡草稿", "Clear this group’s draft cards")}
+              </Button>
+            </div>
+            {me.cards.slice((pages[g.id] ?? 0) * 20, ((pages[g.id] ?? 0) + 1) * 20).map((c) => (
               <label key={c.cardId} className="block break-words">
                 <input
                   aria-label={"Curation card " + index + " " + c.cardId}
@@ -194,6 +232,25 @@ function Editor({ me }: { me: CollectionMe }) {
                 {c.name} · {c.poolId}
               </label>
             ))}
+            <nav className="flex gap-3">
+              <Button
+                variant="outline"
+                disabled={busy || !((pages[g.id] ?? 0) > 0)}
+                onClick={() => setPages({ ...pages, [g.id]: (pages[g.id] ?? 0) - 1 })}
+              >
+                {t("上一頁選卡", "Previous card page")}
+              </Button>
+              <span>
+                {(pages[g.id] ?? 0) + 1}/{Math.max(1, Math.ceil(me.cards.length / 20))}
+              </span>
+              <Button
+                variant="outline"
+                disabled={busy || ((pages[g.id] ?? 0) + 1) * 20 >= me.cards.length}
+                onClick={() => setPages({ ...pages, [g.id]: (pages[g.id] ?? 0) + 1 })}
+              >
+                {t("下一頁選卡", "Next card page")}
+              </Button>
+            </nav>
           </fieldset>
           <ol>
             {g.cardIds
@@ -211,6 +268,17 @@ function Editor({ me }: { me: CollectionMe }) {
                     }}
                   >
                     {t("上移", "Move up")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    disabled={busy || n === g.cardIds.filter((id) => valid.has(id)).length - 1}
+                    onClick={() => {
+                      const next = g.cardIds.filter((v) => valid.has(v));
+                      [next[n + 1], next[n]] = [next[n]!, next[n + 1]!];
+                      change(g.id, { cardIds: next });
+                    }}
+                  >
+                    {t("下移", "Move down")}
                   </Button>
                 </li>
               ))}
@@ -314,6 +382,35 @@ function Editor({ me }: { me: CollectionMe }) {
         cancelLabel={t("繼續編輯", "Keep editing")}
         onConfirm={() => blocker.proceed?.()}
         onCancel={() => blocker.reset?.()}
+      />
+      <ConfirmDialog
+        open={batch !== null}
+        title={t("批次加入尚未保存策展？", "Add these to the unsaved curation?")}
+        description={t(
+          "本頁新增" +
+            (batch?.ids.length ?? 0) +
+            "款合法持卡，最多12款，已選項不重複。只改草稿；可取消或在主頁取消修改，不授權公開。",
+          "Adds " +
+            (batch?.ids.length ?? 0) +
+            " eligible designs from this page, up to 12, without duplicating selections. Draft only; cancel here or discard editor changes. No public consent granted.",
+        )}
+        confirmLabel={t("確認加入草稿", "Confirm adding to draft")}
+        onCancel={() => setBatch(null)}
+        onConfirm={() => {
+          if (batch) {
+            const g = groups.find((g) => g.id === batch.id);
+            if (g)
+              change(g.id, {
+                cardIds: [
+                  ...new Set([
+                    ...g.cardIds.filter((id) => valid.has(id)),
+                    ...batch.ids.filter((id) => valid.has(id)),
+                  ]),
+                ].slice(0, 12),
+              });
+          }
+          setBatch(null);
+        }}
       />
     </section>
   );
