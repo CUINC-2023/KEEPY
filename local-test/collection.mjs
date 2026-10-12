@@ -1,3 +1,4 @@
+import { validReadingGuide } from "../src/lib/collection-reading-guide.mjs";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
 import { validWorkbench } from "../src/lib/collection-workbench.mjs";
 import { FIXTURES, ApiError } from "./database.mjs";
@@ -248,6 +249,12 @@ export function collectionMe(d, token) {
     const acquiredIds = acquired(d, u.id);
     const heldById = new Map(held.map((h) => [h.card_id, h.count]));
     const profileData = parse(profile.payload);
+    if (
+      profileData.readingGuide &&
+      (!validReadingGuide(profileData.readingGuide) ||
+        !catalogue.pools.some((p) => p.poolId === profileData.readingGuide.poolId))
+    )
+      delete profileData.readingGuide;
     if (profileData.collectionSearch && validWorkbench(profileData.collectionSearch)) {
       if (!catalogue.pools.some((p) => p.poolId === profileData.collectionSearch.poolId))
         profileData.collectionSearch.poolId = "";
@@ -312,12 +319,19 @@ function validateProfile(d, u, p) {
             "curations",
             "readingLayout",
             "collectionSearch",
+            "readingGuide",
           ].includes(k),
       )
       .sort()
       .join(",") !== Object.keys(defaultProfile()).sort().join(",")
   )
     fail("Unknown profile fields");
+  if (
+    p.readingGuide !== undefined &&
+    (!validReadingGuide(p.readingGuide) ||
+      !collectionCatalogue(d).pools.some((pool) => pool.poolId === p.readingGuide.poolId))
+  )
+    fail("Invalid current public reading guide");
   if (p.collectionSearch !== undefined) {
     const cat = collectionCatalogue(d);
     if (

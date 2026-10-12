@@ -75,7 +75,8 @@
     "test:sequence-play": "node tests/sequence-play.test.mjs",
     "test:new-play-route": "node tests/new-play-route.test.mjs",
     "test:practice-plan": "node tests/practice-plan.test.mjs",
-    "test:play-analysis": "node tests/play-analysis.test.mjs"
+    "test:play-analysis": "node tests/play-analysis.test.mjs",
+    "test:reading-guide": "node tests/reading-guide.test.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -153,5 +154,5 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
   },
-  "version": "0.22.177"
+  "version": "0.22.179"
 }
