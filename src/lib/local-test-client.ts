@@ -226,6 +226,16 @@ function adapt(summary: Summary): DemoPlayerState {
 let refreshSerial = 0;
 const SESSION_SIGNAL = "keepy-local-session-invalidation-v1";
 let sessionListenersInstalled = false;
+let sessionVerification: {
+  epoch: number;
+  actor: string;
+  controller: AbortController;
+  promise: Promise<void>;
+} | null = null;
+function cancelSessionVerification() {
+  sessionVerification?.controller.abort();
+  sessionVerification = null;
+}
 function announceLocalSessionChange() {
   if (typeof window === "undefined") return;
   try {
@@ -242,17 +252,37 @@ function installLocalSessionListeners() {
     const epoch = refreshSerial,
       actor = state.summary?.user.id;
     if (!state.enabled || !actor) return;
-    try {
-      const result = await localApi<Summary>("/me");
-      if (epoch === refreshSerial && state.summary?.user.id === actor && result.user?.id !== actor)
-        clearLocalSession(
-          "Session changed in another tab; reload / 其他頁籤身分已變更，請重新讀取",
-          false,
+    if (sessionVerification?.epoch === epoch && sessionVerification.actor === actor)
+      return sessionVerification.promise;
+    cancelSessionVerification();
+    const controller = new AbortController();
+    const promise = (async () => {
+      try {
+        const result = await localApi<Summary>(
+          "/me",
+          undefined,
+          "GET",
+          undefined,
+          controller.signal,
         );
-    } catch {
-      if (epoch === refreshSerial)
-        clearLocalSession("Unable to confirm session; reload / 無法確認身分，請重新讀取", false);
-    }
+        if (
+          epoch === refreshSerial &&
+          state.summary?.user.id === actor &&
+          result.user?.id !== actor
+        )
+          clearLocalSession(
+            "Session changed in another tab; reload / 其他頁籤身分已變更，請重新讀取",
+            false,
+          );
+      } catch {
+        if (!controller.signal.aborted && epoch === refreshSerial)
+          clearLocalSession("Unable to confirm session; reload / 無法確認身分，請重新讀取", false);
+      } finally {
+        if (sessionVerification?.controller === controller) sessionVerification = null;
+      }
+    })();
+    sessionVerification = { epoch, actor, controller, promise };
+    return promise;
   };
   window.addEventListener("storage", (event) => {
     if (
@@ -276,6 +306,7 @@ function installLocalSessionListeners() {
 }
 export async function refreshLocalTest() {
   const serial = ++refreshSerial;
+  cancelSessionVerification();
   if (!state.enabled) return;
   publish({ ...state, loading: true, error: "" });
   try {
@@ -331,12 +362,14 @@ export async function refreshLocalTest() {
 /** Clear shared private projections without falling back to browser Mock or deleting pending keys. */
 export function clearLocalSession(error = "", notify = true) {
   refreshSerial++;
+  cancelSessionVerification();
   publish({ ...empty, enabled: state.enabled, error });
   if (notify) announceLocalSessionChange();
 }
 export async function enableLocalTest(notify = true) {
   installLocalSessionListeners();
   refreshSerial++;
+  cancelSessionVerification();
   sessionStorage.setItem("keepy-local-normal-v1", "syntheticLocalTest");
   publish({ ...empty, enabled: true });
   if (notify) announceLocalSessionChange();
@@ -349,6 +382,7 @@ export function initializeLocalTest() {
 }
 export function disableLocalTest() {
   refreshSerial++;
+  cancelSessionVerification();
   sessionStorage.removeItem("keepy-local-normal-v1");
   publish(empty);
   announceLocalSessionChange();
