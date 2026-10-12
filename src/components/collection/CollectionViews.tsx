@@ -1018,7 +1018,7 @@ export function PublicCollectionPage({ handle }: { handle: string }) {
       ) : (
         visibleData && (
           <>
-            <CollectionShare key={visibleData.handle} handle={visibleData.handle} />
+            <CollectionShare key={visibleData.handle} data={visibleData} />
             <ShowcaseContent data={visibleData} />
           </>
         )
