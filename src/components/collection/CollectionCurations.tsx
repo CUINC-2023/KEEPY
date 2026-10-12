@@ -3,6 +3,7 @@ import { Link, useBlocker } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { CollectionCardView } from "./CollectionCardView";
+import { CollectionDraftPreview } from "./CollectionViews";
 import {
   useCollection,
   refreshCollectionMe,
@@ -357,6 +358,16 @@ function Editor({ me }: { me: CollectionMe }) {
           </section>
         ))}
       </details>
+      <CollectionDraftPreview
+        draft={{
+          ...me.profile.data,
+          curations: groups.map((g) => ({
+            ...g,
+            cardIds: g.cardIds.filter((id) => valid.has(id)),
+          })),
+        }}
+        version={me.profile.version}
+      />
       {error && (
         <div role="alert">
           <p>{error}</p>

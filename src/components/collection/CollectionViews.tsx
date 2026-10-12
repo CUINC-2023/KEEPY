@@ -576,7 +576,13 @@ export function CollectionPrivacy() {
     </div>
   );
 }
-function CollectionDraftPreview({ draft, version }: { draft: CollectionProfile; version: number }) {
+export function CollectionDraftPreview({
+  draft,
+  version,
+}: {
+  draft: CollectionProfile;
+  version: number;
+}) {
   const collection = useCollection(),
     epoch = localSessionGeneration();
   const t = useDiscoveryText(),
