@@ -4,6 +4,7 @@ import { useDiscoveryText } from "@/lib/discovery-copy";
 import { useLocale } from "@/lib/keepy-i18n-shared";
 import { Button } from "@/components/ui/button";
 import { MemoryPlay } from "./MemoryPlay";
+import { KnowledgePlay } from "./KnowledgePlay";
 export function CollectionPlay() {
   const d = useCollection(),
     t = useDiscoveryText(),
@@ -106,18 +107,28 @@ export function CollectionPlay() {
             </Link>
           </section>
           <section className="grid gap-3 sm:grid-cols-3" data-play-entrances>
+            {d.catalogue && (
+              <KnowledgePlay
+                key={
+                  "knowledge:" +
+                  legal.actorId +
+                  legal.visibilityKey +
+                  legal.cards.map((c) => c.cardId).join(",")
+                }
+                me={legal}
+                catalogue={d.catalogue}
+              />
+            )}
             <MemoryPlay
               key={
+                "memory:" +
                 legal.actorId +
                 legal.visibilityKey +
                 legal.cards.map((c) => c.cardId + ":" + c.cardVersion).join(",")
               }
               cards={legal.cards}
             />
-            {[
-              ["knowledge", "卡冊知識", "Album knowledge"],
-              ["observation", "收藏觀察", "Collection observation"],
-            ].map(([id, zh, en]) => (
+            {[["observation", "收藏觀察", "Collection observation"]].map(([id, zh, en]) => (
               <article key={id} id={"play-" + id} className="panel space-y-2 p-4">
                 <h2 className="font-bold">{t(zh!, en!)}</h2>
                 <p>
