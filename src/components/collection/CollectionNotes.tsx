@@ -1,0 +1,306 @@
+import { useState } from "react";
+import { Link, useBlocker } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useCollection, refreshCollectionMe, type CollectionMe } from "@/lib/collection-store";
+import { useDiscoveryText } from "@/lib/discovery-copy";
+import { useLocale } from "@/lib/keepy-i18n-shared";
+import { NOTE_CATEGORIES, type CollectionNote } from "@/lib/collection-notes.mjs";
+import {
+  discoveryCommand,
+  retryDiscoveryCommand,
+  hasPendingDiscovery,
+} from "@/lib/discovery-store";
+export function CollectionNotes() {
+  const d = useCollection(),
+    t = useDiscoveryText();
+  return (
+    <main className="space-y-4 p-4 md:p-8">
+      <h1 className="text-2xl font-bold">{t("私人收藏筆記", "Private collection notes")}</h1>
+      <Link to="/app/collection" className="underline text-primary">
+        {t("返回本人收藏", "Back to your collection")}
+      </Link>
+      {d.meError || d.error ? (
+        <div role="alert">
+          <p>
+            {t(
+              "筆記來源無法讀取，舊私人資料已清空；Staging僅前端預覽。",
+              "Notes source unavailable; previous private data cleared. Staging is a front-end preview.",
+            )}
+          </p>
+          <Button onClick={() => void refreshCollectionMe()}>
+            {t("重讀本人筆記", "Reload your notes")}
+          </Button>
+        </div>
+      ) : d.me && d.catalogueValid ? (
+        <Editor
+          key={
+            d.me.actorId +
+            ":" +
+            d.me.profile.version +
+            ":" +
+            d.me.visibilityKey +
+            ":" +
+            d.me.cards.map((c) => c.cardId).join(",")
+          }
+          me={d.me}
+        />
+      ) : (
+        <p>
+          {t(
+            "請在本機確認本人Local Test身分；這不是真人登入。",
+            "Confirm your Local Test identity locally; this is not a real login.",
+          )}
+        </p>
+      )}
+    </main>
+  );
+}
+function Editor({ me }: { me: CollectionMe }) {
+  const d = useCollection(),
+    t = useDiscoveryText(),
+    { locale } = useLocale(),
+    saved = me.profile.data.notes ?? [],
+    [notes, setNotes] = useState<CollectionNote[]>(saved),
+    [kind, setKind] = useState<"card" | "album">("card"),
+    [subject, setSubject] = useState(""),
+    [query, setQuery] = useState(""),
+    [filter, setFilter] = useState("all"),
+    [busy, setBusy] = useState(false),
+    [error, setError] = useState("");
+  const dirty = JSON.stringify(notes) !== JSON.stringify(saved),
+    pending = hasPendingDiscovery("/collection/profile"),
+    subjects =
+      kind === "card"
+        ? me.cards.map((c) => ({ id: c.cardId, title: c.name }))
+        : (d.catalogue?.pools.map((p) => ({ id: p.poolId, title: p.title[locale] })) ?? []),
+    selected = subjects.some((s) => s.id === subject) ? subject : (subjects[0]?.id ?? ""),
+    blocker = useBlocker({
+      shouldBlockFn: () => dirty,
+      disabled: !dirty,
+      enableBeforeUnload: dirty,
+      withResolver: true,
+    });
+  async function save(replay = false) {
+    if (busy) return;
+    setBusy(true);
+    try {
+      if (replay) await retryDiscoveryCommand("/collection/profile");
+      else
+        await discoveryCommand("/collection/profile", {
+          expectedVersion: me.profile.version,
+          data: { ...me.profile.data, notes },
+        });
+      await refreshCollectionMe();
+    } catch {
+      setError(
+        t(
+          "保存未確認／版本衝突；先重讀或確認原key，不覆寫或另建新重送。",
+          "Save unconfirmed / version conflict. Read back or confirm the original key, without overwriting or creating a new request.",
+        ),
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+  const shown = notes.filter(
+    (n) =>
+      (filter === "all" || n.category === filter) &&
+      n.text.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
+  );
+  const subjectName = (n: CollectionNote) =>
+    n.kind === "card"
+      ? me.cards.find((c) => c.cardId === n.subjectId)?.name
+      : n.kind === "album"
+        ? d.catalogue?.pools.find((p) => p.poolId === n.subjectId)?.title[locale]
+        : me.awards.find((a) => a.id === n.subjectId)?.title[locale];
+  return (
+    <section data-private-notes className="panel space-y-4 p-4">
+      <p>
+        {t(
+          "最多30則、每則1000字，僅本人本機保存。來源須目前合法持卡或公開卡冊；失效與隱藏來源不出現在筆記、數量或連結。筆記不加入公開頁或分享網址。",
+          "Up to 30 notes, 1000 characters each, saved locally for you only. Sources must be eligible held cards or public albums. Unavailable or hidden sources are excluded from notes, counts and links. Notes never enter public pages or sharing URLs.",
+        )}
+      </p>
+      <p role="status">
+        {dirty ? t("未保存筆記", "Unsaved notes") : t("已保存筆記", "Saved notes")} · v
+        {me.profile.version}
+      </p>
+      <label>
+        {t("來源類型", "Source type")}{" "}
+        <select
+          aria-label="Note subject kind"
+          value={kind}
+          disabled={busy}
+          onChange={(e) => {
+            setKind(e.target.value as "card" | "album");
+            setSubject("");
+          }}
+        >
+          <option value="card">{t("本人合法持卡", "Your eligible held card")}</option>
+          <option value="album">{t("公開卡冊", "Public album")}</option>
+        </select>
+      </label>
+      <label>
+        {t("來源", "Source")}{" "}
+        <select
+          aria-label="Note subject"
+          value={selected}
+          disabled={busy}
+          onChange={(e) => setSubject(e.target.value)}
+        >
+          {subjects.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.title}
+            </option>
+          ))}
+        </select>
+      </label>
+      <Button
+        disabled={busy || !selected || notes.length >= 30}
+        onClick={() =>
+          setNotes([
+            ...notes,
+            {
+              schema: 1,
+              id: "note-" + crypto.randomUUID(),
+              kind,
+              subjectId: selected,
+              category: "story",
+              text: t("我的私人收藏筆記", "My private collection note"),
+            },
+          ])
+        }
+      >
+        {t("新增私人筆記草稿", "Add private note draft")}
+      </Button>
+      <label>
+        {t("查找本人筆記", "Find your notes")}
+        <input
+          aria-label="Private note query"
+          className="block w-full rounded border bg-background p-2"
+          maxLength={100}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </label>
+      <label>
+        {t("分類", "Category")}{" "}
+        <select
+          aria-label="Private note category"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        >
+          <option value="all">{t("全部", "All")}</option>
+          {NOTE_CATEGORIES.map((c) => (
+            <option key={c}>{c}</option>
+          ))}
+        </select>
+      </label>
+      {shown.length ? (
+        <ul className="space-y-4">
+          {shown.map((n) => (
+            <li key={n.id} className="space-y-2 rounded border p-3">
+              <h2>{subjectName(n)}</h2>
+              <label>
+                {t("筆記分類", "Note category")}{" "}
+                <select
+                  aria-label={"Note category " + n.id}
+                  value={n.category}
+                  disabled={busy}
+                  onChange={(e) =>
+                    setNotes(
+                      notes.map((v) => (v.id === n.id ? { ...v, category: e.target.value } : v)),
+                    )
+                  }
+                >
+                  {NOTE_CATEGORIES.map((c) => (
+                    <option key={c}>{c}</option>
+                  ))}
+                </select>
+              </label>
+              <textarea
+                aria-label={"Note text " + n.id}
+                className="block min-h-32 w-full rounded border bg-background p-2"
+                maxLength={1000}
+                value={n.text}
+                disabled={busy}
+                onChange={(e) =>
+                  setNotes(notes.map((v) => (v.id === n.id ? { ...v, text: e.target.value } : v)))
+                }
+              />
+              {n.kind === "card" ? (
+                <Link
+                  className="underline"
+                  to="/app/cards/$cardId"
+                  params={{ cardId: n.subjectId }}
+                >
+                  {t("核對本人卡牌來源", "Check your card source")}
+                </Link>
+              ) : n.kind === "album" ? (
+                <Link className="underline" to="/pools/$poolId" params={{ poolId: n.subjectId }}>
+                  {t("閱讀目前公開系列", "Read the current public series")}
+                </Link>
+              ) : (
+                <Link to="/app/achievements" className="underline">
+                  {t("查看已取得成就", "View earned achievements")}
+                </Link>
+              )}
+              <Button
+                variant="outline"
+                disabled={busy}
+                onClick={() => setNotes(notes.filter((v) => v.id !== n.id))}
+              >
+                {t("移除筆記草稿", "Remove note draft")}
+              </Button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>
+          {notes.length
+            ? t("沒有符合條件的合法本人筆記。", "No eligible personal notes match.")
+            : t(
+                "沒有目前合法本人筆記；可先閱讀公開卡冊。",
+                "No currently eligible personal notes. Read a public album first.",
+              )}
+        </p>
+      )}
+      <div className="flex flex-wrap gap-3">
+        <Button
+          disabled={busy || !dirty || pending || notes.some((n) => !n.text.trim())}
+          onClick={() => void save()}
+        >
+          {t("保存本人筆記", "Save my notes")}
+        </Button>
+        <Button
+          variant="outline"
+          disabled={busy || !dirty}
+          onClick={() => {
+            setNotes(saved);
+            setError("");
+          }}
+        >
+          {t("取消筆記修改", "Cancel note changes")}
+        </Button>
+      </div>
+      {error && <p role="alert">{error}</p>}
+      {(pending || error) && (
+        <Button disabled={busy} variant="outline" onClick={() => void save(true)}>
+          {t("確認笔記原操作", "Confirm original note operation")}
+        </Button>
+      )}
+      <ConfirmDialog
+        open={blocker.status === "blocked"}
+        title={t("離開未保存筆記？", "Leave unsaved notes?")}
+        description={t(
+          "未保存草稿會捨棄，取消可繼續編輯；已保存資料保持。",
+          "Unsaved drafts will be discarded; cancel to keep editing. Saved data remains.",
+        )}
+        confirmLabel={t("捨棄並離開", "Discard and leave")}
+        onConfirm={() => blocker.proceed?.()}
+        onCancel={() => blocker.reset?.()}
+      />
+    </section>
+  );
+}

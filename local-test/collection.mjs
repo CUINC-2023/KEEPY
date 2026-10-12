@@ -1,3 +1,4 @@
+import { validCollectionNotes, noteSubjectAllowed } from "../src/lib/collection-notes.mjs";
 import { validReadingGuide } from "../src/lib/collection-reading-guide.mjs";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
 import { validWorkbench } from "../src/lib/collection-workbench.mjs";
@@ -264,6 +265,17 @@ export function collectionMe(d, token) {
     const displayable = new Set(
       catalogue.cards.filter((c) => heldById.has(c.cardId)).map((c) => c.cardId),
     );
+    if (profileData.notes !== undefined) {
+      if (!validCollectionNotes(profileData.notes))
+        fail("Stored notes incompatible; source cleared");
+      profileData.notes = profileData.notes.filter((n) =>
+        noteSubjectAllowed(n, {
+          card: displayable,
+          album: new Set(catalogue.pools.map((p) => p.poolId)),
+          award: new Set(awards(d, u.id, true).map((a) => a.id)),
+        }),
+      );
+    }
     if (Array.isArray(profileData.curations))
       profileData.curations = profileData.curations.map((group) => ({
         ...group,
@@ -320,6 +332,7 @@ function validateProfile(d, u, p) {
             "readingLayout",
             "collectionSearch",
             "readingGuide",
+            "notes",
           ].includes(k),
       )
       .sort()
@@ -332,6 +345,23 @@ function validateProfile(d, u, p) {
       !collectionCatalogue(d).pools.some((pool) => pool.poolId === p.readingGuide.poolId))
   )
     fail("Invalid current public reading guide");
+  if (p.notes !== undefined) {
+    if (!validCollectionNotes(p.notes)) fail("Invalid bounded private notes");
+    const cat = collectionCatalogue(d),
+      held = new Set(
+        d.db
+          .prepare("SELECT card_id FROM holdings WHERE user_id=? AND count>0")
+          .all(u.id)
+          .map((r) => r.card_id),
+      ),
+      subjects = {
+        card: new Set(cat.cards.filter((c) => held.has(c.cardId)).map((c) => c.cardId)),
+        album: new Set(cat.pools.map((p) => p.poolId)),
+        award: new Set(awards(d, u.id, true).map((a) => a.id)),
+      };
+    if (p.notes.some((n) => !noteSubjectAllowed(n, subjects)))
+      fail("Only currently authorized note subjects");
+  }
   if (p.collectionSearch !== undefined) {
     const cat = collectionCatalogue(d);
     if (
@@ -531,6 +561,16 @@ export function collectionProfileHealth(d, token) {
         removed++;
       }
       candidate.shelfIds = trim(candidate.shelfIds, displayable);
+      if (Array.isArray(candidate.notes))
+        candidate.notes = candidate.notes.filter((n) => {
+          const keep = noteSubjectAllowed(n, {
+            card: displayable,
+            album: publicPools,
+            award: earned,
+          });
+          if (!keep) removed++;
+          return keep;
+        });
       if (Array.isArray(candidate.curations))
         candidate.curations = candidate.curations.map((g) =>
           g && typeof g === "object" ? { ...g, cardIds: trim(g.cardIds, displayable) } : g,
