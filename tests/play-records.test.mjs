@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { LocalDatabase } from "../local-test/database.mjs";
 import { loadCatalog } from "../local-test/catalog.mjs";
-import { playMe, playCommand } from "../local-test/play.mjs";
+import { playMe, playCommand, privatePlaySummary } from "../local-test/play.mjs";
 import { memoryStart, memoryAction, PLAY_RULE_VERSION } from "../src/lib/collection-play.mjs";
 import { playQuestions, quizStart } from "../src/lib/play-questions.mjs";
 const file = join(mkdtempSync(join(tmpdir(), "keepy-play-")), "qa.sqlite"),
@@ -86,6 +86,10 @@ try {
     );
   }
   assert.equal(playMe(d, a).best.length, 3);
+  assert.equal(privatePlaySummary(d, a, { start: "", end: "" }).records, 3);
+  assert.equal(privatePlaySummary(d, a, { start: "2099-01-01T00:00:00Z", end: "" }).records, 0);
+  assert.equal(privatePlaySummary(d, b, { start: "", end: "" }).records, 0);
+  assert.equal(privatePlaySummary(d, o, { start: "", end: "" }), null);
   assert.equal(assets(), before);
   const current = playMe(d, a);
   fault = true;

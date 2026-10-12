@@ -107,6 +107,40 @@ export function playMe(d, token, params = {}) {
     rewards: false,
   };
 }
+export function privatePlaySummary(d, token, range) {
+  const u = d.actor(token);
+  if (u.role !== "member") return null;
+  const { owner } = eligible(d, u.id),
+    ids = JSON.stringify(owner.cards.map((c) => c.cardId));
+  const rows = d.db
+    .prepare(
+      "SELECT payload FROM play_results r WHERE user_id=? AND (?='' OR at>=?) AND (?='' OR at<?) AND json_type(payload,'$.sourceIds')='array' AND json_array_length(payload,'$.sourceIds')>0 AND NOT EXISTS(SELECT 1 FROM json_each(json_extract(r.payload,'$.sourceIds')) s WHERE s.value NOT IN (SELECT value FROM json_each(?)))",
+    )
+    .all(u.id, range.start, range.start, range.end, range.end, ids)
+    .map((r) => JSON.parse(r.payload));
+  return {
+    source: "local-SQLite-private-play",
+    records: rows.length,
+    modes: PLAY_MODES.flatMap((mode) => {
+      const group = rows.filter((r) => r.mode === mode);
+      return group.length
+        ? [
+            {
+              mode,
+              rounds: group.length,
+              correct: group.reduce((n, r) => n + r.correct, 0),
+              total: group.reduce((n, r) => n + r.total, 0),
+              ruleVersions: [...new Set(group.map((r) => r.ruleVersion))],
+            },
+          ]
+        : [];
+    }),
+    recordTimeOnly: true,
+    officialXP: false,
+    rewards: false,
+    ranking: false,
+  };
+}
 export function playCommand(d, token, input, key) {
   const u = actor(d, token);
   if (

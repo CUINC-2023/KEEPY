@@ -1,6 +1,7 @@
 import { ApiError } from "./database.mjs";
 import { collectionReadContract } from "../src/lib/collection-contract.mjs";
 import { readEarnedCollectionRecords } from "./collection.mjs";
+import { privatePlaySummary } from "./play.mjs";
 export function collectionHistory(d, token, params = {}) {
   const u = d.actor(token),
     cat = d.collectionCatalogue();
@@ -105,6 +106,7 @@ export function collectionRecap(d, token, params = {}) {
     seriesRecords: earned.filter((a) => a.type === "series").length,
     sources: history.sources,
     recordedAtIsNotCompletionTime: true,
+    playSummary: privatePlaySummary(d, token, history.range),
     readOnly: true,
   };
 }

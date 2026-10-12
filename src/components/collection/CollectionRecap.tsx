@@ -16,6 +16,21 @@ type Recap = {
   seriesRecords: number;
   sources: string[];
   readOnly: true;
+  playSummary?: {
+    source: string;
+    records: number;
+    modes: {
+      mode: string;
+      rounds: number;
+      correct: number;
+      total: number;
+      ruleVersions: string[];
+    }[];
+    recordTimeOnly: true;
+    officialXP: false;
+    rewards: false;
+    ranking: false;
+  } | null;
 };
 export function CollectionRecap({ me }: { me: CollectionMe }) {
   const t = useDiscoveryText(),
@@ -137,6 +152,38 @@ export function CollectionRecap({ me }: { me: CollectionMe }) {
             {t("期間合法來源分類", "Eligible source categories in the period")}:{" "}
             {data.sources.join(" · ") || t("沒有可確認來源。", "No confirmed source.")}
           </p>
+          {data.playSummary && (
+            <section data-period-play-summary className="space-y-3 rounded-xl border p-4">
+              <h3 className="font-bold">
+                {t("同期間本人遊玩保存摘要", "Your saved play summaries in the same period")}
+              </h3>
+              <p>
+                {t(
+                  "依本機保存時間統計，不代表真正遊玩完成時間、收藏增長、正式XP或獎勵。素材失效紀錄不投影；歷史不足不補造過去卡冊完成度。",
+                  "Counts local save timestamps, not actual play completion time, collection growth, official XP or rewards. Unavailable material records are not projected; missing history never invents past album completion.",
+                )}
+              </p>
+              {data.playSummary.records ? (
+                <ul>
+                  {data.playSummary.modes.map((m) => (
+                    <li key={m.mode}>
+                      {m.mode} · {m.rounds} · {m.correct}/{m.total} · {m.ruleVersions.join(" / ")}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>
+                  {t(
+                    "此期間沒有合法本人玩法保存紀錄。",
+                    "No eligible saved personal play records in this period.",
+                  )}
+                </p>
+              )}
+              <Link className="underline" to="/app/play">
+                {t("回到私人遊玩紀錄", "Return to private play records")}
+              </Link>
+            </section>
+          )}
           {data.earned.length > 0 && (
             <ul>
               {data.earned.map((a) => (

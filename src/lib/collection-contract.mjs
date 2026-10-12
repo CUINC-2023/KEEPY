@@ -100,6 +100,7 @@ const fields = {
     "seriesRecords",
     "sources",
     "recordedAtIsNotCompletionTime",
+    "playSummary",
     "readOnly",
   ],
 };
