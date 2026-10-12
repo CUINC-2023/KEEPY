@@ -64,7 +64,8 @@
     "test:collection-play": "node tests/collection-play.test.mjs",
     "test:play-records": "node tests/play-records.test.mjs",
     "test:collection-workbench": "node tests/collection-workbench.test.mjs",
-    "test:play-packs": "node tests/play-packs.test.mjs"
+    "test:play-packs": "node tests/play-packs.test.mjs",
+    "test:play-query": "node tests/play-query.test.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -142,5 +143,5 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
   },
-  "version": "0.22.138"
+  "version": "0.22.139"
 }

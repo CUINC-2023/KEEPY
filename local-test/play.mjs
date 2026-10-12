@@ -16,6 +16,9 @@ export function initPlay(d) {
     .exec(`CREATE TABLE IF NOT EXISTS play_private(user_id TEXT PRIMARY KEY REFERENCES users(id),version INTEGER NOT NULL,payload TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS play_results(id TEXT PRIMARY KEY,user_id TEXT REFERENCES users(id),at TEXT NOT NULL,payload TEXT NOT NULL,proof_hash TEXT NOT NULL,UNIQUE(user_id,proof_hash));
 CREATE TRIGGER IF NOT EXISTS play_results_immutable BEFORE UPDATE OF id,user_id,at,payload,proof_hash ON play_results BEGIN SELECT RAISE(ABORT,'immutable'); END;`);
+  d.db
+    .exec(`CREATE INDEX IF NOT EXISTS play_results_owner_time ON play_results(user_id,at DESC,id DESC);
+CREATE INDEX IF NOT EXISTS play_results_owner_score ON play_results(user_id,json_extract(payload,'$.ruleVersion'),json_extract(payload,'$.mode'),json_extract(payload,'$.difficulty'),(CASE WHEN json_extract(payload,'$.mode')='memory' THEN -json_extract(payload,'$.moves') ELSE 1.0*json_extract(payload,'$.correct')/NULLIF(json_extract(payload,'$.total'),0) END) DESC,at DESC,id DESC);`);
 }
 function actor(d, token) {
   const u = d.actor(token);
@@ -59,15 +62,15 @@ export function playMe(d, token, params = {}) {
   )
     fail(d, 422, "Invalid private query");
   const { cat, owner } = eligible(d, u.id),
-    allowed = new Set(owner.cards.map((c) => c.cardId));
-  const rows = d.db
-    .prepare("SELECT id,at,payload FROM play_results WHERE user_id=? ORDER BY at DESC,id DESC")
-    .all(u.id)
-    .map((row) => ({ ...JSON.parse(row.payload), id: row.id, at: row.at }))
-    .filter(
-      (r) => r.sourceIds.every((id) => allowed.has(id)) && (mode === "all" || r.mode === mode),
-    );
-  const pages = Math.max(1, Math.ceil(rows.length / 20)),
+    allowed = JSON.stringify(owner.cards.map((c) => c.cardId)),
+    where =
+      "user_id=? AND json_array_length(json_extract(payload,'$.sourceIds'))>0 AND NOT EXISTS(SELECT 1 FROM json_each(play_results.payload,'$.sourceIds') s WHERE s.type!='text' OR s.value NOT IN (SELECT value FROM json_each(?)))",
+    selected = where + (mode === "all" ? "" : " AND json_extract(payload,'$.mode')=?"),
+    queryArgs = mode === "all" ? [u.id, allowed] : [u.id, allowed, mode],
+    total = d.db
+      .prepare("SELECT count(*) n FROM play_results WHERE " + selected)
+      .get(...queryArgs).n;
+  const pages = Math.max(1, Math.ceil(total / 20)),
     p = Math.min(page, pages),
     project = (r) => ({
       id: r.id,
@@ -80,16 +83,27 @@ export function playMe(d, token, params = {}) {
       correct: r.correct,
       total: r.total,
     });
+  const unpack = (r) => ({ ...JSON.parse(r.payload), id: r.id, at: r.at });
+  const rows = d.db
+    .prepare(
+      "SELECT id,at,payload FROM play_results WHERE " +
+        selected +
+        " ORDER BY at DESC,id DESC LIMIT 20 OFFSET ?",
+    )
+    .all(...queryArgs, (p - 1) * 20)
+    .map(unpack);
   const best = [];
   for (const kind of PLAY_MODES)
     for (const level of PLAY_DIFFICULTIES) {
-      const group = rows.filter(
-        (r) => r.mode === kind && r.difficulty === level && r.ruleVersion === PLAY_RULE_VERSION,
-      );
-      group.sort((a, b) =>
-        kind === "memory" ? a.moves - b.moves : b.correct / b.total - a.correct / a.total,
-      );
-      if (group[0]) best.push(project(group[0]));
+      if (mode !== "all" && mode !== kind) continue;
+      const result = d.db
+        .prepare(
+          "SELECT id,at,payload FROM play_results WHERE " +
+            where +
+            " AND json_extract(payload,'$.ruleVersion')=? AND json_extract(payload,'$.mode')=? AND json_extract(payload,'$.difficulty')=? ORDER BY (CASE WHEN json_extract(payload,'$.mode')='memory' THEN -json_extract(payload,'$.moves') ELSE 1.0*json_extract(payload,'$.correct')/NULLIF(json_extract(payload,'$.total'),0) END) DESC,at DESC,id DESC LIMIT 1",
+        )
+        .get(u.id, allowed, PLAY_RULE_VERSION, kind, level);
+      if (result) best.push(project(unpack(result)));
     }
   return {
     schema: 1,
@@ -99,8 +113,8 @@ export function playMe(d, token, params = {}) {
     settings: settings(d, u.id),
     page: p,
     pages,
-    total: rows.length,
-    rows: rows.slice((p - 1) * 20, p * 20).map(project),
+    total,
+    rows: rows.map(project),
     best,
     officialXP: false,
     ranking: false,
