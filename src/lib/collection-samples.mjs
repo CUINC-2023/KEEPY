@@ -249,6 +249,72 @@ export const COLLECTION_THEMES = [
       bi("相遇：兩種色塊在中線相接。", "Encounter: two color fields meet along the center."),
     ],
   },
+  {
+    id: "local-demo-121-lantern",
+    coverTone: "tide",
+    title: bi("燈影書頁 · 虛構範本", "Lantern Pages · Fictional template"),
+    story: bi(
+      "以圓形燈光與書頁的幾何留白構想三段閱讀：入口、停留、回望。這是純文字与幾何美術企劃，不宣稱真人拍攝、合作或日期。",
+      "Imagine three readings through circular light and geometric page space: arrival, pause and return. A text and geometry concept, without claims of real shoots, collaborations or dates.",
+    ),
+    guide: bi(
+      "由公開款式閱讀故事；完整、部分與空收藏情境只用隔離fixture，不給原帳戶補卡。",
+      "Read stories through public designs; full, partial and empty collection cases use isolated fixtures only, never grants to original accounts.",
+    ),
+    bio: bi("以安靜的閱讀節奏策展。", "Curate through a quiet reading rhythm."),
+    badge: bi("書頁視覺範本，非新成就。", "Page visual sample, not a new achievement."),
+    cardStories: [
+      bi("入口：圓形光線建立閱讀落點。", "Arrival: circular light establishes an entry."),
+      bi("停留：長方留白保持文字呼吸。", "Pause: rectangular space lets prose breathe."),
+      bi("回望：重複線條帶回敘事起點。", "Return: repeated lines recall the opening."),
+    ],
+  },
+  {
+    id: "local-demo-121-wind",
+    coverTone: "garden",
+    title: bi("風向圖集 · 虛構範本", "Wind Atlas · Fictional template"),
+    story: bi(
+      "以線條方向、層次與比例構想風的變化，不借用地理或天氣成效。三款視覺分別代表沿行、交會、迴旋；只是閱讀方向，不是未核定的玩法獎勵。",
+      "Imagine changes in wind through direction, layers and proportion, without claiming geographic or weather results. Three visuals represent passage, crossing and turning: reading directions, not unapproved game rewards.",
+    ),
+    guide: bi(
+      "比較不同構圖，設定私人卡冊順序，再依目前合法不同款式回顧。",
+      "Compare compositions, choose private album order and revisit current eligible distinct designs.",
+    ),
+    bio: bi("以線條與色彩整理觀察。", "Arrange observations through lines and color."),
+    badge: bi(
+      "風向幾何徽章範本，沒有發放規則。",
+      "Directional geometric badge sample, with no issuance rule.",
+    ),
+    cardStories: [
+      bi("沿行：平行線建立方向。", "Passage: parallel lines establish direction."),
+      bi("交會：兩條線在中段相遇。", "Crossing: two lines meet at the middle."),
+      bi("迴旋：弧線留下返回空間。", "Turning: curves leave room to return."),
+    ],
+  },
+  {
+    id: "local-demo-121-signal",
+    coverTone: "orbit",
+    title: bi("色彩訊號 · 虛構範本", "Color Signals · Fictional template"),
+    story: bi(
+      "將圓、方、三角排列為可重讀的色彩訊號。所有卡面與封面使用既有樣式，沒有外部照片、真人回答或合作宣告；不得自動上架為可抽卡池。",
+      "Arrange circles, squares and triangles into color signals to reread. All faces and covers use existing styles, with no external photos, real answers or collaboration claims; never automatically published as a draw pool.",
+    ),
+    guide: bi(
+      "閱讀形狀與留白，分享前核對本人同意與目前公開範圍。",
+      "Read shapes and space; check personal consent and current public scope before sharing.",
+    ),
+    bio: bi("從簡單形狀開始收藏故事。", "Start collecting stories through simple shapes."),
+    badge: bi(
+      "訊號視覺範本，與正式成就分開。",
+      "Signal visual sample, separate from formal achievements.",
+    ),
+    cardStories: [
+      bi("圓：連續的輪廓建立節奏。", "Circle: a continuous outline establishes rhythm."),
+      bi("方：邊界整理訊息順序。", "Square: boundaries order information."),
+      bi("三角：尖端指向下一段閱讀。", "Triangle: a point directs the next reading."),
+    ],
+  },
 ].map((t) => ({
   ...t,
   synthetic: true,

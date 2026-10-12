@@ -23,8 +23,13 @@ for (const t of CREATOR_CONTENT_TEMPLATES) {
   assert.equal(t.shootDate, null);
 }
 assert.equal(JSON.stringify(base), before);
-assert.equal(COLLECTION_THEMES.length, 12);
-assert.equal(new Set(COLLECTION_THEMES.map((t) => t.id)).size, 12);
+assert.equal(COLLECTION_THEMES.length, 15);
+assert.equal(new Set(COLLECTION_THEMES.map((t) => t.id)).size, 15);
+assert.ok(
+  COLLECTION_THEMES.slice(12).every(
+    (t) => t.id.startsWith("local-demo-121-") && t.cardStories.length === 3,
+  ),
+);
 assert.deepEqual(
   COLLECTION_THEMES.slice(0, 3).map((t) => t.id),
   ["local-demo-034-window", "local-demo-034-city", "local-demo-034-paper"],
@@ -45,7 +50,7 @@ for (const theme of COLLECTION_THEMES) {
   assert.ok(!base.pools.some((p) => p.id === theme.id));
 }
 assert.ok(
-  COLLECTION_THEMES.slice(9).every(
+  COLLECTION_THEMES.slice(9, 12).every(
     (t) =>
       t.id.startsWith("local-demo-086-") &&
       t.cardStories.length === 3 &&
