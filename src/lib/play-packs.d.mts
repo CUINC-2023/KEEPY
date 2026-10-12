@@ -9,6 +9,14 @@ export interface PlayContentPack {
   websiteUse: "local-sample-only";
   socialUse: "unconfirmed";
   printUse: "unconfirmed";
+  puzzleMaterials?: {
+    id: string;
+    ref: "geometry-grid";
+    size: number;
+    sourceRef: { templateId: string; version: number };
+    purpose: "local-sample-only";
+    alt: Bilingual;
+  }[];
   questions: {
     id: string;
     mode: string;

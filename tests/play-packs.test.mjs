@@ -6,7 +6,7 @@ import { createLocalServer } from "../local-test/server.mjs";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-assert.equal(PLAY_CONTENT_PACKS.length, 6);
+assert.equal(PLAY_CONTENT_PACKS.length, 9);
 const corrupt = structuredClone(PLAY_CONTENT_PACKS[0]);
 corrupt.questions[0].options = [null, null];
 assert.ok(playPackIssues(corrupt).includes("answer-or-options"));
@@ -25,11 +25,22 @@ for (const code of [
   "source-relation",
 ])
   assert.ok(codes.includes(code));
+const geometric = PLAY_CONTENT_PACKS.filter((p) => p.puzzleMaterials);
+assert.equal(geometric.length, 3);
+for (const p of geometric) {
+  assert.deepEqual(
+    p.puzzleMaterials.map((m) => m.size),
+    [2, 3, 4],
+  );
+  const bad = structuredClone(p);
+  bad.puzzleMaterials[0].purpose = "formal-print";
+  assert.ok(playPackIssues(bad).includes("puzzle-material"));
+}
 const health = playPackHealth();
-assert.equal(health.packs.length, 6);
+assert.equal(health.packs.length, 9);
 assert.ok(health.packs.every((p) => p.sharedQuestionLayouts >= 3 && p.sharedQuestionLayouts <= 6));
 assert.ok(!JSON.stringify(health).includes(PLAY_CONTENT_PACKS[0].questions[0].prompt.en));
-assert.equal(new Set(PLAY_CONTENT_PACKS.map((p) => p.id)).size, 6);
+assert.equal(new Set(PLAY_CONTENT_PACKS.map((p) => p.id)).size, 9);
 for (const p of PLAY_CONTENT_PACKS) {
   assert.deepEqual(playPackIssues(p), []);
   assert.equal(p.questions.length, 6);
@@ -60,7 +71,7 @@ try {
   assert.equal(r.status, 200);
   const body = await r.json();
   assert.equal(body.publicationApproval, false);
-  assert.equal(body.packs.length, 6);
+  assert.equal(body.packs.length, 9);
   const prefix =
     "http://127.0.0.1:" +
     server.address().port +

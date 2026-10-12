@@ -137,6 +137,40 @@ export function PlayPackPreview() {
               : t("必要示意欄位完整（未發布）", "Required sample fields complete (unpublished)")}
           </p>
           <p>{pack.source[locale]}</p>
+          {pack.puzzleMaterials && (
+            <section data-pack-puzzle-materials className="space-y-3">
+              <h3 className="font-bold">
+                {t(
+                  "拼圖素材示意（不啟用玩家題庫）",
+                  "Puzzle material samples (do not activate player banks)",
+                )}
+              </h3>
+              {pack.puzzleMaterials.map((m) => (
+                <figure key={m.id} className="max-w-xs space-y-2">
+                  <div
+                    role="img"
+                    aria-label={m.alt[locale]}
+                    className="grid gap-1"
+                    style={{ gridTemplateColumns: `repeat(${m.size},minmax(0,1fr))` }}
+                  >
+                    {Array.from({ length: m.size * m.size }, (_, i) => (
+                      <span
+                        key={i}
+                        aria-hidden="true"
+                        className={
+                          "aspect-square rounded " + (i % 2 ? "bg-primary/50" : "bg-primary")
+                        }
+                      />
+                    ))}
+                  </div>
+                  <figcaption>
+                    {m.id} · {m.size}×{m.size} · {m.sourceRef.templateId} v{m.sourceRef.version} ·{" "}
+                    {t("僅本機示意用途", "Local sample use only")}
+                  </figcaption>
+                </figure>
+              ))}
+            </section>
+          )}
           {pack.questions.map((q) => (
             <article key={q.id} className="space-y-3 border-t py-4">
               <h3 className="font-bold">{q.prompt[locale]}</h3>

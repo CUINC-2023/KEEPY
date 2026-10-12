@@ -1,7 +1,10 @@
 import { COLLECTION_THEMES } from "./collection-samples.mjs";
 const bi = (zh, en) => ({ "zh-TW": zh, en });
 export const PLAY_CONTENT_PACKS = COLLECTION_THEMES.filter(
-  (t) => t.id.startsWith("local-demo-121-") || t.id.startsWith("local-demo-156-"),
+  (t) =>
+    t.id.startsWith("local-demo-121-") ||
+    t.id.startsWith("local-demo-156-") ||
+    t.id.startsWith("local-demo-176-"),
 ).map((t) => ({
   id: "play-pack-" + t.id,
   version: 1,
@@ -12,6 +15,21 @@ export const PLAY_CONTENT_PACKS = COLLECTION_THEMES.filter(
   websiteUse: "local-sample-only",
   socialUse: "unconfirmed",
   printUse: "unconfirmed",
+  ...(t.id.startsWith("local-demo-176-")
+    ? {
+        puzzleMaterials: [2, 3, 4].map((size) => ({
+          id: t.id + "-puzzle-" + size,
+          ref: "geometry-grid",
+          size,
+          sourceRef: { templateId: t.id, version: t.version },
+          purpose: "local-sample-only",
+          alt: bi(
+            "本機幾何拼圖示意：" + size + "×" + size,
+            "Local geometric puzzle sample: " + size + "×" + size,
+          ),
+        })),
+      }
+    : {}),
   questions: [
     ...t.cardStories.map((s, i) => ({
       id: t.id + "-knowledge-" + i,
@@ -71,6 +89,27 @@ export function playPackIssues(pack) {
   )
     issues.push("unconfirmed-use");
   const questions = Array.isArray(pack?.questions) ? pack.questions : [];
+  if (
+    pack?.puzzleMaterials !== undefined &&
+    (!Array.isArray(pack.puzzleMaterials) ||
+      pack.puzzleMaterials.length !== 3 ||
+      new Set(pack.puzzleMaterials.map((m) => m?.id)).size !== 3 ||
+      pack.puzzleMaterials.some(
+        (m) =>
+          !m ||
+          Object.keys(m).sort().join() !== "alt,id,purpose,ref,size,sourceRef" ||
+          typeof m.id !== "string" ||
+          m.id.length > 128 ||
+          m.ref !== "geometry-grid" ||
+          ![2, 3, 4].includes(m.size) ||
+          m.purpose !== "local-sample-only" ||
+          !bilingual(m.alt) ||
+          !COLLECTION_THEMES.some(
+            (t) => t.id === m.sourceRef?.templateId && t.version === m.sourceRef?.version,
+          ),
+      ))
+  )
+    issues.push("puzzle-material");
   if (!questions.length || questions.length > 40) issues.push("question-count");
   if (new Set(questions.map((q) => q?.id)).size !== questions.length)
     issues.push("duplicate-question");
