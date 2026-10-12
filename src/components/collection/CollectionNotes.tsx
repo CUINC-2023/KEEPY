@@ -62,7 +62,7 @@ function Editor({ me }: { me: CollectionMe }) {
     { locale } = useLocale(),
     saved = me.profile.data.notes ?? [],
     [notes, setNotes] = useState<CollectionNote[]>(saved),
-    [kind, setKind] = useState<"card" | "album">("card"),
+    [kind, setKind] = useState<"card" | "album" | "award">("card"),
     [subject, setSubject] = useState(""),
     [query, setQuery] = useState(""),
     [filter, setFilter] = useState("all"),
@@ -73,7 +73,9 @@ function Editor({ me }: { me: CollectionMe }) {
     subjects =
       kind === "card"
         ? me.cards.map((c) => ({ id: c.cardId, title: c.name }))
-        : (d.catalogue?.pools.map((p) => ({ id: p.poolId, title: p.title[locale] })) ?? []),
+        : kind === "award"
+          ? me.awards.map((a) => ({ id: a.id, title: a.title[locale] }))
+          : (d.catalogue?.pools.map((p) => ({ id: p.poolId, title: p.title[locale] })) ?? []),
     selected = subjects.some((s) => s.id === subject) ? subject : (subjects[0]?.id ?? ""),
     blocker = useBlocker({
       shouldBlockFn: () => dirty,
@@ -118,8 +120,8 @@ function Editor({ me }: { me: CollectionMe }) {
     <section data-private-notes className="panel space-y-4 p-4">
       <p>
         {t(
-          "最多30則、每則1000字，僅本人本機保存。來源須目前合法持卡或公開卡冊；失效與隱藏來源不出現在筆記、數量或連結。筆記不加入公開頁或分享網址。",
-          "Up to 30 notes, 1000 characters each, saved locally for you only. Sources must be eligible held cards or public albums. Unavailable or hidden sources are excluded from notes, counts and links. Notes never enter public pages or sharing URLs.",
+          "最多30則、每則1000字，僅本人本機保存。來源須目前合法持卡、公開卡冊或已取得成就；失效與隱藏來源不出現在筆記、數量或連結。未取得成就完全隱藏，筆記不加入公開頁或分享網址。",
+          "Up to 30 notes, 1000 characters each, saved locally for you only. Sources must be eligible held cards, public albums or earned achievements. Unavailable or hidden sources are excluded from notes, counts and links. Unearned achievements are completely hidden; notes never enter public pages or sharing URLs.",
         )}
       </p>
       <p role="status">
@@ -133,12 +135,15 @@ function Editor({ me }: { me: CollectionMe }) {
           value={kind}
           disabled={busy}
           onChange={(e) => {
-            setKind(e.target.value as "card" | "album");
+            setKind(e.target.value as "card" | "album" | "award");
             setSubject("");
           }}
         >
           <option value="card">{t("本人合法持卡", "Your eligible held card")}</option>
           <option value="album">{t("公開卡冊", "Public album")}</option>
+          {!!me.awards.length && (
+            <option value="award">{t("已取得成就", "Earned achievement")}</option>
+          )}
         </select>
       </label>
       <label>
