@@ -66,7 +66,8 @@
     "test:collection-workbench": "node tests/collection-workbench.test.mjs",
     "test:play-packs": "node tests/play-packs.test.mjs",
     "test:play-query": "node tests/play-query.test.mjs",
-    "test:actor-boundary": "node tests/actor-boundary.test.mjs"
+    "test:actor-boundary": "node tests/actor-boundary.test.mjs",
+    "test:memory-advanced": "node tests/memory-advanced.test.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -144,5 +145,5 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
   },
-  "version": "0.22.151"
+  "version": "0.22.152"
 }

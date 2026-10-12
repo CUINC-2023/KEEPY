@@ -1,4 +1,15 @@
 export const PLAY_RULE_VERSION = "local-play-v1";
+export const MEMORY_RULE_VERSION = "local-memory-v2";
+export function validMemoryConfig(v) {
+  return (
+    !!v &&
+    typeof v === "object" &&
+    Object.keys(v).sort().join() === "allowHints,schema,variant" &&
+    v.schema === 1 &&
+    ["practice", "limit"].includes(v.variant) &&
+    typeof v.allowHints === "boolean"
+  );
+}
 export const PLAY_MODES = ["memory", "knowledge", "observation"];
 export const PLAY_DIFFICULTIES = ["easy", "standard", "hard"];
 export function shuffle(items, seed) {
@@ -15,15 +26,25 @@ export function shuffle(items, seed) {
   }
   return out;
 }
-export function memoryStart(ids, difficulty = "easy", seed = 1) {
+export function memoryStart(ids, difficulty = "easy", seed = 1, config = null) {
   if (!PLAY_DIFFICULTIES.includes(difficulty)) throw Error("Unknown difficulty");
+  if (config !== null && !validMemoryConfig(config)) throw Error("Invalid memory configuration");
   const needed = { easy: 2, standard: 4, hard: 6 }[difficulty];
   const unique = [...new Set(ids)];
   if (unique.length < needed) throw Error("Insufficient eligible held designs");
   const chosen = shuffle(unique, seed).slice(0, needed);
   return {
     schema: 1,
-    ruleVersion: PLAY_RULE_VERSION,
+    ruleVersion: config ? MEMORY_RULE_VERSION : PLAY_RULE_VERSION,
+    ...(config
+      ? {
+          memoryConfig: structuredClone(config),
+          hintsUsed: 0,
+          hintIndexes: [],
+          moveLimit: config.variant === "limit" ? needed * 2 : null,
+          failed: false,
+        }
+      : {}),
     mode: "memory",
     inputIds: unique,
     difficulty,
@@ -42,7 +63,7 @@ export function memoryStart(ids, difficulty = "easy", seed = 1) {
   };
 }
 export function memoryAction(state, event) {
-  if (!state || state.complete) return state;
+  if (!state || state.complete || state.failed) return state;
   const s = structuredClone(state);
   if (event.type === "pause") {
     s.paused = !s.paused;
@@ -50,7 +71,17 @@ export function memoryAction(state, event) {
     return s;
   }
   if (s.paused) return state;
-  if (event.type === "continue") {
+  if (event.type === "hint") {
+    if (!s.memoryConfig?.allowHints || s.hintsUsed >= 3 || s.open.length) return state;
+    const first = s.deck.findIndex((_, i) => !s.matched.includes(i));
+    s.hintIndexes = s.deck.flatMap((id, i) =>
+      id === s.deck[first] && !s.matched.includes(i) ? [i] : [],
+    );
+    s.hintsUsed++;
+  } else if (event.type === "hide-hint") {
+    if (!s.hintIndexes?.length) return state;
+    s.hintIndexes = [];
+  } else if (event.type === "continue") {
     if (s.open.length !== 2) return state;
     s.open = [];
   } else if (event.type === "flip") {
@@ -65,6 +96,7 @@ export function memoryAction(state, event) {
     )
       return state;
     s.open.push(i);
+    if (s.hintIndexes) s.hintIndexes = [];
     if (s.open.length === 2) {
       s.moves++;
       const [a, b] = s.open;
@@ -73,6 +105,13 @@ export function memoryAction(state, event) {
         s.open = [];
         s.complete = s.matched.length === s.deck.length;
       }
+      if (
+        s.moveLimit !== null &&
+        s.moveLimit !== undefined &&
+        s.moves >= s.moveLimit &&
+        !s.complete
+      )
+        s.failed = true;
     }
   } else throw Error("Unknown memory action");
   s.events.push(event);
@@ -80,7 +119,12 @@ export function memoryAction(state, event) {
   return s;
 }
 export function replayMemory(proof) {
-  let s = memoryStart(proof.inputIds ?? proof.cardIds, proof.difficulty, proof.seed);
+  let s = memoryStart(
+    proof.inputIds ?? proof.cardIds,
+    proof.difficulty,
+    proof.seed,
+    proof.memoryConfig ?? null,
+  );
   for (const event of proof.events) {
     const next = memoryAction(s, event);
     if (next === s) throw Error("Invalid replay action");

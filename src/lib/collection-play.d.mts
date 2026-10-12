@@ -1,4 +1,11 @@
 export const PLAY_RULE_VERSION: string;
+export const MEMORY_RULE_VERSION: string;
+export interface MemoryConfig {
+  schema: 1;
+  variant: "practice" | "limit";
+  allowHints: boolean;
+}
+export function validMemoryConfig(value: unknown): boolean;
 export const PLAY_MODES: string[];
 export const PLAY_DIFFICULTIES: string[];
 export interface MemoryRound {
@@ -16,9 +23,19 @@ export interface MemoryRound {
   paused: boolean;
   complete: boolean;
   events: { type: string; index?: number }[];
+  memoryConfig?: MemoryConfig;
+  hintsUsed?: number;
+  hintIndexes?: number[];
+  moveLimit?: number | null;
+  failed?: boolean;
 }
 export function shuffle<T>(items: T[], seed: number): T[];
-export function memoryStart(ids: string[], difficulty?: string, seed?: number): MemoryRound;
+export function memoryStart(
+  ids: string[],
+  difficulty?: string,
+  seed?: number,
+  config?: MemoryConfig | null,
+): MemoryRound;
 export function memoryAction(
   state: MemoryRound,
   event: { type: string; index?: number },
@@ -28,6 +45,7 @@ export function replayMemory(proof: {
   difficulty: string;
   seed: number;
   events: MemoryRound["events"];
+  memoryConfig?: MemoryConfig;
 }): {
   mode: string;
   difficulty: string;

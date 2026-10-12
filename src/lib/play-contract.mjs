@@ -1,4 +1,5 @@
 import { PLAY_MODES, PLAY_DIFFICULTIES } from "./collection-play.mjs";
+import { MEMORY_RULE_VERSION, validMemoryConfig } from "./collection-play.mjs";
 const exact = (v, keys) =>
   !!v &&
   typeof v === "object" &&
@@ -17,6 +18,7 @@ const row = (v) =>
     "moves",
     "correct",
     "total",
+    ...(v?.ruleVersion === MEMORY_RULE_VERSION ? ["memoryConfig", "hintsUsed"] : []),
   ]) &&
   text(v.id, 128) &&
   text(v.at, 64) &&
@@ -24,6 +26,11 @@ const row = (v) =>
   PLAY_MODES.includes(v.mode) &&
   PLAY_DIFFICULTIES.includes(v.difficulty) &&
   text(v.ruleVersion, 128) &&
+  (v.ruleVersion !== MEMORY_RULE_VERSION ||
+    (v.mode === "memory" &&
+      validMemoryConfig(v.memoryConfig) &&
+      integer(v.hintsUsed) &&
+      v.hintsUsed <= 3)) &&
   integer(v.sourceVersion) &&
   integer(v.correct) &&
   integer(v.total, 1) &&

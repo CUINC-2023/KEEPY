@@ -11,6 +11,7 @@ import {
   hasPendingDiscovery,
 } from "@/lib/discovery-store";
 export interface PlayProof {
+  memoryConfig?: import("@/lib/collection-play.mjs").MemoryConfig;
   mode: string;
   difficulty: string;
   ruleVersion: string;
@@ -39,6 +40,8 @@ export interface PlayPrivate {
     moves: number | null;
     ruleVersion: string;
     sourceVersion: number;
+    memoryConfig?: import("@/lib/collection-play.mjs").MemoryConfig;
+    hintsUsed?: number;
   }[];
   best: PlayPrivate["rows"];
   officialXP: false;
@@ -323,6 +326,12 @@ export function PlayRecords({
                 <li key={r.id}>
                   {r.at} · {r.mode} / {r.difficulty} · {r.correct}/{r.total}{" "}
                   {r.moves !== null ? " · " + r.moves : ""} · {r.ruleVersion}
+                  {r.memoryConfig && (
+                    <>
+                      {" "}
+                      · {r.memoryConfig.variant} · {t("提示次數", "Hints used")}: {r.hintsUsed}
+                    </>
+                  )}
                 </li>
               ))}
             </ol>
@@ -330,7 +339,13 @@ export function PlayRecords({
             <p>{t("目前沒有合法本人遊玩紀錄。", "No currently eligible personal play records.")}</p>
           )}
           <details>
-            <summary>{t("同規則個人最佳", "Personal bests under the same rules")}</summary>
+            <summary>{t("原規則個人最佳", "Personal bests under the original rules")}</summary>
+            <p>
+              {t(
+                "進階模式依版本／上限／提示記錄於近期摘要，不與原規則混比。",
+                "Advanced modes retain their version, cap and hints in recent records; they are not compared against the original rules.",
+              )}
+            </p>
             <ul>
               {snapshot.best.map((r) => (
                 <li key={r.id}>

@@ -4,6 +4,8 @@ import {
   memoryStart,
   memoryAction,
   PLAY_RULE_VERSION,
+  MEMORY_RULE_VERSION,
+  validMemoryConfig,
   PLAY_MODES,
   PLAY_DIFFICULTIES,
 } from "../src/lib/collection-play.mjs";
@@ -79,6 +81,9 @@ export function playMe(d, token, params = {}) {
       difficulty: r.difficulty,
       ruleVersion: r.ruleVersion,
       sourceVersion: r.sourceVersion,
+      ...(r.ruleVersion === MEMORY_RULE_VERSION
+        ? { memoryConfig: r.memoryConfig, hintsUsed: r.hintsUsed }
+        : {}),
       moves: r.moves,
       correct: r.correct,
       total: r.total,
@@ -190,9 +195,17 @@ export function playCommand(d, token, input, key) {
       const proof = input.data;
       if (
         !proof ||
-        Object.keys(proof).sort().join() !==
+        Object.keys(proof)
+          .filter((k) => k !== "memoryConfig")
+          .sort()
+          .join() !==
           "cardIds,cardVersions,difficulty,events,mode,ruleVersion,seed,visibilityKey" ||
-        proof.ruleVersion !== PLAY_RULE_VERSION ||
+        !(
+          (proof.ruleVersion === PLAY_RULE_VERSION && proof.memoryConfig === undefined) ||
+          (proof.mode === "memory" &&
+            proof.ruleVersion === MEMORY_RULE_VERSION &&
+            validMemoryConfig(proof.memoryConfig))
+        ) ||
         !PLAY_MODES.includes(proof.mode) ||
         !PLAY_DIFFICULTIES.includes(proof.difficulty) ||
         !Array.isArray(proof.cardIds) ||
@@ -221,7 +234,12 @@ export function playCommand(d, token, input, key) {
       let state;
       try {
         if (proof.mode === "memory") {
-          state = memoryStart(proof.cardIds, proof.difficulty, proof.seed);
+          state = memoryStart(
+            proof.cardIds,
+            proof.difficulty,
+            proof.seed,
+            proof.memoryConfig ?? null,
+          );
           for (const e of proof.events) {
             if (!e || Object.keys(e).some((k) => !["type", "index"].includes(k)))
               throw Error("Invalid event");
@@ -252,7 +270,10 @@ export function playCommand(d, token, input, key) {
         schema: 1,
         mode: proof.mode,
         difficulty: proof.difficulty,
-        ruleVersion: PLAY_RULE_VERSION,
+        ruleVersion: proof.ruleVersion,
+        ...(state.memoryConfig
+          ? { memoryConfig: state.memoryConfig, hintsUsed: state.hintsUsed }
+          : {}),
         sourceVersion: cat.version,
         sourceIds: proof.cardIds,
         moves: proof.mode === "memory" ? state.moves : null,
