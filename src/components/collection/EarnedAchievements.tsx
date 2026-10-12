@@ -247,6 +247,13 @@ function EarnedList({ me }: { me: CollectionMe }) {
                 <Link className="text-primary underline" to="/app/settings/privacy">
                   {t("選擇公開展示", "Choose public display")}
                 </Link>
+                <Link
+                  className="text-primary underline"
+                  to="/app/collection"
+                  hash="collection-recap"
+                >
+                  {t("核對私人收藏回顧", "Check your private collection recap")}
+                </Link>
               </div>
               <label>
                 <input
