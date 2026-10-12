@@ -1,4 +1,5 @@
 import { randomBytes, randomUUID, createHash } from "node:crypto";
+import { validWorkbench } from "../src/lib/collection-workbench.mjs";
 import { FIXTURES, ApiError } from "./database.mjs";
 import { recordDiscoveryEvent } from "./discovery.mjs";
 import { collectionReadContract } from "../src/lib/collection-contract.mjs";
@@ -247,6 +248,12 @@ export function collectionMe(d, token) {
     const acquiredIds = acquired(d, u.id);
     const heldById = new Map(held.map((h) => [h.card_id, h.count]));
     const profileData = parse(profile.payload);
+    if (profileData.collectionSearch && validWorkbench(profileData.collectionSearch)) {
+      if (!catalogue.pools.some((p) => p.poolId === profileData.collectionSearch.poolId))
+        profileData.collectionSearch.poolId = "";
+      if (!catalogue.cards.some((c) => c.rarity === profileData.collectionSearch.rarity))
+        profileData.collectionSearch.rarity = "all";
+    }
     const displayable = new Set(
       catalogue.cards.filter((c) => heldById.has(c.cardId)).map((c) => c.cardId),
     );
@@ -304,12 +311,24 @@ function validateProfile(d, u, p) {
             "journeyPaused",
             "curations",
             "readingLayout",
+            "collectionSearch",
           ].includes(k),
       )
       .sort()
       .join(",") !== Object.keys(defaultProfile()).sort().join(",")
   )
     fail("Unknown profile fields");
+  if (p.collectionSearch !== undefined) {
+    const cat = collectionCatalogue(d);
+    if (
+      !validWorkbench(p.collectionSearch) ||
+      (p.collectionSearch.poolId &&
+        !cat.pools.some((v) => v.poolId === p.collectionSearch.poolId)) ||
+      (p.collectionSearch.rarity !== "all" &&
+        !cat.cards.some((v) => v.rarity === p.collectionSearch.rarity))
+    )
+      fail("Invalid private search preference");
+  }
   if (
     p.readingLayout !== undefined &&
     (!p.readingLayout ||

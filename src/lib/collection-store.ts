@@ -38,6 +38,7 @@ export interface CollectionAward {
   recordedAt: string;
 }
 export interface CollectionProfile {
+  collectionSearch?: import("./collection-workbench.mjs").WorkbenchPreference;
   readingLayout?: { schema: 1; mode: "full" | "compact"; first: "timeline" | "awards" | "growth" };
   curations?: { id: string; title: string; note: string; cardIds: string[]; showPublic: boolean }[];
   journeyPaused?: boolean;

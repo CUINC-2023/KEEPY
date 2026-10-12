@@ -2,6 +2,7 @@ import { PublicRankings } from "./PublicRankings";
 import { CollectionShare } from "./CollectionShare";
 import { CollectionJourney } from "./CollectionJourney";
 import { JourneyTemplates } from "./JourneyTemplates";
+import { CollectionWorkbench } from "./CollectionWorkbench";
 import { GrowthIntegration } from "./GrowthIntegration";
 import { CatalogueIntegrity } from "./CatalogueIntegrity";
 import { ThemeJourney } from "./ThemeJourney";
@@ -191,6 +192,13 @@ export function CollectionPage() {
             }
           />
           <CollectionJourney me={d.me} />
+          {d.catalogue && (
+            <CollectionWorkbench
+              key={"workbench:" + d.me.actorId + ":" + d.me.profile.version}
+              me={d.me}
+              catalogue={d.catalogue}
+            />
+          )}
           {d.catalogue && (
             <JourneyTemplates
               key={"journey-template:" + d.me.actorId + ":" + d.me.profile.version}
