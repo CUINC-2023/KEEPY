@@ -61,7 +61,7 @@ export function CollectionWorkbench({
           "Searches your current eligible projection, separating ever acquired and current holdings. One row per design; duplicates do not increase completion. Private filters save in local SQLite, never public URLs or cross-device sync.",
         )}
       </p>
-      <fieldset disabled={busy || pending} className="flex flex-wrap gap-3">
+      <fieldset disabled={busy || pending} className="collection-filter-grid">
         <label>
           {t("關鍵字", "Keyword")}{" "}
           <input

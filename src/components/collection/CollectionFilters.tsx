@@ -42,7 +42,7 @@ export function CollectionFilters({
           "Filters apply to this page only and reset on leaving or switching accounts. Preferences are not saved or synced across devices.",
         )}
       </p>
-      <div className="flex flex-wrap gap-3">
+      <div className="collection-filter-grid">
         <label>
           {t("系列", "Series")}{" "}
           <select

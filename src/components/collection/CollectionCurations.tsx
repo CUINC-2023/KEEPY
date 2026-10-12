@@ -211,28 +211,36 @@ function Editor({ me }: { me: CollectionMe }) {
                 {t("清空本組選卡草稿", "Clear this group’s draft cards")}
               </Button>
             </div>
-            {me.cards.slice((pages[g.id] ?? 0) * 20, ((pages[g.id] ?? 0) + 1) * 20).map((c) => (
-              <label key={c.cardId} className="block break-words">
-                <input
-                  aria-label={"Curation card " + index + " " + c.cardId}
-                  type="checkbox"
-                  checked={g.cardIds.includes(c.cardId)}
-                  disabled={
-                    busy ||
-                    (!g.cardIds.includes(c.cardId) &&
-                      g.cardIds.filter((id) => valid.has(id)).length >= 12)
-                  }
-                  onChange={(e) =>
-                    change(g.id, {
-                      cardIds: e.target.checked
-                        ? [...g.cardIds, c.cardId]
-                        : g.cardIds.filter((id) => id !== c.cardId),
-                    })
-                  }
-                />
-                {c.name} · {c.poolId}
-              </label>
-            ))}
+            <div
+              className="grid max-h-80 grid-cols-1 gap-2 overflow-y-auto p-1 sm:grid-cols-2"
+              data-curation-picker
+            >
+              {me.cards.slice((pages[g.id] ?? 0) * 20, ((pages[g.id] ?? 0) + 1) * 20).map((c) => (
+                <label
+                  key={c.cardId}
+                  className="flex min-h-11 min-w-0 cursor-pointer items-center gap-3 rounded-xl border bg-background p-3 break-words"
+                >
+                  <input
+                    aria-label={"Curation card " + index + " " + c.cardId}
+                    type="checkbox"
+                    checked={g.cardIds.includes(c.cardId)}
+                    disabled={
+                      busy ||
+                      (!g.cardIds.includes(c.cardId) &&
+                        g.cardIds.filter((id) => valid.has(id)).length >= 12)
+                    }
+                    onChange={(e) =>
+                      change(g.id, {
+                        cardIds: e.target.checked
+                          ? [...g.cardIds, c.cardId]
+                          : g.cardIds.filter((id) => id !== c.cardId),
+                      })
+                    }
+                  />
+                  {c.name} · {c.poolId}
+                </label>
+              ))}
+            </div>
             <nav className="flex gap-3">
               <Button
                 variant="outline"

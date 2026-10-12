@@ -417,3 +417,32 @@
     transform: none;
   }
 }
+
+.collection-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 0.75rem;
+  min-width: 0;
+}
+.collection-filter-grid > label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+.collection-filter-grid input,
+.collection-filter-grid select {
+  min-height: 2.75rem;
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background: var(--background);
+  color: var(--foreground);
+}
+.collection-filter-grid input:focus-visible,
+.collection-filter-grid select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
