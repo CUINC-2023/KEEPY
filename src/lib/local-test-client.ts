@@ -216,6 +216,56 @@ function adapt(summary: Summary): DemoPlayerState {
   };
 }
 let refreshSerial = 0;
+const SESSION_SIGNAL = "keepy-local-session-invalidation-v1";
+let sessionListenersInstalled = false;
+function announceLocalSessionChange() {
+  if (typeof window === "undefined") return;
+  try {
+    // An invalidation nonce only: no actor, cookie, draft or credential is shared.
+    localStorage.setItem(SESSION_SIGNAL, crypto.randomUUID());
+  } catch {
+    // Storage may be unavailable; focus validation and the server actor assertion remain active.
+  }
+}
+function installLocalSessionListeners() {
+  if (typeof window === "undefined" || sessionListenersInstalled) return;
+  sessionListenersInstalled = true;
+  const verify = async () => {
+    const epoch = refreshSerial,
+      actor = state.summary?.user.id;
+    if (!state.enabled || !actor) return;
+    try {
+      const result = await localApi<Summary>("/me");
+      if (epoch === refreshSerial && state.summary?.user.id === actor && result.user?.id !== actor)
+        clearLocalSession(
+          "Session changed in another tab; reload / 其他頁籤身分已變更，請重新讀取",
+          false,
+        );
+    } catch {
+      if (epoch === refreshSerial)
+        clearLocalSession("Unable to confirm session; reload / 無法確認身分，請重新讀取", false);
+    }
+  };
+  window.addEventListener("storage", (event) => {
+    if (
+      state.enabled &&
+      event.key === SESSION_SIGNAL &&
+      typeof event.newValue === "string" &&
+      /^[a-f0-9-]{36}$/.test(event.newValue)
+    )
+      clearLocalSession(
+        "Session changed in another tab; reload / 其他頁籤身分已變更，請重新讀取",
+        false,
+      );
+  });
+  window.addEventListener("focus", () => void verify());
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) void verify();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") void verify();
+  });
+}
 export async function refreshLocalTest() {
   const serial = ++refreshSerial;
   if (!state.enabled) return;
@@ -271,24 +321,29 @@ export async function refreshLocalTest() {
   }
 }
 /** Clear shared private projections without falling back to browser Mock or deleting pending keys. */
-export function clearLocalSession(error = "") {
+export function clearLocalSession(error = "", notify = true) {
   refreshSerial++;
   publish({ ...empty, enabled: state.enabled, error });
+  if (notify) announceLocalSessionChange();
 }
-export async function enableLocalTest() {
+export async function enableLocalTest(notify = true) {
+  installLocalSessionListeners();
   refreshSerial++;
   sessionStorage.setItem("keepy-local-normal-v1", "syntheticLocalTest");
   publish({ ...empty, enabled: true });
+  if (notify) announceLocalSessionChange();
   await refreshLocalTest();
 }
 export function initializeLocalTest() {
+  installLocalSessionListeners();
   if (sessionStorage.getItem("keepy-local-normal-v1") === "syntheticLocalTest" && !state.enabled)
-    void enableLocalTest();
+    void enableLocalTest(false);
 }
 export function disableLocalTest() {
   refreshSerial++;
   sessionStorage.removeItem("keepy-local-normal-v1");
   publish(empty);
+  announceLocalSessionChange();
 }
 export async function drawLocal(poolId: string, mode: "single" | "ten", id: string) {
   if (!state.summary) throw new Error("Select a syntheticLocalTest fixture first");
