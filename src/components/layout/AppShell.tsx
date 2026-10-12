@@ -335,6 +335,46 @@ function NavLinks({
   );
 }
 
+function RoutePosition({ area, pathname }: { area: Area; pathname: string }) {
+  const tx = usePlayerUiText(),
+    t = useCopy(),
+    { locale } = useLocale();
+  const items = itemsFor(area),
+    current = items.find((item) => item.to === activePath(pathname, items));
+  const entries = {
+    public: "/explore",
+    player: "/app/collection",
+    admin: "/admin/supply",
+    goddess: "/goddess/supply",
+  } as const;
+  return (
+    <nav
+      data-route-position
+      aria-label={locale === "en" ? "Page location" : "頁面位置"}
+      className="mb-4 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-sm"
+    >
+      <Link className="inline-flex min-h-11 items-center text-primary underline" to="/explore">
+        {locale === "en" ? "Public discovery" : "公開探索"}
+      </Link>
+      {area !== "public" && (
+        <>
+          <span aria-hidden="true">/</span>
+          <Link
+            className="inline-flex min-h-11 items-center text-primary underline"
+            to={entries[area]}
+          >
+            {tx(AREA_LABEL[area])}
+          </Link>
+        </>
+      )}
+      <span aria-hidden="true">/</span>
+      <span aria-current="page" className="min-w-0 break-words">
+        {current ? tx(current.copyKey ? t(current.copyKey) : current.label) : tx(AREA_LABEL[area])}
+      </span>
+    </nav>
+  );
+}
+
 function LoginDemoDialog({
   open,
   onClose,
@@ -650,6 +690,7 @@ function ShellInner({ children }: { children: ReactNode }) {
 
           <main className="min-w-0 flex-1 px-4 pb-10 pt-6 sm:px-6 lg:px-8">
             <LocalTestBanner />
+            <RoutePosition area={area} pathname={pathname} />
             {children}
             <footer className="mt-10 border-t border-border pt-4 text-xs text-muted-foreground">
               KEEPY ·{" "}
