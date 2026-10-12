@@ -54,6 +54,17 @@ export function createLocalServer(database, { port = 8787, webPort = 8083 } = {}
           .find((s) => s.startsWith("keepy_local_session="))
           ?.slice(20) ?? "";
       let body = null;
+      const expectedActor = req.headers["x-keepy-expected-actor"];
+      if (expectedActor !== undefined && path !== "/session" && path !== "/me") {
+        if (typeof expectedActor !== "string" || expectedActor.length > 128)
+          throw new ApiError(422, "actor-boundary", "Invalid expected actor");
+        if (database.actor(token).id !== expectedActor)
+          throw new ApiError(
+            409,
+            "actor-changed",
+            "Session changed; reload identity before continuing",
+          );
+      }
       if (req.method !== "GET") {
         let raw = "";
         for await (const chunk of req) {

@@ -115,17 +115,20 @@ export async function localApi<T>(
   signal?: AbortSignal,
 ): Promise<T> {
   const sessionGeneration = refreshSerial;
+  const expectedActor = path === "/me" || path === "/session" ? null : state.summary?.user.id;
   const response = await fetch("/api/local-test" + path, {
     ...(signal ? { signal } : {}),
     credentials: "same-origin",
+    headers: {
+      ...(expectedActor ? { "X-KEEPY-Expected-Actor": expectedActor } : {}),
+      ...(body === undefined
+        ? {}
+        : { "Content-Type": "application/json", ...(key ? { "Idempotency-Key": key } : {}) }),
+    },
     ...(body === undefined
       ? {}
       : {
           method,
-          headers: {
-            "Content-Type": "application/json",
-            ...(key ? { "Idempotency-Key": key } : {}),
-          },
           body: JSON.stringify(body),
         }),
   });
@@ -139,6 +142,12 @@ export async function localApi<T>(
   });
   if (response.status === 401 && sessionGeneration === refreshSerial)
     clearLocalSession("401 · Local Test session expired / 測試 Session 已失效");
+  if (
+    response.status === 409 &&
+    value.code === "actor-changed" &&
+    sessionGeneration === refreshSerial
+  )
+    clearLocalSession("409 · Session changed; reload your identity / 身分已變更，請重新讀取");
   if (!response.ok)
     throw Object.assign(
       new Error(String(response.status) + " · " + (value.message ?? "Local Test unavailable")),
@@ -213,6 +222,9 @@ export async function refreshLocalTest() {
   publish({ ...state, loading: true, error: "" });
   try {
     const summary = await localApi<Summary>("/me");
+    if (serial !== refreshSerial) return;
+    if (state.summary && state.summary.user.id !== summary.user.id)
+      publish({ ...empty, enabled: state.enabled, loading: true });
     const content = await localApi<{ version: number; data: ContentOverrides }>("/content");
     const pools = await localApi<LocalPool[]>("/pools");
     let operations: OpsState = EMPTY_OPS,
