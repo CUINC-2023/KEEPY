@@ -107,7 +107,7 @@ export function SavePlayResult({ proof, actor }: { proof: PlayProof; actor: stri
     }
   };
   return (
-    <div className="space-y-2" data-play-save>
+    <div className="space-y-2" data-play-save aria-busy={busy}>
       <Button disabled={busy || saved || pending} onClick={() => void save()}>
         {t("保存本人遊玩摘要", "Save my play summary")}
       </Button>
@@ -116,7 +116,9 @@ export function SavePlayResult({ proof, actor }: { proof: PlayProof; actor: stri
           {t("確認原遊玩操作", "Confirm original play operation")}
         </Button>
       )}
-      <p role="status">{message}</p>
+      <p role="status" aria-live="polite">
+        {message}
+      </p>
     </div>
   );
 }
@@ -205,7 +207,11 @@ export function PlayRecords({
     }
   };
   return (
-    <section className="panel space-y-3 p-4" data-private-play-records>
+    <section
+      className="panel space-y-3 p-4"
+      data-private-play-records
+      aria-busy={busy || (!snapshot && !error)}
+    >
       <h2 className="text-xl font-bold">
         {t("私人遊玩紀錄（本機SQLite）", "Private play records (local SQLite)")}
       </h2>
@@ -215,6 +221,19 @@ export function PlayRecords({
           "Recent summaries and personal bests for the same rule and difficulty, separate from official XP, achievements and rankings. No cloud sync; records with unavailable sources are not projected.",
         )}
       </p>
+      {pending && !error && (
+        <div role="status" className="space-y-2 rounded border p-3">
+          <p>
+            {t(
+              "原操作仍待確認；重讀成功不會刪除原key。請確認後再開始不同操作。",
+              "The original operation is still unconfirmed. A successful read does not discard its key; confirm it before a different operation.",
+            )}
+          </p>
+          <Button disabled={busy} variant="outline" onClick={() => void confirmOriginal()}>
+            {t("確認紀錄原操作", "Confirm the original record operation")}
+          </Button>
+        </div>
+      )}
       <label>
         {t("紀錄類型", "Record type")}{" "}
         <select

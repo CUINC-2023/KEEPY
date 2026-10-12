@@ -5,7 +5,11 @@ import { tmpdir } from "node:os";
 import { LocalDatabase } from "../local-test/database.mjs";
 import { loadCatalog } from "../local-test/catalog.mjs";
 import { createLocalServer } from "../local-test/server.mjs";
-import { isLocalSummary } from "../src/lib/local-summary-contract.mjs";
+import {
+  isLocalSummary,
+  unreadableLocalResponse,
+  isDefiniteLocalRejection,
+} from "../src/lib/local-summary-contract.mjs";
 const d = new LocalDatabase(
     join(mkdtempSync(join(tmpdir(), "keepy-actor-")), "qa.sqlite"),
     await loadCatalog(),
@@ -90,3 +94,12 @@ try {
 console.log(
   "PASS stale expected-actor read/write rejection, authoritative cookie role, unchanged rejected transactions and correct own save",
 );
+for (const status of [200, 201, 204, 206])
+  assert.equal(unreadableLocalResponse(status).status, undefined);
+for (const status of [401, 403, 409, 422, 500, 503])
+  assert.equal(unreadableLocalResponse(status).status, status);
+for (const status of [200, 401, 403, 500, 503])
+  assert.equal(isDefiniteLocalRejection({ status }), false);
+assert.equal(isDefiniteLocalRejection({ status: 409, code: "actor-changed" }), false);
+assert.equal(isDefiniteLocalRejection({ status: 409, code: "version" }), true);
+assert.equal(isDefiniteLocalRejection({ status: 422 }), true);

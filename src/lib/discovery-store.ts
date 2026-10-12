@@ -1,4 +1,5 @@
 import { useLocation } from "@tanstack/react-router";
+import { isDefiniteLocalRejection } from "./local-summary-contract.mjs";
 import { useSeasonClock } from "./season-time";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import {
@@ -282,7 +283,7 @@ export async function discoveryCommand<T>(path: string, body: unknown) {
       if (path === READING_COMMAND) emit({ ...state });
       return result;
     } catch (e) {
-      if ((e as { status?: number }).status && (e as { status: number }).status < 500) {
+      if (isDefiniteLocalRejection(e)) {
         if (pending.get(id) === active) pending.delete(id);
         if (path === READING_COMMAND) emit({ ...state });
       }

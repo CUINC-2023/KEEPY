@@ -1,5 +1,9 @@
 import type { DemoSynthesis } from "./demo-player-model";
-import { isLocalSummary } from "./local-summary-contract.mjs";
+import {
+  isLocalSummary,
+  unreadableLocalResponse,
+  isDefiniteLocalRejection,
+} from "./local-summary-contract.mjs";
 export interface LocalRevenue {
   basis: string;
   rows: {
@@ -134,9 +138,7 @@ export async function localApi<T>(
         }),
   });
   const value = await response.json().catch(() => {
-    const error = Object.assign(new Error("Local Test API unavailable / 本機 API 不可用"), {
-      status: response.status,
-    });
+    const error = unreadableLocalResponse(response.status);
     if (response.status === 401 && sessionGeneration === refreshSerial)
       clearLocalSession(error.message);
     throw error;
@@ -152,7 +154,7 @@ export async function localApi<T>(
   if (!response.ok)
     throw Object.assign(
       new Error(String(response.status) + " · " + (value.message ?? "Local Test unavailable")),
-      { status: response.status },
+      { status: response.status, code: value?.code },
     );
   if (path === "/me" && !isLocalSummary(value)) {
     if (sessionGeneration === refreshSerial)
@@ -442,13 +444,7 @@ async function commandLocal(path: string, body: unknown, method = "POST") {
   try {
     result = await localApi(path, request.body, method, request.key);
   } catch (error) {
-    if (
-      error instanceof Error &&
-      "status" in error &&
-      typeof error.status === "number" &&
-      error.status >= 400 &&
-      error.status < 500
-    ) {
+    if (isDefiniteLocalRejection(error)) {
       sessionStorage.removeItem(slot);
       await refreshLocalTest();
     }
@@ -494,14 +490,7 @@ export async function retryLocalCommands() {
         await localApi(path, request.body, path === "/admin/content" ? "PUT" : "POST", request.key);
         sessionStorage.removeItem(slot);
       } catch (error) {
-        if (
-          error instanceof Error &&
-          "status" in error &&
-          typeof error.status === "number" &&
-          error.status >= 400 &&
-          error.status < 500
-        )
-          sessionStorage.removeItem(slot);
+        if (isDefiniteLocalRejection(error)) sessionStorage.removeItem(slot);
         throw error;
       }
     }

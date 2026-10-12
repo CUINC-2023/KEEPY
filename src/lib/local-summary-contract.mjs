@@ -12,6 +12,25 @@ const fields = [
   "assetEvents",
   "ledger",
 ];
+/** Successful HTTP with an unreadable body is ambiguous: never mark it as a definite rejection. */
+export function unreadableLocalResponse(status) {
+  return Object.assign(
+    new Error(
+      "Local response unreadable; confirm the original operation / 本機回應無法讀取，請確認原操作",
+    ),
+    status >= 400 ? { status } : {},
+  );
+}
+export function isDefiniteLocalRejection(error) {
+  const status = error?.status;
+  return (
+    Number.isInteger(status) &&
+    status >= 400 &&
+    status < 500 &&
+    ![401, 403].includes(status) &&
+    error?.code !== "actor-changed"
+  );
+}
 /** Validate the current Local Test identity projection, not an authorization grant or stored actor. */
 export function isLocalSummary(v) {
   if (
