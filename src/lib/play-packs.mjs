@@ -75,6 +75,10 @@ export function playPackIssues(pack) {
   if (new Set(questions.map((q) => q?.id)).size !== questions.length)
     issues.push("duplicate-question");
   for (const q of questions) {
+    if (!q || typeof q !== "object") {
+      issues.push("question-schema");
+      continue;
+    }
     if (
       !q ||
       !bilingual(q.prompt) ||
@@ -87,9 +91,9 @@ export function playPackIssues(pack) {
       !Array.isArray(q?.options) ||
       q.options.length < 2 ||
       q.options.length > 6 ||
-      new Set(q.options.map((o) => o.id)).size !== q.options.length ||
-      !q.options.every((o) => bilingual(o.label)) ||
-      !q.options.some((o) => o.id === q.answer)
+      new Set(q.options.map((o) => o?.id)).size !== q.options.length ||
+      !q.options.every((o) => o && typeof o.id === "string" && bilingual(o.label)) ||
+      !q.options.some((o) => o?.id === q.answer)
     )
       issues.push("answer-or-options");
     const theme = COLLECTION_THEMES.find((t) => t.id === q?.sourceRef?.templateId);
@@ -98,7 +102,7 @@ export function playPackIssues(pack) {
       q.sourceRef.version !== theme.version ||
       !Number.isInteger(q.sourceRef.chapter) ||
       q.sourceRef.chapter < 1 ||
-      q.sourceRef.chapter > theme.cardStories?.length
+      q.sourceRef.chapter > (theme.cardStories?.length ?? 0)
     )
       issues.push("source-relation");
     if (
@@ -109,4 +113,32 @@ export function playPackIssues(pack) {
       issues.push("material-or-answer");
   }
   return [...new Set(issues)];
+}
+export function playPackHealth(packs = PLAY_CONTENT_PACKS) {
+  const seen = new Map(),
+    ids = packs.map((p) => p?.id);
+  for (const p of packs)
+    for (const q of Array.isArray(p?.questions) ? p.questions : []) {
+      if (!q || typeof q !== "object") continue;
+      const key = JSON.stringify([q.mode, q.prompt, q.options, q.answer, q.material]);
+      seen.set(key, (seen.get(key) ?? 0) + 1);
+    }
+  return {
+    schema: 1,
+    readOnly: true,
+    publicationApproval: false,
+    packs: packs.map((p) => ({
+      id: p?.id ?? "unknown",
+      version: p?.version ?? null,
+      questionCount: Array.isArray(p?.questions) ? p.questions.length : 0,
+      issues: [
+        ...playPackIssues(p),
+        ...(ids.filter((id) => id === p?.id).length > 1 ? ["duplicate-pack"] : []),
+      ],
+      sharedQuestionLayouts: (Array.isArray(p?.questions) ? p.questions : []).filter(
+        (q) =>
+          q && seen.get(JSON.stringify([q.mode, q.prompt, q.options, q.answer, q.material])) > 1,
+      ).length,
+    })),
+  };
 }

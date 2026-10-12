@@ -180,6 +180,26 @@ export function CatalogueIntegrity() {
             )}
           </section>
           {data.profileChecks && (
+            <aside data-play-quality className="space-y-3 rounded-xl border p-4">
+              <h3 className="font-bold">
+                {t("題組品質：唯讀／未核准", "Question quality: read-only / unapproved")}
+              </h3>
+              <p>
+                {t(
+                  "重複版型是內容核對提示，不自動裁定正式審核政策。指定版預覽與發布仍分開。報告不含私人題文、答案或帳戶。",
+                  "Repeated layouts are review hints, not an automatic formal review policy. Specified-version previews and publication stay separate. Reports omit private prose, answers and accounts.",
+                )}
+              </p>
+              {data.playPacks?.packs.map((p) => (
+                <p key={p.id}>
+                  {p.id} · v{p.version} · {p.questionCount} ·{" "}
+                  {p.issues.join(" / ") || t("必要欄位完整", "Required fields complete")} ·{" "}
+                  {t("共用題目版型", "Reused question layouts")}: {p.sharedQuestionLayouts}
+                </p>
+              ))}
+            </aside>
+          )}
+          {data.profileChecks && (
             <aside data-profile-repair-preview className="space-y-2 rounded-xl border p-4">
               <h3 className="font-bold">
                 {t(

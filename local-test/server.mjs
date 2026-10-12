@@ -8,7 +8,7 @@ import {
 import { seasonRankings, albumRankings } from "./collection-rankings.mjs";
 import { collectionHistory, collectionRecap } from "./collection-history.mjs";
 import { playMe, playCommand } from "./play.mjs";
-import { PLAY_CONTENT_PACKS, playPackIssues } from "../src/lib/play-packs.mjs";
+import { PLAY_CONTENT_PACKS, playPackIssues, playPackHealth } from "../src/lib/play-packs.mjs";
 import { readingMe, readingCommand, discoverySearch } from "./discovery.mjs";
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
@@ -156,6 +156,7 @@ export function createLocalServer(database, { port = 8787, webPort = 8083 } = {}
             CREATOR_CONTENT_TEMPLATES,
           ),
           profileChecks: collectionProfileHealth(database, token),
+          playPacks: playPackHealth(),
         });
       }
       if (req.method === "POST" && path === "/collection/profile-preview")
@@ -182,6 +183,25 @@ export function createLocalServer(database, { port = 8787, webPort = 8083 } = {}
           synthetic: true,
           publicationApproval: false,
           packs: PLAY_CONTENT_PACKS.map((pack) => ({ ...pack, issues: playPackIssues(pack) })),
+        });
+      }
+      if (req.method === "GET" && path === "/admin/play/preview") {
+        database.official(token);
+        const keys = [...url.searchParams.keys()];
+        if (keys.some((k) => !["id", "version"].includes(k)))
+          throw new ApiError(422, "play", "Unknown preview fields");
+        const pack = PLAY_CONTENT_PACKS.find((p) => p.id === url.searchParams.get("id"));
+        if (!pack) throw new ApiError(404, "play", "Sample pack unavailable");
+        if (String(pack.version) !== url.searchParams.get("version"))
+          throw new ApiError(409, "play", "Specified pack version changed");
+        return send(200, {
+          schema: 1,
+          id: pack.id,
+          version: pack.version,
+          readOnly: true,
+          publicationApproval: false,
+          issues: playPackIssues(pack),
+          questionCount: pack.questions.length,
         });
       }
       if (req.method === "GET" && path === "/admin/supply") {

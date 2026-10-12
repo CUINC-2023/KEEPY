@@ -17,13 +17,17 @@ export function PlayPackPreview() {
     [error, setError] = useState(false),
     [retry, setRetry] = useState(0),
     [selected, setSelected] = useState(""),
-    [answers, setAnswers] = useState<Record<string, string>>({});
+    [answers, setAnswers] = useState<Record<string, string>>({}),
+    [previewed, setPreviewed] = useState(""),
+    [previewBusy, setPreviewBusy] = useState(false);
   useEffect(() => {
     const c = new AbortController();
     setData(null);
     setError(false);
     setSelected("");
     setAnswers({});
+    setPreviewed("");
+    setPreviewBusy(false);
     if (official)
       void localApi<{ packs: (PlayContentPack & { issues: string[] })[] }>(
         "/admin/play/packs",
@@ -93,6 +97,39 @@ export function PlayPackPreview() {
       )}
       {pack && (
         <div data-play-pack-details>
+          <Button
+            disabled={previewBusy}
+            onClick={async () => {
+              const epoch = localSessionGeneration();
+              setPreviewBusy(true);
+              try {
+                await localApi(
+                  "/admin/play/preview?id=" +
+                    encodeURIComponent(pack.id) +
+                    "&version=" +
+                    pack.version,
+                );
+                if (epoch === localSessionGeneration()) setPreviewed(pack.id + ":" + pack.version);
+              } catch {
+                if (epoch === localSessionGeneration()) {
+                  setData(null);
+                  setError(true);
+                }
+              } finally {
+                if (epoch === localSessionGeneration()) setPreviewBusy(false);
+              }
+            }}
+          >
+            {t("核對指定題組版本", "Check the specified question-pack version")}
+          </Button>
+          {previewed === pack.id + ":" + pack.version && (
+            <p role="status">
+              {t(
+                "此指定版本已核對，未核准發布。",
+                "Specified version checked; publication is not approved.",
+              )}
+            </p>
+          )}
           <p>
             {pack.id} · v{pack.version} ·{" "}
             {pack.issues.length

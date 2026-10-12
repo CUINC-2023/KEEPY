@@ -23,3 +23,16 @@ export interface PlayContentPack {
 }
 export const PLAY_CONTENT_PACKS: PlayContentPack[];
 export function playPackIssues(pack: unknown): string[];
+export interface PlayPackHealth {
+  schema: 1;
+  readOnly: true;
+  publicationApproval: false;
+  packs: {
+    id: string;
+    version: number | null;
+    questionCount: number;
+    issues: string[];
+    sharedQuestionLayouts: number;
+  }[];
+}
+export function playPackHealth(packs?: unknown[]): PlayPackHealth;
