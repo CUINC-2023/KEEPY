@@ -1,7 +1,7 @@
 import { COLLECTION_THEMES } from "./collection-samples.mjs";
 const bi = (zh, en) => ({ "zh-TW": zh, en });
-export const PLAY_CONTENT_PACKS = COLLECTION_THEMES.filter((t) =>
-  t.id.startsWith("local-demo-121-"),
+export const PLAY_CONTENT_PACKS = COLLECTION_THEMES.filter(
+  (t) => t.id.startsWith("local-demo-121-") || t.id.startsWith("local-demo-156-"),
 ).map((t) => ({
   id: "play-pack-" + t.id,
   version: 1,
