@@ -530,6 +530,8 @@ export function previewCollectionProfile(d, token, input) {
   const u = d.actor(token);
   if (!input || Object.keys(input).sort().join(",") !== "data,expectedVersion")
     fail("Expected profile and version");
+  if (!Number.isSafeInteger(input.expectedVersion) || input.expectedVersion < 0)
+    fail("Non-negative integer version required");
   const row = d.db.prepare("SELECT * FROM collection_profiles WHERE user_id=?").get(u.id);
   if (row.version !== input.expectedVersion) fail("Profile changed; reload", 409);
   validateProfile(d, u, input.data);
@@ -543,6 +545,8 @@ export function saveCollectionProfile(d, token, input, key) {
   return d.mutation(token, input, key, "collection-profile", (u) => {
     if (!input || Object.keys(input).sort().join(",") !== "data,expectedVersion")
       fail("Expected profile and version");
+    if (!Number.isSafeInteger(input.expectedVersion) || input.expectedVersion < 0)
+      fail("Non-negative integer version required");
     const row = d.db.prepare("SELECT * FROM collection_profiles WHERE user_id=?").get(u.id);
     if (row.version !== input.expectedVersion) fail("Profile changed; reload", 409);
     const p = input.data;

@@ -1,4 +1,5 @@
 import type { DemoSynthesis } from "./demo-player-model";
+import { isLocalSummary } from "./local-summary-contract.mjs";
 export interface LocalRevenue {
   basis: string;
   rows: {
@@ -144,7 +145,7 @@ export async function localApi<T>(
     clearLocalSession("401 · Local Test session expired / 測試 Session 已失效");
   if (
     response.status === 409 &&
-    value.code === "actor-changed" &&
+    value?.code === "actor-changed" &&
     sessionGeneration === refreshSerial
   )
     clearLocalSession("409 · Session changed; reload your identity / 身分已變更，請重新讀取");
@@ -153,6 +154,11 @@ export async function localApi<T>(
       new Error(String(response.status) + " · " + (value.message ?? "Local Test unavailable")),
       { status: response.status },
     );
+  if (path === "/me" && !isLocalSummary(value)) {
+    if (sessionGeneration === refreshSerial)
+      clearLocalSession("Invalid Local Test identity response / 本機身分讀取格式不符");
+    throw new Error("Invalid Local Test identity response / 本機身分讀取格式不符");
+  }
   return value as T;
 }
 function adapt(summary: Summary): DemoPlayerState {

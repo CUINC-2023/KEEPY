@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { LocalDatabase } from "../local-test/database.mjs";
 import { loadCatalog } from "../local-test/catalog.mjs";
 import { createLocalServer } from "../local-test/server.mjs";
+import { isLocalSummary } from "../src/lib/local-summary-contract.mjs";
 const d = new LocalDatabase(
     join(mkdtempSync(join(tmpdir(), "keepy-actor-")), "qa.sqlite"),
     await loadCatalog(),
@@ -16,6 +17,21 @@ try {
     b = d.session("member-b"),
     o = d.session("official-a"),
     me = d.collectionMe(a);
+  const summary = d.summary(a);
+  assert.equal(isLocalSummary(summary), true);
+  assert.equal(isLocalSummary({ ...summary, tokenHash: "private" }), false);
+  assert.equal(isLocalSummary({ ...summary, user: { ...summary.user, role: "superuser" } }), false);
+  assert.equal(
+    isLocalSummary({ ...summary, holdings: [{ user_id: "member-b", card_id: "known", count: 1 }] }),
+    false,
+  );
+  assert.equal(
+    isLocalSummary({
+      ...summary,
+      holdings: [{ user_id: "member-a", card_id: "known", count: -1 }],
+    }),
+    false,
+  );
   const request = async (path, token, actor, body) => {
     const r = await fetch("http://127.0.0.1:" + server.address().port + "/api/local-test" + path, {
       headers: {
