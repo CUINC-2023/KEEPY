@@ -20,18 +20,31 @@ export function PuzzlePlay({ me }: { me: CollectionMe }) {
   usePlayRoundLifecycle(me.actorId, "puzzle", !!round && !round.complete);
   const card = cards.find((c) => c.cardId === (round?.cardId ?? cardId)),
     art = card && cardsByPool(card.poolId).find((c) => c.id === card.cardId)?.art;
+  const focusTarget = round
+    ? round.paused
+      ? "[data-puzzle-pause]"
+      : round.complete
+        ? "[data-play-save] button"
+        : "[data-puzzle-index]"
+    : "";
   useEffect(() => {
-    if (round)
-      root.current
-        ?.querySelector<HTMLButtonElement>(
-          round.paused
-            ? "[data-puzzle-pause]"
-            : round.complete
-              ? "[data-play-save] button"
-              : "[data-puzzle-index]",
-        )
-        ?.focus({ preventScroll: true });
-  }, [round?.events.length, round?.paused, round?.complete]);
+    if (focusTarget)
+      root.current?.querySelector<HTMLButtonElement>(focusTarget)?.focus({ preventScroll: true });
+  }, [focusTarget, round?.events.length]);
+  function act(event: Parameters<typeof puzzleAction>[1]) {
+    try {
+      if (round) setRound(puzzleAction(round, event));
+    } catch {
+      setRound(null);
+      setSelected(null);
+      setError(
+        t(
+          "已達本局操作上限，拼圖安全中止；可重新開始，不保存不完整結果。",
+          "This round reached its action limit and ended safely. Start again; incomplete results are not saved.",
+        ),
+      );
+    }
+  }
   return (
     <section
       ref={root}
@@ -119,7 +132,7 @@ export function PuzzlePlay({ me }: { me: CollectionMe }) {
               variant="outline"
               onClick={() => {
                 setSelected(null);
-                setRound(puzzleAction(round, { type: "pause" }));
+                act({ type: "pause" });
               }}
             >
               {round.paused ? t("繼續拼圖", "Resume puzzle") : t("暫停拼圖", "Pause puzzle")}
@@ -170,9 +183,7 @@ export function PuzzlePlay({ me }: { me: CollectionMe }) {
                       onClick={() => {
                         if (selected === null) setSelected(index);
                         else {
-                          setRound(
-                            puzzleAction(round, { type: "swap", from: selected, to: index }),
-                          );
+                          act({ type: "swap", from: selected, to: index });
                           setSelected(null);
                         }
                       }}
@@ -184,9 +195,7 @@ export function PuzzlePlay({ me }: { me: CollectionMe }) {
                     variant="outline"
                     disabled={!round.showHint && round.hintsUsed >= 3}
                     data-puzzle-hint
-                    onClick={() =>
-                      setRound(puzzleAction(round, { type: round.showHint ? "hide-hint" : "hint" }))
-                    }
+                    onClick={() => act({ type: round.showHint ? "hide-hint" : "hint" })}
                   >
                     {t("查看／收起合法卡面提示", "Show / hide eligible face hint")}
                   </Button>

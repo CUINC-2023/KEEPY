@@ -47,6 +47,32 @@ try {
   assert.ok(!JSON.stringify(report).includes("unknown-private-reference"));
   assert.equal(playMe(d, a).settings.data.journey.invalidated, true);
   assert.deepEqual(migrationInventory(path), before);
+  raw.journey.resultIds = [];
+  raw.practice = {
+    schema: 1,
+    ruleVersion: "local-practice-v1",
+    items: [{ mode: "puzzle", difficulty: "easy" }],
+    startedAt: "2026-10-04T10:00:00.000Z",
+    paused: false,
+    resultIds: ["health-owned-wrong"],
+  };
+  d.db
+    .prepare("INSERT INTO play_results(id,user_id,at,payload,proof_hash) VALUES(?,?,?,?,?)")
+    .run(
+      "health-owned-wrong",
+      "member-a",
+      "2026-10-04T10:00:00.000Z",
+      JSON.stringify({ mode: "knowledge", difficulty: "hard", sourceIds: [] }),
+      "health-isolated-proof",
+    );
+  d.db
+    .prepare("UPDATE play_private SET payload=? WHERE user_id=?")
+    .run(JSON.stringify(raw), "member-a");
+  const mismatchedBefore = migrationInventory(path);
+  assert.equal(playHealth(d, o).missingReferences, 1);
+  assert.equal(playMe(d, a).settings.data.practice.invalidated, true);
+  assert.deepEqual(migrationInventory(path), mismatchedBefore);
+  assert.ok(!JSON.stringify(playHealth(d, o)).includes("health-owned-wrong"));
   d.db
     .prepare("UPDATE play_private SET payload=? WHERE user_id=?")
     .run(JSON.stringify({ schema: 99, privateBody: "sensitive-never-report" }), "member-a");

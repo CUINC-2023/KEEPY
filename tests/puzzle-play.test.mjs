@@ -32,6 +32,11 @@ for (const difficulty of ["easy", "standard", "hard"]) {
   assert.equal(puzzleAction(s, { type: "hint" }), s);
 }
 assert.throws(() => puzzleStart([]));
+let bounded = puzzleStart(["eligible"], "easy", 17);
+for (let i = 0; i < 500; i++) bounded = puzzleAction(bounded, { type: "pause" });
+assert.equal(bounded.events.length, 500);
+assert.throws(() => puzzleAction(bounded, { type: "pause" }), /Bounded round exceeded/);
+assert.equal(bounded.events.length, 500);
 const d = new LocalDatabase(
   join(mkdtempSync(join(tmpdir(), "keepy-puzzle-")), "qa.sqlite"),
   await loadCatalog(),

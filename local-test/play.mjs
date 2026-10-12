@@ -85,17 +85,25 @@ export function playHealth(d, token) {
         report.incompatible++;
         continue;
       }
-      for (const [index, id] of [
-        ...(value.journey?.resultIds ?? []),
-        ...(value.practice?.resultIds ?? []),
-      ].entries()) {
+      const references = [
+        ...(value.journey?.resultIds ?? []).map((id, index) => ({
+          id,
+          mode: value.journey.modes[index],
+        })),
+        ...(value.practice?.resultIds ?? []).map((id, index) => ({
+          id,
+          ...value.practice.items[index],
+        })),
+      ];
+      for (const reference of references) {
         const result = d.db
           .prepare("SELECT payload FROM play_results WHERE user_id=? AND id=?")
-          .get(row.user_id, id);
+          .get(row.user_id, reference.id);
+        const payload = result ? JSON.parse(result.payload) : null;
         if (
-          !result ||
-          (index < (value.journey?.resultIds.length ?? 0) &&
-            JSON.parse(result.payload).mode !== value.journey.modes[index])
+          !payload ||
+          payload.mode !== reference.mode ||
+          (reference.difficulty && payload.difficulty !== reference.difficulty)
         )
           report.missingReferences++;
       }
