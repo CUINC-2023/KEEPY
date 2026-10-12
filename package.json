@@ -70,7 +70,8 @@
     "test:memory-advanced": "node tests/memory-advanced.test.mjs",
     "test:mixed-play-journey": "node tests/mixed-play-journey.test.mjs",
     "test:play-health": "node tests/play-health.test.mjs",
-    "test:local-request": "node tests/local-request.test.mjs"
+    "test:local-request": "node tests/local-request.test.mjs",
+    "test:puzzle-play": "node tests/puzzle-play.test.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -148,5 +149,5 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
   },
-  "version": "0.22.170"
+  "version": "0.22.171"
 }

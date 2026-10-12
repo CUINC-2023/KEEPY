@@ -8,6 +8,7 @@ import { MemoryPlay } from "./MemoryPlay";
 import { KnowledgePlay } from "./KnowledgePlay";
 import { PlayRecords } from "./PlayRecords";
 import { PlayRoundGuard } from "./PlayRoundGuard";
+import { PuzzlePlay } from "./PuzzlePlay";
 export function CollectionPlay() {
   const d = useCollection(),
     t = useDiscoveryText(),
@@ -151,6 +152,7 @@ export function CollectionPlay() {
             >
               {[
                 ["memory", t("記憶配對", "Memory matching")],
+                ["puzzle", t("卡牌拼圖", "Card puzzle")],
                 ["knowledge", t("卡冊知識", "Album knowledge")],
                 ["observation", t("收藏觀察", "Collection observation")],
                 ["records", t("旅程與私人回顧", "Journey and private review")],
@@ -184,6 +186,15 @@ export function CollectionPlay() {
                 catalogue={d.catalogue}
               />
             )}
+            <PuzzlePlay
+              key={
+                "puzzle:" +
+                legal.actorId +
+                legal.visibilityKey +
+                legal.cards.map((c) => c.cardId + ":" + c.cardVersion).join(",")
+              }
+              me={legal}
+            />
             <MemoryPlay
               key={
                 "memory:" +

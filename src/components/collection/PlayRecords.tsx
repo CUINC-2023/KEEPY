@@ -5,6 +5,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import { localApi, localSessionGeneration, localTestState } from "@/lib/local-test-client";
 import { isPlayProjection } from "@/lib/play-contract.mjs";
+import { PLAY_MODES } from "@/lib/collection-play.mjs";
 import {
   discoveryCommand,
   retryDiscoveryCommand,
@@ -168,7 +169,9 @@ export function PlayRecords({
         ? t("卡冊知識", "Album knowledge")
         : id === "observation"
           ? t("收藏觀察", "Collection observation")
-          : t("全部", "All");
+          : id === "puzzle"
+            ? t("卡牌拼圖", "Card puzzle")
+            : t("全部", "All");
   useEffect(() => {
     const c = new AbortController(),
       epoch = localSessionGeneration();
@@ -278,7 +281,7 @@ export function PlayRecords({
             setPage(1);
           }}
         >
-          {["all", "memory", "knowledge", "observation"].map((id) => (
+          {["all", ...PLAY_MODES].map((id) => (
             <option key={id} value={id}>
               {modeLabel(id)}
             </option>

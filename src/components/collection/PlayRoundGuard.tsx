@@ -3,6 +3,7 @@ import { useBlocker } from "@tanstack/react-router";
 import { hasPendingDiscovery } from "@/lib/discovery-store";
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { PLAY_MODES } from "@/lib/collection-play.mjs";
 export function PlayRoundGuard({ actor }: { actor: string }) {
   const t = useDiscoveryText(),
     [active, setActive] = useState<string[]>([]);
@@ -11,7 +12,7 @@ export function PlayRoundGuard({ actor }: { actor: string }) {
       const data = (event as CustomEvent).detail;
       if (
         data?.actor !== actor ||
-        !["memory", "knowledge", "observation"].includes(data.mode) ||
+        !PLAY_MODES.includes(data.mode) ||
         typeof data.active !== "boolean"
       )
         return;

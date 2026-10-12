@@ -11,6 +11,11 @@ import {
 } from "../src/lib/collection-play.mjs";
 import { playQuestions, quizStart, quizAnswer } from "../src/lib/play-questions.mjs";
 import { validStoredPlaySettings } from "../src/lib/play-contract.mjs";
+import {
+  PUZZLE_RULE_VERSION,
+  puzzleStart,
+  puzzleAction,
+} from "../src/lib/collection-extra-play.mjs";
 const fail = (d, status, message) => {
   throw new d.constructor.DiscoveryError(status, "play", message);
 };
@@ -308,10 +313,15 @@ export function playCommand(d, token, input, key) {
           .join() !==
           "cardIds,cardVersions,difficulty,events,mode,ruleVersion,seed,visibilityKey" ||
         !(
-          (proof.ruleVersion === PLAY_RULE_VERSION && proof.memoryConfig === undefined) ||
+          (proof.ruleVersion === PLAY_RULE_VERSION &&
+            ["memory", "knowledge", "observation"].includes(proof.mode) &&
+            proof.memoryConfig === undefined) ||
           (proof.mode === "memory" &&
             proof.ruleVersion === MEMORY_RULE_VERSION &&
-            validMemoryConfig(proof.memoryConfig))
+            validMemoryConfig(proof.memoryConfig)) ||
+          (proof.mode === "puzzle" &&
+            proof.ruleVersion === PUZZLE_RULE_VERSION &&
+            proof.memoryConfig === undefined)
         ) ||
         !PLAY_MODES.includes(proof.mode) ||
         !PLAY_DIFFICULTIES.includes(proof.difficulty) ||
@@ -340,7 +350,16 @@ export function playCommand(d, token, input, key) {
         fail(d, 422, "Only current eligible held designs");
       let state;
       try {
-        if (proof.mode === "memory") {
+        if (proof.mode === "puzzle") {
+          state = puzzleStart(proof.cardIds, proof.difficulty, proof.seed);
+          for (const event of proof.events) {
+            if (!event || Object.keys(event).some((key) => !["type", "from", "to"].includes(key)))
+              throw Error("Invalid puzzle event");
+            const next = puzzleAction(state, event);
+            if (next === state) throw Error("Invalid puzzle event");
+            state = next;
+          }
+        } else if (proof.mode === "memory") {
           state = memoryStart(
             proof.cardIds,
             proof.difficulty,
@@ -383,12 +402,19 @@ export function playCommand(d, token, input, key) {
           : {}),
         sourceVersion: cat.version,
         sourceIds: proof.cardIds,
-        moves: proof.mode === "memory" ? state.moves : null,
+        moves: ["memory", "puzzle"].includes(proof.mode) ? state.moves : null,
         correct:
-          proof.mode === "memory"
-            ? state.cardIds.length
-            : state.answers.filter((a, i) => a === state.questions[i].answer).length,
-        total: proof.mode === "memory" ? state.cardIds.length : state.questions.length,
+          proof.mode === "puzzle"
+            ? state.tiles.length
+            : proof.mode === "memory"
+              ? state.cardIds.length
+              : state.answers.filter((a, i) => a === state.questions[i].answer).length,
+        total:
+          proof.mode === "puzzle"
+            ? state.tiles.length
+            : proof.mode === "memory"
+              ? state.cardIds.length
+              : state.questions.length,
       };
       const id = randomUUID();
       d.db

@@ -70,7 +70,9 @@ const row = (v) =>
   integer(v.total, 1) &&
   v.total <= 120 &&
   v.correct <= v.total &&
-  (v.mode === "memory" ? integer(v.moves, 1) && v.moves <= 500 : v.moves === null);
+  (["memory", "puzzle"].includes(v.mode)
+    ? integer(v.moves, 1) && v.moves <= 500
+    : v.moves === null);
 /** Read-only projection whitelist; legacy rule labels are retained, never promoted to current rules. */
 export function isPlayProjection(v) {
   return (
