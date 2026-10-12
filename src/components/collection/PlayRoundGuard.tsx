@@ -12,7 +12,7 @@ export function PlayRoundGuard({ actor }: { actor: string }) {
       const data = (event as CustomEvent).detail;
       if (
         data?.actor !== actor ||
-        !PLAY_MODES.includes(data.mode) ||
+        ![...PLAY_MODES, "practice-draft"].includes(data.mode) ||
         typeof data.active !== "boolean"
       )
         return;
@@ -33,8 +33,8 @@ export function PlayRoundGuard({ actor }: { actor: string }) {
       open={blocker.status === "blocked"}
       title={t("離開目前遊玩？", "Leave current play?")}
       description={t(
-        "進行中的本機進度將捨棄；已保存紀錄保持。未確認操作的原key保留，返回本人後可確認，不建立新重送。取消可繼續此局。",
-        "In-progress local rounds will be discarded; saved records remain. An unconfirmed operation retains its original key for confirmation on returning to your account, without a new request. Cancel to continue the round.",
+        "進行中的本機進度與未保存練習清單將捨棄；已保存紀錄保持。未確認操作的原key保留，返回本人後可確認，不建立新重送。取消可繼續此局。",
+        "In-progress local rounds and unsaved practice lists will be discarded; saved records remain. An unconfirmed operation retains its original key for confirmation on returning to your account, without a new request. Cancel to continue the round.",
       )}
       confirmLabel={t("離開遊玩頁", "Leave play page")}
       cancelLabel={t("繼續此局", "Continue this round")}

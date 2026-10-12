@@ -11,6 +11,8 @@ import {
   retryDiscoveryCommand,
   hasPendingDiscovery,
 } from "@/lib/discovery-store";
+import { PracticePlan } from "./PracticePlan";
+import { usePlayRoundLifecycle } from "@/lib/play-round-lifecycle";
 export interface PlayProof {
   memoryConfig?: import("@/lib/collection-play.mjs").MemoryConfig;
   mode: string;
@@ -33,6 +35,7 @@ export interface PlayPrivate {
       schema: 1;
       lastMode: string;
       difficulty: string;
+      practice?: import("@/lib/play-practice.mjs").PracticeProjection;
       journey?: {
         schema: 1;
         ruleVersion: string;
@@ -159,9 +162,21 @@ export function PlayRecords({
     [mode, setMode] = useState("all"),
     [busy, setBusy] = useState(false),
     [clear, setClear] = useState(false),
+    [practiceDraft, setPracticeDraft] = useState<
+      import("@/lib/play-practice.mjs").PracticeItem[] | null
+    >(null),
     [journeyOrder, setJourneyOrder] = useState("memory,knowledge,observation"),
     [restartJourney, setRestartJourney] = useState(false);
   const pending = hasPendingDiscovery("/play/commands");
+  usePlayRoundLifecycle(actor, "practice-draft", continuePlay && practiceDraft !== null);
+  useEffect(() => {
+    if (
+      snapshot &&
+      practiceDraft !== null &&
+      JSON.stringify(snapshot.settings.data.practice?.items ?? []) === JSON.stringify(practiceDraft)
+    )
+      setPracticeDraft(null);
+  }, [snapshot, practiceDraft]);
   const modeLabel = (id: string) =>
     id === "memory"
       ? t("記憶配對", "Memory matching")
@@ -203,7 +218,7 @@ export function PlayRecords({
     return () => window.removeEventListener("keepy-play-readback", read);
   }, []);
   const command = async (
-    action: "settings" | "clear" | "journey",
+    action: "settings" | "clear" | "journey" | "practice",
     data: unknown,
     replay = false,
   ) => {
@@ -311,6 +326,15 @@ export function PlayRecords({
         <p role="status">{t("讀取本人紀錄中…", "Loading your records…")}</p>
       ) : (
         <>
+          <PracticePlan
+            key={snapshot.settings.version}
+            snapshot={snapshot}
+            busy={busy || pending}
+            editable={continuePlay}
+            draft={practiceDraft}
+            onDraft={setPracticeDraft}
+            onCommand={(data) => void command("practice", data)}
+          />
           <section className="rounded border p-3 space-y-3" data-mixed-play-journey>
             <h3 className="font-bold">{t("私人混合遊玩旅程", "Private mixed play journey")}</h3>
             <p>

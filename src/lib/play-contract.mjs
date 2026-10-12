@@ -1,3 +1,4 @@
+import { validPracticeStored, validPracticeProjection } from "./play-practice.mjs";
 import { PLAY_MODES, PLAY_DIFFICULTIES } from "./collection-play.mjs";
 import { MEMORY_RULE_VERSION, validMemoryConfig } from "./collection-play.mjs";
 const exact = (v, keys) =>
@@ -15,12 +16,14 @@ export function validStoredPlaySettings(v) {
       "lastMode",
       "difficulty",
       ...(v?.journey !== undefined ? ["journey"] : []),
+      ...(v?.practice !== undefined ? ["practice"] : []),
     ]) ||
     v.schema !== 1 ||
     !PLAY_MODES.includes(v.lastMode) ||
     !PLAY_DIFFICULTIES.includes(v.difficulty)
   )
     return false;
+  if (v.practice !== undefined && !validPracticeStored(v.practice)) return false;
   const j = v.journey;
   return (
     j === undefined ||
@@ -102,6 +105,7 @@ export function isPlayProjection(v) {
       "lastMode",
       "difficulty",
       ...(v.settings.data?.journey ? ["journey"] : []),
+      ...(v.settings.data?.practice !== undefined ? ["practice"] : []),
     ]) &&
     (!v.settings.data.journey ||
       (exact(v.settings.data.journey, [
@@ -128,6 +132,7 @@ export function isPlayProjection(v) {
         typeof v.settings.data.journey.invalidated === "boolean" &&
         integer(v.settings.data.journey.completed) &&
         v.settings.data.journey.completed <= v.settings.data.journey.modes.length)) &&
+    (v.settings.data.practice === undefined || validPracticeProjection(v.settings.data.practice)) &&
     v.settings.data.schema === 1 &&
     PLAY_MODES.includes(v.settings.data.lastMode) &&
     PLAY_DIFFICULTIES.includes(v.settings.data.difficulty) &&

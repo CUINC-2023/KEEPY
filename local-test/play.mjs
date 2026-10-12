@@ -10,6 +10,7 @@ import {
   PLAY_DIFFICULTIES,
 } from "../src/lib/collection-play.mjs";
 import { playQuestions, quizStart, quizAnswer } from "../src/lib/play-questions.mjs";
+import { validPracticeItems } from "../src/lib/play-practice.mjs";
 import { validStoredPlaySettings } from "../src/lib/play-contract.mjs";
 import {
   PUZZLE_RULE_VERSION,
@@ -84,11 +85,18 @@ export function playHealth(d, token) {
         report.incompatible++;
         continue;
       }
-      for (const [index, id] of (value.journey?.resultIds ?? []).entries()) {
+      for (const [index, id] of [
+        ...(value.journey?.resultIds ?? []),
+        ...(value.practice?.resultIds ?? []),
+      ].entries()) {
         const result = d.db
           .prepare("SELECT payload FROM play_results WHERE user_id=? AND id=?")
           .get(row.user_id, id);
-        if (!result || JSON.parse(result.payload).mode !== value.journey.modes[index])
+        if (
+          !result ||
+          (index < (value.journey?.resultIds.length ?? 0) &&
+            JSON.parse(result.payload).mode !== value.journey.modes[index])
+        )
           report.missingReferences++;
       }
     } catch {
@@ -119,6 +127,32 @@ function journeyProjection(d, id, journey, owner) {
     startedAt: journey.startedAt,
     paused: journey.paused,
     completed: valid ? journey.resultIds.length : 0,
+    invalidated: !valid,
+  };
+}
+function practiceProjection(d, id, p, owner) {
+  if (!p) return null;
+  const allowed = new Set(owner.cards.map((c) => c.cardId));
+  const valid = p.resultIds.every((resultId, i) => {
+    const row = d.db
+      .prepare("SELECT payload FROM play_results WHERE user_id=? AND id=?")
+      .get(id, resultId);
+    if (!row) return false;
+    const r = JSON.parse(row.payload);
+    return (
+      r.mode === p.items[i].mode &&
+      r.difficulty === p.items[i].difficulty &&
+      r.sourceIds.length > 0 &&
+      r.sourceIds.every((id) => allowed.has(id))
+    );
+  });
+  return {
+    schema: 1,
+    ruleVersion: p.ruleVersion,
+    items: p.items,
+    startedAt: p.startedAt,
+    paused: p.paused,
+    completed: valid ? p.resultIds.length : 0,
     invalidated: !valid,
   };
 }
@@ -184,6 +218,7 @@ export function playMe(d, token, params = {}) {
     }
   const privateSettings = settings(d, u.id);
   const journey = journeyProjection(d, u.id, privateSettings.data.journey, owner);
+  const practice = practiceProjection(d, u.id, privateSettings.data.practice, owner);
   return {
     schema: 1,
     source: "local-SQLite-private-play",
@@ -196,6 +231,7 @@ export function playMe(d, token, params = {}) {
         lastMode: privateSettings.data.lastMode,
         difficulty: privateSettings.data.difficulty,
         ...(journey ? { journey } : {}),
+        ...(practice ? { practice } : {}),
       },
     },
     page: p,
@@ -246,7 +282,7 @@ export function playCommand(d, token, input, key) {
   const u = actor(d, token);
   if (
     !input ||
-    !["result", "settings", "clear", "journey"].includes(input.action) ||
+    !["result", "settings", "clear", "journey", "practice"].includes(input.action) ||
     Object.keys(input).some((k) => !["action", "expectedVersion", "data"].includes(k))
   )
     fail(d, 422, "Invalid play command");
@@ -266,8 +302,48 @@ export function playCommand(d, token, input, key) {
       )
         fail(d, 422, "Invalid play settings");
       result = {
-        settings: { ...v, ...(prior.data.journey ? { journey: prior.data.journey } : {}) },
+        settings: { ...prior.data, ...v },
       };
+    } else if (input.action === "practice") {
+      const v = input.data;
+      if (
+        !v ||
+        Object.keys(v).sort().join() !== "cancel,items,paused,restart" ||
+        typeof v.cancel !== "boolean" ||
+        typeof v.paused !== "boolean" ||
+        typeof v.restart !== "boolean"
+      )
+        fail(d, 422, "Invalid practice command");
+      if (v.cancel) {
+        if (!Array.isArray(v.items) || v.items.length || v.paused || v.restart)
+          fail(d, 422, "Explicit plan-only cancellation required");
+        const data = { ...prior.data };
+        delete data.practice;
+        result = { settings: data };
+      } else {
+        if (!validPracticeItems(v.items)) fail(d, 422, "Invalid bounded practice items");
+        if (
+          !v.restart &&
+          (!prior.data.practice ||
+            JSON.stringify(prior.data.practice.items) !== JSON.stringify(v.items))
+        )
+          fail(d, 409, "Practice changed; reload");
+        result = {
+          settings: {
+            ...prior.data,
+            practice: v.restart
+              ? {
+                  schema: 1,
+                  ruleVersion: "local-practice-v1",
+                  items: v.items,
+                  startedAt: d.at(),
+                  paused: v.paused,
+                  resultIds: [],
+                }
+              : { ...prior.data.practice, paused: v.paused },
+          },
+        };
+      }
     } else if (input.action === "journey") {
       const v = input.data;
       if (
@@ -453,6 +529,20 @@ export function playCommand(d, token, input, key) {
             ? { ...prior.data, journey: { ...journey, resultIds: [...journey.resultIds, id] } }
             : prior.data,
       };
+      const p = prior.data.practice,
+        practiceProgress = practiceProjection(d, u.id, p, owner),
+        item = p?.items[p.resultIds.length];
+      if (
+        p &&
+        !p.paused &&
+        !practiceProgress.invalidated &&
+        item?.mode === proof.mode &&
+        item?.difficulty === proof.difficulty
+      )
+        result.settings = {
+          ...result.settings,
+          practice: { ...p, resultIds: [...p.resultIds, id] },
+        };
     }
     const version = prior.version + 1;
     d.db

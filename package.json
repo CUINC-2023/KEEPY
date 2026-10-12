@@ -73,7 +73,8 @@
     "test:local-request": "node tests/local-request.test.mjs",
     "test:puzzle-play": "node tests/puzzle-play.test.mjs",
     "test:sequence-play": "node tests/sequence-play.test.mjs",
-    "test:new-play-route": "node tests/new-play-route.test.mjs"
+    "test:new-play-route": "node tests/new-play-route.test.mjs",
+    "test:practice-plan": "node tests/practice-plan.test.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -151,5 +152,5 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
   },
-  "version": "0.22.173"
+  "version": "0.22.174"
 }
