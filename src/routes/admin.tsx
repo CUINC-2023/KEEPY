@@ -3,6 +3,8 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { SubNav } from "@/components/layout/SubNav";
 import { ADMIN_PERMISSION_NOTE, ADMIN_USER } from "@/data/admin";
 import { StatusTag } from "@/components/ui/status-tag";
+import { LocalRoleStatus } from "@/components/layout/LocalRoleStatus";
+import { useLocalTest } from "@/lib/local-test-client";
 
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
@@ -24,19 +26,24 @@ const ITEMS = [
 
 function AdminLayout() {
   const copy = useCopy();
+  const local = useLocalTest();
   return (
     <div className="mx-auto max-w-6xl space-y-5">
-      <div className="panel flex flex-wrap items-center gap-2 px-3 py-2.5 text-xs">
-        <span className="demo-chip">Demo</span>
-        <span className="text-muted-foreground">
-          官方管理後台骨架｜{ADMIN_USER.name}｜{ADMIN_USER.role}
-        </span>
-        <div className="ml-auto flex flex-wrap gap-1.5">
-          {ADMIN_USER.restricted.map((r) => (
-            <StatusTag key={r} tone="danger" label={`無權限：${r}`} />
-          ))}
+      {local.enabled ? (
+        <LocalRoleStatus required="official" />
+      ) : (
+        <div className="panel flex flex-wrap items-center gap-2 px-3 py-2.5 text-xs">
+          <span className="demo-chip">Demo</span>
+          <span className="text-muted-foreground">
+            官方管理後台骨架｜{ADMIN_USER.name}｜{ADMIN_USER.role}
+          </span>
+          <div className="ml-auto flex flex-wrap gap-1.5">
+            {ADMIN_USER.restricted.map((r) => (
+              <StatusTag key={r} tone="danger" label={`無權限：${r}`} />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <SubNav
         items={ITEMS.map((item) => ({
