@@ -1,10 +1,5 @@
-import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
-
-type Toast = { id: number; title: string; description?: string; tone?: "default" | "gold" };
-const ToastContext = createContext<{ push: (t: Omit<Toast, "id">) => void }>({
-  push: () => {},
-});
-export const useToast = () => useContext(ToastContext);
+import { ToastContext, Toast } from "./toast-shared";
+import { useCallback, useState, type ReactNode } from "react";
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { StatePlaceholder, StateSwitcher, useDemoState } from "@/components/ui/state-demo";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StatePlaceholder, StateSwitcher } from "@/components/ui/state-demo";
 
 export function PublicPage({
   title,
@@ -37,7 +38,22 @@ export function SectionTitle({ title, note }: { title: string; note?: string }) 
   );
 }
 
-export function TextStatus({ children, tone = "default" }: { children: ReactNode; tone?: "default" | "gold" | "live" }) {
-  const style = tone === "live" ? "border-primary/40 bg-primary/10 text-primary" : tone === "gold" ? "border-gold/40 bg-gold/10 text-gold" : "border-border bg-muted text-muted-foreground";
-  return <span className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-bold ${style}`}>{children}</span>;
+export function TextStatus({
+  children,
+  tone = "default",
+}: {
+  children: ReactNode;
+  tone?: "default" | "gold" | "live";
+}) {
+  const style =
+    tone === "live"
+      ? "border-primary/40 bg-primary/10 text-primary"
+      : tone === "gold"
+        ? "border-gold/40 bg-gold/10 text-gold"
+        : "border-border bg-muted text-muted-foreground";
+  return (
+    <span className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-bold ${style}`}>
+      {children}
+    </span>
+  );
 }

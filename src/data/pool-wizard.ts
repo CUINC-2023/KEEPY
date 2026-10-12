@@ -2,13 +2,11 @@
 // KEEPY — 七步卡池建立精靈（Phase 5B）Mock 資料與驗證
 // 全部為本地 Demo 草稿：不連後端、不真的發布、不影響既有六個卡池。
 // ─────────────────────────────────────────────────────────────
-import {
-  GRADES,
-  POOLS,
-  POOL_KIND_LABEL,
-  type PoolKind,
-  type Rarity,
-} from "@/data/mock";
+// ─────────────────────────────────────────────────────────────
+// KEEPY — 七步卡池建立精靈（Phase 5B）Mock 資料與驗證
+// 全部為本地 Demo 草稿：不連後端、不真的發布、不影響既有六個卡池。
+// ─────────────────────────────────────────────────────────────
+import { GRADES, POOLS, POOL_KIND_LABEL, type PoolKind, type Rarity } from "@/data/mock";
 
 export type MaterialStatus = "none" | "review" | "ready";
 
@@ -75,7 +73,7 @@ const zeroPlan = (): Record<Rarity, number> =>
 const zeroRates = (): Record<Rarity, { enabled: boolean; pct: number }> =>
   GRADES.reduce(
     (a, g) => ({ ...a, [g]: { enabled: false, pct: 0 } }),
-    {} as Record<Rarity, { enabled: boolean; pct: number }>
+    {} as Record<Rarity, { enabled: boolean; pct: number }>,
   );
 
 const nullRates = (): Record<Rarity, number | null> =>
@@ -138,7 +136,16 @@ const ratesFrom = (pairs: Partial<Record<Rarity, number>>) => {
 
 const BASE_PLAN = planFrom({ C: 10, U: 8, R: 7, RR: 5, RRR: 4, SR: 3, SSR: 2, HR: 1, UR: 1, O: 1 });
 const BASE_RATES = ratesFrom({
-  C: 34, U: 24, R: 16, RR: 10, RRR: 7, SR: 5, SSR: 2.5, HR: 1, UR: 0.4, O: 0.1,
+  C: 34,
+  U: 24,
+  R: 16,
+  RR: 10,
+  RRR: 7,
+  SR: 5,
+  SSR: 2.5,
+  HR: 1,
+  UR: 0.4,
+  O: 0.1,
 });
 
 export const TEMPLATE_PRESETS: Record<TemplateKey, Partial<WizardDraft>> = {
@@ -183,7 +190,8 @@ export const TEMPLATE_PRESETS: Record<TemplateKey, Partial<WizardDraft>> = {
     subtitle: "RERUN EDITION",
     slug: "p-new-rerun",
     kind: "limited",
-    description: "以既有卡池結構復刻，僅複製欄位設定，不帶入任何玩家資料。（Demo 示例文案，可自行修改）",
+    description:
+      "以既有卡池結構復刻，僅複製欄位設定，不帶入任何玩家資料。（Demo 示例文案，可自行修改）",
     startAt: "2026-12-01",
     endAt: "2027-01-15",
     cardPlan: BASE_PLAN,
@@ -213,7 +221,10 @@ export function draftFromPool(poolId: string): WizardDraft {
   const enabled = GRADES.filter((g) => rates[g].enabled);
   let left = pool.cardCount;
   enabled.forEach((g, i) => {
-    const n = i === enabled.length - 1 ? Math.max(1, left) : Math.max(1, Math.round(pool.cardCount / enabled.length));
+    const n =
+      i === enabled.length - 1
+        ? Math.max(1, left)
+        : Math.max(1, Math.round(pool.cardCount / enabled.length));
     plan[g] = n;
     left -= n;
   });
@@ -241,7 +252,8 @@ export const totalPlannedCards = (d: WizardDraft) =>
   GRADES.reduce((s, g) => s + (d.cardPlan[g] || 0), 0);
 
 export const ratesSum = (d: WizardDraft) =>
-  Math.round(GRADES.reduce((s, g) => s + (d.rates[g].enabled ? d.rates[g].pct : 0), 0) * 1000) / 1000;
+  Math.round(GRADES.reduce((s, g) => s + (d.rates[g].enabled ? d.rates[g].pct : 0), 0) * 1000) /
+  1000;
 
 /** 單張平均機率（該等級機率 / 該等級卡牌數） */
 export const perCardPct = (d: WizardDraft, g: Rarity) => {
@@ -291,30 +303,51 @@ export function validateDraft(d: WizardDraft, usedSlugs: string[]): ValidationRe
   if (!d.name.trim()) errors.push({ step: 1, field: "name", message: "卡池中文名稱為必填。" });
   if (!d.slug.trim()) errors.push({ step: 1, field: "slug", message: "poolId／slug 為必填。" });
   else if (!slugValid(d.slug))
-    errors.push({ step: 1, field: "slug", message: "slug 格式須為 p- 開頭的小寫英數與連字號（例：p-new-limited）。" });
+    errors.push({
+      step: 1,
+      field: "slug",
+      message: "slug 格式須為 p- 開頭的小寫英數與連字號（例：p-new-limited）。",
+    });
   else if (usedSlugs.includes(d.slug))
-    errors.push({ step: 1, field: "slug", message: `poolId「${d.slug}」已存在，請改用其他 slug。` });
-  if (!d.subtitle.trim()) warnings.push({ step: 1, message: "英文副標尚未填寫（僅影響封面視覺）。" });
+    errors.push({
+      step: 1,
+      field: "slug",
+      message: `poolId「${d.slug}」已存在，請改用其他 slug。`,
+    });
+  if (!d.subtitle.trim())
+    warnings.push({ step: 1, message: "英文副標尚未填寫（僅影響封面視覺）。" });
   if (!d.description.trim()) warnings.push({ step: 1, message: "卡池簡介尚未填寫。" });
 
   // Step 2
   errors.push(...validateStep2(d));
 
   // Step 3
-  if (d.goddessIds.length === 0) errors.push({ step: 3, field: "goddessIds", message: "至少需選擇 1 位參與女神。" });
+  if (d.goddessIds.length === 0)
+    errors.push({ step: 3, field: "goddessIds", message: "至少需選擇 1 位參與女神。" });
   const total = totalPlannedCards(d);
   if (total < 1) errors.push({ step: 3, field: "cardTotal", message: "卡牌總數至少需 1 張。" });
   if (d.materialStatus !== "ready")
-    warnings.push({ step: 3, message: `素材狀態為「${MATERIAL_STATUS_LABEL[d.materialStatus]}」（原型不做真實上傳）。` });
+    warnings.push({
+      step: 3,
+      message: `素材狀態為「${MATERIAL_STATUS_LABEL[d.materialStatus]}」（原型不做真實上傳）。`,
+    });
 
   // Step 4
   const sum = ratesSum(d);
   if (Math.abs(sum - 100) > 0.001)
-    errors.push({ step: 4, field: "ratesTotal", message: `已啟用等級機率總和為 ${sum}%，必須等於 100%。` });
+    errors.push({
+      step: 4,
+      field: "ratesTotal",
+      message: `已啟用等級機率總和為 ${sum}%，必須等於 100%。`,
+    });
   for (const g of GRADES) {
     const r = d.rates[g];
     if (r.enabled && r.pct > 0 && (d.cardPlan[g] || 0) < 1)
-      errors.push({ step: 4, field: `range-${g}`, message: `等級 ${g} 已啟用且機率 ${r.pct}%，但抽取範圍內沒有卡牌（至少需 1 張）。` });
+      errors.push({
+        step: 4,
+        field: `range-${g}`,
+        message: `等級 ${g} 已啟用且機率 ${r.pct}%，但抽取範圍內沒有卡牌（至少需 1 張）。`,
+      });
   }
   tbd.push("抽卡保底機制、門檻、適用等級與卡池結束後處理方式：Demo／待定");
   tbd.push("全卡池抽卡（納入範圍、跨卡池權重、分潤歸屬、機率揭露）：規劃中／尚未啟用");
@@ -323,18 +356,38 @@ export function validateDraft(d: WizardDraft, usedSlugs: string[]): ValidationRe
   if (d.synthEnabledGrades.length === 0)
     errors.push({ step: 5, field: "synthGrades", message: "至少需選擇 1 個可合成等級。" });
   if (d.synthEnabledGrades.includes("O"))
-    errors.push({ step: 5, field: "synthGrades", message: "O 為最高級，不可再往上合成，請取消 O 等級。" });
+    errors.push({
+      step: 5,
+      field: "synthGrades",
+      message: "O 為最高級，不可再往上合成，請取消 O 等級。",
+    });
   for (const g of d.synthEnabledGrades) {
     const count = d.synthMaterialCount[g];
     if (count === null)
-      errors.push({ step: 5, field: `synthCount-${g}`, message: `等級 ${g} 的素材張數尚未輸入（Demo／待定），必須填寫。` });
+      errors.push({
+        step: 5,
+        field: `synthCount-${g}`,
+        message: `等級 ${g} 的素材張數尚未輸入（Demo／待定），必須填寫。`,
+      });
     else if (!Number.isInteger(count) || count < 1)
-      errors.push({ step: 5, field: `synthCount-${g}`, message: `等級 ${g} 的素材張數必須為 1 以上的正整數。` });
+      errors.push({
+        step: 5,
+        field: `synthCount-${g}`,
+        message: `等級 ${g} 的素材張數必須為 1 以上的正整數。`,
+      });
     const rate = d.synthBaseRate[g];
     if (rate === null)
-      errors.push({ step: 5, field: `synth-${g}`, message: `等級 ${g} 的基礎成功率尚未輸入（Demo／待定），必須填寫。` });
+      errors.push({
+        step: 5,
+        field: `synth-${g}`,
+        message: `等級 ${g} 的基礎成功率尚未輸入（Demo／待定），必須填寫。`,
+      });
     else if (!Number.isFinite(rate) || rate < 0 || rate > 100)
-      errors.push({ step: 5, field: `synth-${g}`, message: `等級 ${g} 的基礎成功率必須介於 0–100%。` });
+      errors.push({
+        step: 5,
+        field: `synth-${g}`,
+        message: `等級 ${g} 的基礎成功率必須介於 0–100%。`,
+      });
   }
   if (d.synthItemBoostPct !== null && (d.synthItemBoostPct < 0 || d.synthItemBoostPct > 100))
     errors.push({ step: 5, field: "synthItemBoostPct", message: "商城道具加成必須介於 0–100%。" });
@@ -344,9 +397,14 @@ export function validateDraft(d: WizardDraft, usedSlugs: string[]): ValidationRe
   tbd.push("素材張數與各等級成功率皆為 Demo 示例，正式數值待核定。");
 
   // Step 6
-  if (!d.albumTemplateId) errors.push({ step: 6, field: "albumTemplateId", message: "請選擇卡冊範本。" });
+  if (!d.albumTemplateId)
+    errors.push({ step: 6, field: "albumTemplateId", message: "請選擇卡冊範本。" });
   if (d.albumTotalCards !== total)
-    errors.push({ step: 6, field: "albumTotalCards", message: `卡冊總數（${d.albumTotalCards}）必須與卡牌總數（${total}）一致。` });
+    errors.push({
+      step: 6,
+      field: "albumTotalCards",
+      message: `卡冊總數（${d.albumTotalCards}）必須與卡牌總數（${total}）一致。`,
+    });
 
   return { errors, warnings, tbd };
 }

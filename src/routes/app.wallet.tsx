@@ -1,3 +1,6 @@
+import { useLocalTest } from "@/lib/local-test-client";
+import { LocalAccountOverview } from "@/components/player/LocalAccountOverview";
+import { usePlayerUiText } from "@/lib/player-ui-text";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ORDERS, PLAYER, POINT_DEDUCT_NOTE, TOPUP_PLANS } from "@/data/player";
@@ -6,8 +9,9 @@ import { StatCard } from "@/components/ui/stat-card";
 import { DataTable } from "@/components/ui/data-table";
 import { StatusTag } from "@/components/ui/status-tag";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { StatePlaceholder, StateSwitcher, useDemoState } from "@/components/ui/state-demo";
-import { useToast } from "@/components/ui/toast";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StatePlaceholder, StateSwitcher } from "@/components/ui/state-demo";
+import { useToast } from "@/components/ui/toast-shared";
 
 export const Route = createFileRoute("/app/wallet")({
   head: () => ({
@@ -24,70 +28,98 @@ export const Route = createFileRoute("/app/wallet")({
 });
 
 function WalletPage() {
+  const local = useLocalTest();
+  const tx = usePlayerUiText();
   const [state, setState] = useDemoState();
   const { push } = useToast();
   const [planId, setPlanId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const plan = TOPUP_PLANS.find((p) => p.id === planId);
 
+  if (local.enabled) return <LocalAccountOverview kind="wallet" />;
   return (
     <div className="space-y-5">
       <StateSwitcher state={state} onChange={setState} />
 
       <div className="flex flex-wrap items-center gap-2">
-        <h1 className="text-xl font-black sm:text-2xl">錢包</h1>
-        <span className="demo-chip">付款與退款皆為 Demo</span>
+        <h1 className="text-xl font-black sm:text-2xl">{tx("錢包")}</h1>
+        <span className="demo-chip">{tx("付款與退款皆為 Demo")}</span>
       </div>
 
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="尚無點數紀錄" />
+        <StatePlaceholder state={state} emptyTitle={tx("尚無點數紀錄")} />
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard label="付費點數" value={PLAYER.paidPoints.toLocaleString()} tone="gold" sub="現金購買" />
-            <StatCard label="贈送點數" value={PLAYER.freePoints.toLocaleString()} sub="活動贈送（Demo）" />
-            <StatCard label="點數合計" value={(PLAYER.paidPoints + PLAYER.freePoints).toLocaleString()} sub={POINT_DEDUCT_NOTE} />
-            <StatCard label="本月 Demo 消費" value="NT$1,400" sub="僅為示意資料" tone="violet" />
+            <StatCard
+              label={tx("付費點數")}
+              value={PLAYER.paidPoints.toLocaleString()}
+              tone="gold"
+              sub={tx("現金購買")}
+            />
+            <StatCard
+              label={tx("贈送點數")}
+              value={PLAYER.freePoints.toLocaleString()}
+              sub={tx("活動贈送（Demo）")}
+            />
+            <StatCard
+              label={tx("點數合計")}
+              value={(PLAYER.paidPoints + PLAYER.freePoints).toLocaleString()}
+              sub={tx(POINT_DEDUCT_NOTE)}
+            />
+            <StatCard
+              label={tx("本月 Demo 消費")}
+              value="NT$1,400"
+              sub={tx("僅為示意資料")}
+              tone="violet"
+            />
           </div>
 
           <section className="space-y-3">
-            <h2 className="text-lg font-black">Demo 儲值方案</h2>
+            <h2 className="text-lg font-black">{tx("Demo 儲值方案")}</h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {TOPUP_PLANS.map((p) => (
                 <div key={p.id} className="panel flex flex-col p-4">
                   <div className="flex items-center gap-2">
                     <p className="font-black">{p.name}</p>
-                    {p.tag && <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-bold text-gold">{p.tag}</span>}
+                    {p.tag && (
+                      <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-bold text-gold">
+                        {p.tag}
+                      </span>
+                    )}
                   </div>
-                  <p className="mt-2 text-2xl font-black text-gold-gradient">{p.paidPoints.toLocaleString()}</p>
+                  <p className="mt-2 text-2xl font-black text-gold-gradient">
+                    {p.paidPoints.toLocaleString()}
+                  </p>
                   <p className="text-[11px] text-muted-foreground">
-                    付費點數{p.bonusPoints ? ` + 贈送 ${p.bonusPoints}` : ""}
+                    {tx("付費點數")}
+                    {p.bonusPoints ? tx(` + 贈送 ${p.bonusPoints}`) : ""}
                   </p>
                   <p className="mt-2 text-sm font-bold">NT${p.priceTwd.toLocaleString()}</p>
                   <button
                     onClick={() => setPlanId(p.id)}
                     className="mt-3 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90"
                   >
-                    購買（Demo）
+                    {tx("購買（Demo）")}
                   </button>
                 </div>
               ))}
             </div>
             <p className="text-[11px] text-muted-foreground">
-              原型不連接任何金流服務，不會產生真實付款、發票或退款。
+              {tx("原型不連接任何金流服務，不會產生真實付款、發票或退款。")}
             </p>
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-lg font-black">訂單紀錄</h2>
+            <h2 className="text-lg font-black">{tx("訂單紀錄")}</h2>
             <DataTable
               columns={[
-                { key: "id", label: "訂單編號" },
-                { key: "t", label: "時間" },
-                { key: "plan", label: "方案" },
-                { key: "amount", label: "金額" },
+                { key: "id", label: tx("訂單編號") },
+                { key: "t", label: tx("時間") },
+                { key: "plan", label: tx("方案") },
+                { key: "amount", label: tx("金額") },
                 { key: "method", label: "付款方式" },
-                { key: "status", label: "狀態" },
+                { key: "status", label: tx("狀態") },
               ]}
               rows={ORDERS.map((o) => ({
                 id: o.id,
@@ -98,24 +130,33 @@ function WalletPage() {
                 status: (
                   <StatusTag
                     label={o.status}
-                    tone={o.status === "已完成" ? "live" : o.status === "處理中" ? "pending" : "danger"}
+                    tone={
+                      o.status === "已完成" ? "live" : o.status === "處理中" ? "pending" : "danger"
+                    }
                   />
                 ),
               }))}
             />
-            <Link to="/app/history" className="inline-block text-xs font-bold text-primary hover:underline">
-              查看點數異動與抽卡紀錄 →
+            <Link
+              to="/app/history"
+              className="inline-block text-xs font-bold text-primary hover:underline"
+            >
+              {tx("查看點數異動與抽卡紀錄 →")}
             </Link>
           </section>
 
-          <p className="panel p-4 text-[11px] leading-relaxed text-muted-foreground">{SPLIT_SOURCE_NOTE}</p>
+          <p className="panel p-4 text-[11px] leading-relaxed text-muted-foreground">
+            {tx(SPLIT_SOURCE_NOTE)}
+          </p>
         </>
       )}
 
       <ConfirmDialog
         open={plan !== undefined}
-        title={`確認購買「${plan?.name ?? ""}」`}
-        description={`Demo 付款 NT$${plan?.priceTwd.toLocaleString() ?? 0}，不會真的扣款或加值。${POINT_DEDUCT_NOTE}`}
+        title={tx(`確認購買「${plan?.name ?? ""}」`)}
+        description={tx(
+          `Demo 付款 NT$${plan?.priceTwd.toLocaleString() ?? 0}，不會真的扣款或加值。${tx(POINT_DEDUCT_NOTE)}`,
+        )}
         confirmLabel={submitting ? "處理中…" : "確認付款（Demo）"}
         tone="gold"
         onCancel={() => setPlanId(null)}
@@ -124,7 +165,11 @@ function WalletPage() {
           setTimeout(() => {
             setSubmitting(false);
             setPlanId(null);
-            push({ title: "Demo 付款完成", description: "此為介面示意，點數與訂單不會變更。", tone: "gold" });
+            push({
+              title: "Demo 付款完成",
+              description: "此為介面示意，點數與訂單不會變更。",
+              tone: "gold",
+            });
           }, 800);
         }}
       />

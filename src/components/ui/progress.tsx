@@ -30,7 +30,7 @@ export function Progress({
             "h-full rounded-full transition-all",
             tone === "gold"
               ? "bg-gradient-to-r from-gold-soft to-gold"
-              : "bg-gradient-to-r from-primary/70 to-primary"
+              : "bg-gradient-to-r from-primary/70 to-primary",
           )}
           style={{ width: `${pct}%` }}
         />

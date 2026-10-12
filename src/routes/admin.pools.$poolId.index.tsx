@@ -4,16 +4,23 @@ import { poolById, goddessById } from "@/data/mock";
 import { ADMIN_PERMISSION_NOTE, ADMIN_USER, poolMeta } from "@/data/admin";
 import { StatCard } from "@/components/ui/stat-card";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { useToast } from "@/components/ui/toast";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useToast } from "@/components/ui/toast-shared";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/admin/pools/$poolId/")({
   head: () => ({
     meta: [
       { title: "卡池營運 — KEEPY管理後台" },
-      { name: "description", content: "單一卡池的營運資訊、草稿與發布狀態、預覽與發布確認骨架。（Demo）" },
+      {
+        name: "description",
+        content: "單一卡池的營運資訊、草稿與發布狀態、預覽與發布確認骨架。（Demo）",
+      },
       { property: "og:title", content: "卡池營運 — KEEPY管理後台" },
-      { property: "og:description", content: "單一卡池的營運資訊、草稿與發布狀態、預覽與發布確認骨架。（Demo）" },
+      {
+        property: "og:description",
+        content: "單一卡池的營運資訊、草稿與發布狀態、預覽與發布確認骨架。（Demo）",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -33,22 +40,40 @@ function AdminPoolOverview() {
     <div className="space-y-5">
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="此卡池尚無設定" emptyDescription="先建立抽卡與合成設定草稿。" />
+        <StatePlaceholder
+          state={state}
+          emptyTitle="此卡池尚無設定"
+          emptyDescription="先建立抽卡與合成設定草稿。"
+        />
       ) : (
         <>
           <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <StatCard label="卡牌數" value={pool.cardCount} sub="卡池內卡面總數" />
-            <StatCard label="單抽／十連" value={`${pool.singlePricePoints}／${pool.tenPricePoints}`} sub="點數（Demo）" tone="violet" />
+            <StatCard
+              label="單抽／十連"
+              value={`${pool.singlePricePoints}／${pool.tenPricePoints}`}
+              sub="點數（Demo）"
+              tone="violet"
+            />
             <StatCard label="抽卡範圍" value="單一卡池" sub="V1 僅啟用 single_pool" />
-            <StatCard label="設定版本" value={`${meta.drawSettingsVersion}／${meta.synthesisSettingsVersion}`} sub="抽卡／合成" tone="gold" />
+            <StatCard
+              label="設定版本"
+              value={`${meta.drawSettingsVersion}／${meta.synthesisSettingsVersion}`}
+              sub="抽卡／合成"
+              tone="gold"
+            />
           </section>
 
           <section className="panel space-y-2 p-5 text-sm leading-relaxed text-muted-foreground">
             <p className="font-black text-foreground">卡池資訊</p>
-            <p>期間：<span className="tabular-nums">{pool.startAt} ～ {pool.endAt}</span></p>
+            <p>
+              期間：
+              <span className="tabular-nums">
+                {pool.startAt} ～ {pool.endAt}
+              </span>
+            </p>
             <p>參與女神：{pool.goddessIds.map((g) => goddessById(g)?.name ?? g).join("、")}</p>
             <p>保底：{pool.pityNote.join("　")}</p>
-
           </section>
 
           <section className="grid gap-3 sm:grid-cols-2">
@@ -58,7 +83,9 @@ function AdminPoolOverview() {
               className="panel p-5 transition-colors hover:bg-muted/40"
             >
               <p className="font-black">抽卡機率設定</p>
-              <p className="mt-1 text-sm text-muted-foreground">十級機率、等級啟用、卡牌抽取範圍與同等級權重。</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                十級機率、等級啟用、卡牌抽取範圍與同等級權重。
+              </p>
             </Link>
             <Link
               to="/admin/pools/$poolId/synthesis-settings"
@@ -66,7 +93,9 @@ function AdminPoolOverview() {
               className="panel p-5 transition-colors hover:bg-muted/40"
             >
               <p className="font-black">合成條件設定</p>
-              <p className="mt-1 text-sm text-muted-foreground">素材張數、同卡池同等級限制、基礎成功率與保底次數。</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                素材張數、同卡池同等級限制、基礎成功率與保底次數。
+              </p>
             </Link>
           </section>
 
@@ -83,7 +112,9 @@ function AdminPoolOverview() {
                 預覽前台卡池頁
               </Link>
               <button
-                onClick={() => push({ title: "已儲存草稿（Demo）", description: "草稿不會影響前台資料。" })}
+                onClick={() =>
+                  push({ title: "已儲存草稿（Demo）", description: "草稿不會影響前台資料。" })
+                }
                 className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:bg-primary/90"
               >
                 儲存草稿（Demo）

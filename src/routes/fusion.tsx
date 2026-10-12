@@ -13,8 +13,8 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Progress } from "@/components/ui/progress";
 import { RarityBadge } from "@/components/ui/rarity-badge";
-import { useToast } from "@/components/ui/toast";
-import { useAuth } from "@/components/layout/AppShell";
+import { useToast } from "@/components/ui/toast-shared";
+import { useAuth } from "@/components/layout/AppShell-shared";
 
 export const Route = createFileRoute("/fusion")({
   head: () => ({
@@ -22,7 +22,10 @@ export const Route = createFileRoute("/fusion")({
       { title: "合成工坊 — KEEPY" },
       { name: "description", content: "重複卡成長與隨機卡牌合成，連續失敗 10 次觸發保底升級。" },
       { property: "og:title", content: "合成工坊 — KEEPY" },
-      { property: "og:description", content: "重複卡成長與隨機卡牌合成，連續失敗 10 次觸發保底升級。" },
+      {
+        property: "og:description",
+        content: "重複卡成長與隨機卡牌合成，連續失敗 10 次觸發保底升級。",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -103,7 +106,10 @@ function FusionPage() {
           可用素材（同卡牌重複卡）
         </h2>
         {dupes.length === 0 ? (
-          <EmptyState title="沒有可用的重複卡牌" description="抽到重複卡片後，可在此做為成長或合成素材。" />
+          <EmptyState
+            title="沒有可用的重複卡牌"
+            description="抽到重複卡片後，可在此做為成長或合成素材。"
+          />
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
             {dupes.map((o) => {
@@ -150,7 +156,8 @@ function FusionPage() {
                   <h3 className="font-black">{r.name}</h3>
                   {r.mode === "random" && (
                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                      SR <span className="text-gold">→</span> <RarityBadge rarity={nextGrade("SR")} />
+                      SR <span className="text-gold">→</span>{" "}
+                      <RarityBadge rarity={nextGrade("SR")} />
                     </span>
                   )}
                 </div>
@@ -177,7 +184,9 @@ function FusionPage() {
               <p className="font-bold">{i.name}</p>
               <p className="mt-1 text-xs text-muted-foreground">{i.effect}</p>
               <p className="mt-2 text-sm font-black text-gold tabular-nums">{i.pricePoints} 點</p>
-              <p className="mt-1 text-[11px] text-muted-foreground">購買為 Demo，不會產生真實付款。</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                購買為 Demo，不會產生真實付款。
+              </p>
             </div>
           ))}
         </div>

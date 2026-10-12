@@ -12,16 +12,23 @@ import { RarityBadge } from "@/components/ui/rarity-badge";
 import { StatusTag } from "@/components/ui/status-tag";
 import { DataTable } from "@/components/ui/data-table";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { useToast } from "@/components/ui/toast";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useToast } from "@/components/ui/toast-shared";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/admin/pools/$poolId/synthesis-settings")({
   head: () => ({
     meta: [
       { title: "合成條件設定 — KEEPY管理後台" },
-      { name: "description", content: "單一卡池合成素材張數、基礎成功率、道具加成與連續失敗保底設定面板。（Demo）" },
+      {
+        name: "description",
+        content: "單一卡池合成素材張數、基礎成功率、道具加成與連續失敗保底設定面板。（Demo）",
+      },
       { property: "og:title", content: "合成條件設定 — KEEPY管理後台" },
-      { property: "og:description", content: "單一卡池合成素材張數、基礎成功率、道具加成與連續失敗保底設定面板。（Demo）" },
+      {
+        property: "og:description",
+        content: "單一卡池合成素材張數、基礎成功率、道具加成與連續失敗保底設定面板。（Demo）",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -45,15 +52,28 @@ function SynthesisSettings() {
   const { push } = useToast();
 
   const changes: string[] = [];
-  if (materialCount !== initial.materialCount) changes.push(`素材張數 ${initial.materialCount} → ${materialCount} 張`);
-  if (samePoolOnly !== initial.samePoolOnly) changes.push(`同一卡池限制 ${initial.samePoolOnly ? "開" : "關"} → ${samePoolOnly ? "開" : "關"}`);
-  if (sameGradeOnly !== initial.sameGradeOnly) changes.push(`同等級限制 ${initial.sameGradeOnly ? "開" : "關"} → ${sameGradeOnly ? "開" : "關"}`);
-  if (itemBoostEnabled !== initial.itemBoostEnabled) changes.push(`商城道具加成 ${initial.itemBoostEnabled ? "啟用" : "停用"} → ${itemBoostEnabled ? "啟用" : "停用"}`);
-  if (itemBoostPct !== initial.itemBoostPct) changes.push(`道具加成 ${initial.itemBoostPct}% → ${itemBoostPct}%`);
+  if (materialCount !== initial.materialCount)
+    changes.push(`素材張數 ${initial.materialCount} → ${materialCount} 張`);
+  if (samePoolOnly !== initial.samePoolOnly)
+    changes.push(
+      `同一卡池限制 ${initial.samePoolOnly ? "開" : "關"} → ${samePoolOnly ? "開" : "關"}`,
+    );
+  if (sameGradeOnly !== initial.sameGradeOnly)
+    changes.push(
+      `同等級限制 ${initial.sameGradeOnly ? "開" : "關"} → ${sameGradeOnly ? "開" : "關"}`,
+    );
+  if (itemBoostEnabled !== initial.itemBoostEnabled)
+    changes.push(
+      `商城道具加成 ${initial.itemBoostEnabled ? "啟用" : "停用"} → ${itemBoostEnabled ? "啟用" : "停用"}`,
+    );
+  if (itemBoostPct !== initial.itemBoostPct)
+    changes.push(`道具加成 ${initial.itemBoostPct}% → ${itemBoostPct}%`);
   grades.forEach((g, i) => {
     const o = initial.grades[i]!;
-    if (g.baseRate !== o.baseRate) changes.push(`${g.grade} 基礎成功率 ${o.baseRate}% → ${g.baseRate}%`);
-    if (g.enabled !== o.enabled) changes.push(`${g.grade} 可合成 ${o.enabled ? "開" : "關"} → ${g.enabled ? "開" : "關"}`);
+    if (g.baseRate !== o.baseRate)
+      changes.push(`${g.grade} 基礎成功率 ${o.baseRate}% → ${g.baseRate}%`);
+    if (g.enabled !== o.enabled)
+      changes.push(`${g.grade} 可合成 ${o.enabled ? "開" : "關"} → ${g.enabled ? "開" : "關"}`);
   });
   const dirty = changes.length > 0;
 
@@ -61,13 +81,20 @@ function SynthesisSettings() {
     <div className="space-y-5">
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="此卡池尚無合成設定" emptyDescription="建立草稿後即可設定素材與成功率。" />
+        <StatePlaceholder
+          state={state}
+          emptyTitle="此卡池尚無合成設定"
+          emptyDescription="建立草稿後即可設定素材與成功率。"
+        />
       ) : (
         <>
           <section className="panel hairline-gold space-y-1.5 p-5 text-sm leading-relaxed text-muted-foreground">
             <p className="font-black text-foreground">已核定規則（不可變更）</p>
             {SYNTH_RULE_FIXED.map((r) => (
-              <p key={r} className="flex gap-2"><span className="text-gold">◆</span>{r}</p>
+              <p key={r} className="flex gap-2">
+                <span className="text-gold">◆</span>
+                {r}
+              </p>
             ))}
           </section>
 
@@ -93,15 +120,30 @@ function SynthesisSettings() {
               />
             </label>
             <label className="flex items-center gap-2 text-sm text-muted-foreground">
-              <input type="checkbox" checked={samePoolOnly} onChange={(e) => setSamePoolOnly(e.target.checked)} className="accent-[var(--color-primary)]" />
+              <input
+                type="checkbox"
+                checked={samePoolOnly}
+                onChange={(e) => setSamePoolOnly(e.target.checked)}
+                className="accent-[var(--color-primary)]"
+              />
               限同一卡池素材
             </label>
             <label className="flex items-center gap-2 text-sm text-muted-foreground">
-              <input type="checkbox" checked={sameGradeOnly} onChange={(e) => setSameGradeOnly(e.target.checked)} className="accent-[var(--color-primary)]" />
+              <input
+                type="checkbox"
+                checked={sameGradeOnly}
+                onChange={(e) => setSameGradeOnly(e.target.checked)}
+                className="accent-[var(--color-primary)]"
+              />
               限同等級素材
             </label>
             <label className="flex items-center gap-2 text-sm text-muted-foreground">
-              <input type="checkbox" checked={itemBoostEnabled} onChange={(e) => setItemBoostEnabled(e.target.checked)} className="accent-[var(--color-primary)]" />
+              <input
+                type="checkbox"
+                checked={itemBoostEnabled}
+                onChange={(e) => setItemBoostEnabled(e.target.checked)}
+                className="accent-[var(--color-primary)]"
+              />
               啟用商城道具加成（僅增加成功率）
             </label>
             <label className="text-xs text-muted-foreground">
@@ -128,13 +170,20 @@ function SynthesisSettings() {
               {grades.map((g, i) => {
                 const final = Math.min(100, g.baseRate + (itemBoostEnabled ? itemBoostPct : 0));
                 return (
-                  <div key={g.grade} className="grid grid-cols-[auto_1fr] items-center gap-3 p-3 sm:grid-cols-[auto_120px_1fr_auto]">
+                  <div
+                    key={g.grade}
+                    className="grid grid-cols-[auto_1fr] items-center gap-3 p-3 sm:grid-cols-[auto_120px_1fr_auto]"
+                  >
                     <RarityBadge rarity={g.grade} />
                     <label className="flex items-center gap-2 text-xs text-muted-foreground">
                       <input
                         type="checkbox"
                         checked={g.enabled}
-                        onChange={(e) => setGrades((prev) => prev.map((x, j) => (j === i ? { ...x, enabled: e.target.checked } : x)))}
+                        onChange={(e) =>
+                          setGrades((prev) =>
+                            prev.map((x, j) => (j === i ? { ...x, enabled: e.target.checked } : x)),
+                          )
+                        }
                         className="accent-[var(--color-primary)]"
                       />
                       可合成
@@ -146,14 +195,22 @@ function SynthesisSettings() {
                         max={100}
                         value={g.baseRate}
                         disabled={!g.enabled}
-                        onChange={(e) => setGrades((prev) => prev.map((x, j) => (j === i ? { ...x, baseRate: Number(e.target.value) } : x)))}
+                        onChange={(e) =>
+                          setGrades((prev) =>
+                            prev.map((x, j) =>
+                              j === i ? { ...x, baseRate: Number(e.target.value) } : x,
+                            ),
+                          )
+                        }
                         className="w-24 rounded-xl border border-border bg-muted/40 px-3 py-1.5 text-sm tabular-nums text-foreground disabled:opacity-40"
                       />
                       <span className="text-xs text-muted-foreground">% 基礎</span>
                     </div>
                     <span className="text-right text-xs tabular-nums text-muted-foreground">
                       最終 {g.enabled ? `${final}%` : "—"}
-                      {g.grade === "O" && <span className="ml-1 text-gold">O 卡是否可合成：待定</span>}
+                      {g.grade === "O" && (
+                        <span className="ml-1 text-gold">O 卡是否可合成：待定</span>
+                      )}
                     </span>
                   </div>
                 );

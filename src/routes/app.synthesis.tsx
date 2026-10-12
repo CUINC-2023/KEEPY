@@ -1,288 +1,322 @@
-import { useMemo, useState } from "react";
+import { useLocalTest } from "@/lib/local-test-client";
+import { useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ALBUM,
-  NO_SPLIT_ON_FUSION_NOTE,
-  OFFLINE_RESUME_NOTE,
-  PRESET_SYNTHESIS_FAIL,
-  PRESET_SYNTHESIS_PITY,
-  PRESET_SYNTHESIS_SUCCESS,
-  SYNTHESIS,
-  goddessOf,
-  type AlbumCard,
-} from "@/data/player";
-import { GRADES, POOLS, SHOP_ITEMS, nextGrade, type Rarity } from "@/data/mock";
+import { SYNTHESIS, goddessOf } from "@/data/player";
+import { GRADES, POOLS, type Rarity } from "@/data/mock";
+import { KEEPY_SAMPLE_POOL_ID } from "@/data/keepy-sample";
+import { cardCount, DEMO_MATERIAL_COUNT, type DemoSynthesis } from "@/lib/demo-player-model";
+import { synthesizeDemo, useDemoPlayer } from "@/lib/demo-player-store";
+import { usePlayerCopy } from "@/lib/player-copy";
 import { CardFrame } from "@/components/ui/card-frame";
 import { Progress } from "@/components/ui/progress";
-import { RarityBadge } from "@/components/ui/rarity-badge";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
-import { StatePlaceholder, StateSwitcher, useDemoState } from "@/components/ui/state-demo";
-import { usePlayerSettings } from "@/lib/player-store";
-import { useToast } from "@/components/ui/toast";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StatePlaceholder, StateSwitcher } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/app/synthesis")({
-  head: () => ({
-    meta: [
-      { title: "隨機合成 — KEEPY" },
-      { name: "description", content: "同卡池、同等級卡牌的隨機合成：成功率、道具加成與連續失敗保底進度。" },
-      { property: "og:title", content: "隨機合成 — KEEPY" },
-      { property: "og:description", content: "隨機合成流程原型，合成不產生女神分潤。" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () => ({ meta: [{ title: "Synthesis / 合成工坊 — KEEPY" }] }),
   component: SynthesisPage,
 });
-
-const NEED = 3;
-
 function SynthesisPage() {
+  const local = useLocalTest();
+  const t = usePlayerCopy();
+  const { album, state: demo } = useDemoPlayer();
   const [state, setState] = useDemoState();
-  const { settings } = usePlayerSettings();
-  const { push } = useToast();
-
   const [poolId, setPoolId] = useState("p-uniform");
   const [grade, setGrade] = useState<Rarity>("R");
   const [picked, setPicked] = useState<string[]>([]);
   const [useItem, setUseItem] = useState(false);
   const [confirm, setConfirm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [offline, setOffline] = useState(false);
-  const [stashed, setStashed] = useState(false);
-  const [result, setResult] = useState<{ kind: "success" | "fail" | "pity"; card: AlbumCard } | null>(null);
-  const [failStreak, setFailStreak] = useState(SYNTHESIS.failStreak);
-
-  const materials = useMemo(
-    () => ALBUM.filter((c) => c.owned && c.poolId === poolId && c.grade === grade),
-    [poolId, grade]
-  );
-
+  const [result, setResult] = useState<DemoSynthesis | null>(null);
+  const busy = useRef(false);
+  const [error, setError] = useState(false);
+  const materials = album.filter((c) => c.owned && c.poolId === poolId && c.grade === grade);
+  const failStreak = demo.failures[poolId + ":" + grade] ?? SYNTHESIS.failStreak;
   const finalPct = Math.min(100, SYNTHESIS.baseSuccessPct + (useItem ? SYNTHESIS.itemBonusPct : 0));
-  const pityReady = failStreak + 1 >= SYNTHESIS.pityAt;
-
-  const toggle = (id: string) =>
-    setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : p.length >= NEED ? p : [...p, id]));
-
-  const finish = () => {
-    // 預先定義結果，不執行真實亂數
-    if (pityReady) {
-      setResult({ kind: "pity", card: PRESET_SYNTHESIS_PITY });
-      setFailStreak(0);
-    } else if (useItem) {
-      setResult({ kind: "success", card: PRESET_SYNTHESIS_SUCCESS });
-      setFailStreak(0);
-    } else {
-      setResult({ kind: "fail", card: PRESET_SYNTHESIS_FAIL });
-      setFailStreak((f) => f + 1);
+  const resultCard = album.find((c) => c.id === result?.cardId);
+  const selected = (id: string) => picked.filter((value) => value === id).length;
+  const add = (id: string) => {
+    const card = materials.find((c) => c.id === id);
+    if (card && picked.length < DEMO_MATERIAL_COUNT && selected(id) < cardCount(card))
+      setPicked((previous) => [...previous, id]);
+  };
+  const remove = (id: string) =>
+    setPicked((previous) => {
+      const index = previous.indexOf(id);
+      return previous.filter((_, i) => i !== index);
+    });
+  const submit = async () => {
+    if (busy.current) return;
+    busy.current = true;
+    setConfirm(false);
+    try {
+      const output = await synthesizeDemo(poolId, grade, picked, useItem, crypto.randomUUID());
+      setError(!output);
+      setResult(output);
+      setPicked([]);
+    } catch {
+      setError(true);
+    } finally {
+      busy.current = false;
     }
   };
-
-  const submit = () => {
-    setConfirm(false);
-    setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      if (offline) {
-        setStashed(true);
-        push({ title: OFFLINE_RESUME_NOTE, description: "合成結果已保留，恢復查看不會重新合成。", tone: "gold" });
-        return;
-      }
-      finish();
-    }, 900);
-  };
-
   return (
     <div className="space-y-5">
+      {local.enabled && (
+        <p>
+          syntheticLocalTest · SQLite three-card scripted fixture; 0 TEST KP; draw pity unchanged.
+          No real assets or approved production probability.
+        </p>
+      )}
+      {local.enabled && demo.lastSynthesis && (
+        <Button data-testid="saved-synthesis" onClick={() => setResult(demo.lastSynthesis)}>
+          View saved synthesis result
+        </Button>
+      )}
       <StateSwitcher state={state} onChange={setState} />
-
       <div className="flex flex-wrap items-center gap-2">
-        <h1 className="text-xl font-black sm:text-2xl">隨機合成</h1>
+        <h1 className="text-xl font-black sm:text-2xl">{t("合成工坊", "Synthesis")}</h1>
         <span className="demo-chip">Demo</span>
-        <span className="rounded-full border border-border px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
-          {NO_SPLIT_ON_FUSION_NOTE}
+        <span className="text-xs text-muted-foreground">
+          {t("合成不產生分潤", "No revenue from synthesis")}
         </span>
       </div>
-      <p className="text-xs leading-relaxed text-muted-foreground">{SYNTHESIS.note}</p>
-
-      <div className="panel flex flex-wrap items-end gap-3 p-4">
-        <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
-          卡池（僅能選擇同一卡池）
+      <Link to="/app/growth" className="block text-primary underline">
+        {t("查看未核定規則與不消耗預覽", "View unapproved rules and no-consumption preview")}
+      </Link>
+      <p className="text-xs leading-relaxed text-muted-foreground">
+        {t(
+          "僅限同卡池、同等級素材；成功取得上一級、失敗取得同級。為驗收流程，道具勾選固定示範成功、未勾選示範失敗；累積 10 次失敗觸發示意保底。",
+          "Use materials from the same pool and grade. Success yields the next grade; failure yields the same grade. For this scripted preview, the item checkbox demonstrates success and no item demonstrates failure. Ten failures trigger demo pity.",
+        )}
+      </p>
+      <p className="text-xs font-bold text-gold">
+        {t(
+          "消耗 3 張、成功率、道具加成與保底數值均為示意，正式規則待核定。會消耗示意卡冊素材，不涉及真實資產。",
+          "The 3-card cost, probabilities, item bonus and pity values are fixtures pending approval. Demo materials are consumed; no real assets are affected.",
+        )}
+      </p>
+      <div className="panel grid grid-cols-2 gap-3 p-4">
+        <label className="flex min-w-0 flex-col gap-1 text-xs text-muted-foreground">
+          {t("卡池", "Pool")}
           <select
             value={poolId}
             onChange={(e) => {
               setPoolId(e.target.value);
               setPicked([]);
             }}
-            className="rounded-xl border border-border bg-muted/50 px-3 py-2 text-xs font-semibold text-foreground"
+            className="min-h-11 w-full rounded-xl border border-border bg-card px-3 text-foreground"
           >
-            {POOLS.map((p) => (
+            {POOLS.filter((p) => p.id !== KEEPY_SAMPLE_POOL_ID).map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
               </option>
             ))}
           </select>
         </label>
-        <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
-          等級（僅能選擇同等級）
+        <label className="flex min-w-0 flex-col gap-1 text-xs text-muted-foreground">
+          {t("等級", "Grade")}
           <select
             value={grade}
             onChange={(e) => {
               setGrade(e.target.value as Rarity);
               setPicked([]);
             }}
-            className="rounded-xl border border-border bg-muted/50 px-3 py-2 text-xs font-semibold text-foreground"
+            className="min-h-11 w-full rounded-xl border border-border bg-card px-3 text-foreground"
           >
-            {GRADES.map((g) => (
+            {GRADES.filter((g) => g !== "O").map((g) => (
               <option key={g} value={g}>
                 {g}
               </option>
             ))}
           </select>
         </label>
-        <p className="text-[11px] text-muted-foreground">已選 {picked.length} / {NEED} 張素材</p>
       </div>
-
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="沒有可用的合成素材" />
+        <StatePlaceholder state={state} emptyTitle={t("沒有可用素材", "No materials available")} />
       ) : (
         <div className="grid gap-3 lg:grid-cols-[1fr_20rem]">
           <div className="panel p-4 sm:p-5">
-            <p className="text-sm font-black">選擇素材</p>
-            {materials.length === 0 ? (
-              <div className="mt-3">
-                <EmptyState title="此卡池／等級沒有可用卡牌" description="換一個卡池或等級再試試。" />
-              </div>
+            <p className="text-sm font-black">
+              {t("選擇素材", "Choose materials")} · {picked.length} / {DEMO_MATERIAL_COUNT}
+            </p>
+            {!materials.length ? (
+              <EmptyState
+                title={t("此卡池／等級沒有可用卡牌", "No cards in this pool and grade")}
+                description={t(
+                  "請先抽卡，或更換卡池／等級。",
+                  "Draw cards first, or choose another pool or grade.",
+                )}
+              />
             ) : (
-              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {materials.map((c) => (
                   <div
                     key={c.id}
-                    className={`rounded-2xl p-1 transition-colors ${
-                      picked.includes(c.id) ? "ring-2 ring-gold" : "ring-1 ring-border"
-                    }`}
+                    className={
+                      "rounded-2xl p-1 ring-1 " + (selected(c.id) ? "ring-gold" : "ring-border")
+                    }
                   >
-                    <CardFrame
-                      goddess={goddessOf(c)}
-                      grade={c.grade}
-                      cardName={c.name}
-                      onClick={() => toggle(c.id)}
-                    />
-                    <p className="mt-1 px-1 text-[11px] text-muted-foreground">持有 {c.dupes + 1} 張</p>
+                    <CardFrame goddess={goddessOf(c)} grade={c.grade} cardName={c.name} />
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      {t("持有", "Owned")} {cardCount(c)} · {t("已選", "Selected")} {selected(c.id)}
+                    </p>
+                    <div className="mt-2 flex gap-2">
+                      <Button
+                        variant="outline"
+                        aria-label={t("減少素材", "Remove material") + " " + c.name}
+                        disabled={!selected(c.id)}
+                        onClick={() => remove(c.id)}
+                      >
+                        −
+                      </Button>
+                      <Button
+                        variant="outline"
+                        aria-label={t("增加素材", "Add material") + " " + c.name}
+                        disabled={
+                          picked.length >= DEMO_MATERIAL_COUNT || selected(c.id) >= cardCount(c)
+                        }
+                        onClick={() => add(c.id)}
+                      >
+                        +
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
           </div>
-
-          <div className="panel h-fit p-4 sm:p-5">
-            <p className="text-sm font-black">成功率</p>
-            <dl className="mt-3 space-y-1.5 text-xs">
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">基礎成功率</dt>
-                <dd className="font-bold">{SYNTHESIS.baseSuccessPct}%</dd>
+          <div className="panel h-fit space-y-3 p-4 sm:p-5">
+            <p className="text-sm font-black">{t("成功率（示意）", "Probability preview")}</p>
+            <dl className="space-y-2 text-xs">
+              <div className="flex justify-between gap-2">
+                <dt>{t("基礎", "Base")}</dt>
+                <dd>{SYNTHESIS.baseSuccessPct}%</dd>
               </div>
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">商城道具加成</dt>
-                <dd className="font-bold text-gold">{useItem ? `+${SYNTHESIS.itemBonusPct}%` : "未使用"}</dd>
+              <div className="flex justify-between gap-2">
+                <dt>{t("道具加成", "Item bonus")}</dt>
+                <dd>{useItem ? "+" + SYNTHESIS.itemBonusPct + "%" : "—"}</dd>
               </div>
-              <div className="flex justify-between border-t border-border pt-1.5">
-                <dt className="text-muted-foreground">最終成功率</dt>
-                <dd className="text-base font-black text-violet-gradient">{finalPct}%</dd>
+              <div className="flex justify-between gap-2 border-t border-border pt-2">
+                <dt>{t("最終成功率", "Final rate")}</dt>
+                <dd className="font-black text-gold">{finalPct}%</dd>
               </div>
             </dl>
-            <label className="mt-3 flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-[11px]">
-              <input type="checkbox" checked={useItem} onChange={(e) => setUseItem(e.target.checked)} />
-              使用「{SHOP_ITEMS[1]!.name}」（{SHOP_ITEMS[1]!.effect}）
-            </label>
-            <p className="mt-2 text-[11px] text-muted-foreground">{SYNTHESIS.ruleTbd}</p>
-
-            <div className="mt-4">
-              <Progress
-                value={failStreak}
-                max={SYNTHESIS.pityAt}
-                tone="gold"
-                showLabel
-                label={`連續失敗保底 ${failStreak} / ${SYNTHESIS.pityAt}`}
+            <label className="flex min-h-11 items-center gap-2 text-xs">
+              <input
+                type="checkbox"
+                checked={useItem}
+                onChange={(e) => setUseItem(e.target.checked)}
               />
-              <p className="mt-1 text-[11px] text-muted-foreground">
-                {pityReady ? "下一次合成將觸發保底升級（Demo）。" : "連續失敗累積 10 次即觸發保底取得上一級卡牌。"}
-              </p>
-            </div>
-
-            <label className="mt-4 flex items-center gap-2 text-[11px] text-muted-foreground">
-              <input type="checkbox" checked={offline} onChange={(e) => setOffline(e.target.checked)} />
-              模擬網路中斷
+              {t("使用道具（固定成功示意）", "Use item (scripted success)")}
             </label>
-            <button
-              disabled={submitting || picked.length < NEED}
+            <Progress
+              value={failStreak}
+              max={SYNTHESIS.pityAt}
+              tone="gold"
+              showLabel
+              label={
+                t("失敗累積（示意）", "Failures (demo)") +
+                " " +
+                failStreak +
+                " / " +
+                SYNTHESIS.pityAt
+              }
+            />
+            <p className="text-xs text-muted-foreground">
+              {t(
+                "第 10 次失敗路徑示範保底升級；計數依卡池與等級保存。",
+                "The tenth failure path demonstrates pity upgrade. Counters are separate for each pool and grade.",
+              )}
+            </p>
+            <Button
+              disabled={picked.length !== DEMO_MATERIAL_COUNT}
               onClick={() => setConfirm(true)}
-              className="mt-3 w-full rounded-xl bg-gold px-4 py-3 text-sm font-bold text-ink hover:bg-gold/90 disabled:opacity-50"
+              className="min-h-11 w-full bg-gold text-ink hover:bg-gold/90"
             >
-              {submitting ? "合成中…" : picked.length < NEED ? `請選擇 ${NEED} 張素材` : "送出合成（Demo）"}
-            </button>
-            {submitting && (
-              <p className="mt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
-                <span className="h-3 w-3 animate-spin rounded-full border-2 border-gold border-t-transparent" />
-                已鎖定按鈕，避免重複送出
+              {t("預覽並確認合成", "Review synthesis")}
+            </Button>
+            {error && (
+              <p role="alert" className="text-xs text-gold">
+                {t(
+                  "素材不足或已異動，請重新選擇。",
+                  "Materials changed or are insufficient. Select them again.",
+                )}
               </p>
-            )}
-            {stashed && (
-              <div className="mt-3 rounded-xl border border-gold/40 p-3">
-                <p className="text-xs font-bold text-gold">{OFFLINE_RESUME_NOTE}</p>
-                <button
-                  onClick={() => {
-                    setStashed(false);
-                    finish();
-                  }}
-                  className="mt-2 rounded-lg border border-gold/50 px-3 py-1.5 text-[11px] font-bold text-gold"
-                >
-                  恢復查看結果
-                </button>
-              </div>
             )}
           </div>
         </div>
       )}
-
       <ConfirmDialog
         open={confirm}
-        title="確認送出合成"
-        description={`將投入 ${picked.length} 張 ${grade} 素材，最終成功率 ${finalPct}%。${NO_SPLIT_ON_FUSION_NOTE}。`}
-        confirmLabel="確認合成"
+        title={t("確認消耗示意素材", "Confirm demo material consumption")}
+        description={t(
+          "將消耗 3 張同卡池、同等級示意素材並取得 1 張結果卡；正式消耗規則待核定。",
+          "Consume 3 demo units from the same pool and grade and receive 1 result card. Production costs await approval.",
+        )}
+        confirmLabel={t("確認合成", "Confirm synthesis")}
+        cancelLabel={t("取消", "Cancel")}
         tone="gold"
         onCancel={() => setConfirm(false)}
         onConfirm={submit}
-      />
-
-      {result && (
-        <div className="fixed inset-0 z-[70] grid place-items-center overflow-y-auto bg-ink/90 p-4 backdrop-blur-md">
-          <div className="w-full max-w-sm text-center">
-            <p className="text-xs font-black tracking-[0.4em] text-gold">SYNTHESIS</p>
-            <h2 className="mt-1 text-2xl font-black">
-              {result.kind === "fail" ? "合成失敗" : result.kind === "pity" ? "保底升級" : "合成成功"}{" "}
-              <span className="demo-chip align-middle">Demo</span>
-            </h2>
-            <div className={`mx-auto mt-5 w-40 ${settings.reduceMotion ? "" : "animate-in fade-in zoom-in-95"}`}>
-              <CardFrame goddess={goddessOf(result.card)} grade={result.card.grade} cardName={result.card.name} />
-            </div>
-            <p className="mt-4 text-sm text-muted-foreground">
-              {result.kind === "fail"
-                ? "取得該卡池隨機同級卡牌，連續失敗次數 +1。"
-                : `取得該卡池隨機上一級卡牌（${nextGrade(grade)} 示意）。`}
-            </p>
-            <p className="mt-2 text-[11px] text-muted-foreground">{NO_SPLIT_ON_FUSION_NOTE}</p>
-            <div className="mt-6 flex justify-center gap-2">
-              <button onClick={() => setResult(null)} className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground">
-                關閉
-              </button>
-              <Link to="/app/album" className="rounded-xl border border-border px-5 py-2.5 text-sm font-bold text-muted-foreground">
-                前往卡冊
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
+      >
+        <ul className="space-y-1 text-xs">
+          {[...new Set(picked)].map((id) => (
+            <li key={id}>
+              {album.find((c) => c.id === id)?.name} × {selected(id)}
+            </li>
+          ))}
+        </ul>
+      </ConfirmDialog>
+      <Dialog
+        open={!!result}
+        onOpenChange={(open) => {
+          if (!open) setResult(null);
+        }}
+      >
+        <DialogContent className="max-h-[90dvh] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-2xl">
+          <DialogTitle>
+            {result?.kind === "fail"
+              ? t("合成失敗・取得同級卡", "Failed · same-grade card")
+              : result?.kind === "pity"
+                ? t("示意保底升級", "Demo pity upgrade")
+                : t("合成成功", "Synthesis success")}
+          </DialogTitle>
+          <DialogDescription>
+            {t(
+              "示意素材已消耗，結果已同步至本機卡冊。",
+              "Demo materials consumed. The result is in your local collection.",
+            )}
+          </DialogDescription>
+          {resultCard && (
+            <>
+              <div className="mx-auto w-40">
+                <CardFrame
+                  goddess={goddessOf(resultCard)}
+                  grade={resultCard.grade}
+                  cardName={resultCard.name}
+                />
+              </div>
+              <p className="text-center text-xs font-bold">
+                {resultCard.name} · {resultCard.grade}
+              </p>
+              <Button asChild onClick={() => setResult(null)}>
+                <Link to="/app/cards/$cardId" params={{ cardId: resultCard.id }}>
+                  {t("放大與翻面", "Inspect & flip")}
+                </Link>
+              </Button>
+              <Button asChild variant="outline" onClick={() => setResult(null)}>
+                <Link to="/app/album/$poolId" params={{ poolId: resultCard.poolId }}>
+                  {t("查看卡冊", "View collection")}
+                </Link>
+              </Button>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

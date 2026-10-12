@@ -2,6 +2,10 @@
 // KEEPY — 官方管理後台 Mock 資料（Batch 3）
 // 僅本地假資料：儲存草稿、發布、版本紀錄皆為 Demo，不會改動前台。
 // ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// KEEPY — 官方管理後台 Mock 資料（Batch 3）
+// 僅本地假資料：儲存草稿、發布、版本紀錄皆為 Demo，不會改動前台。
+// ─────────────────────────────────────────────────────────────
 import { GRADES, POOLS, type Rarity, type Pool } from "@/data/mock";
 import { albumByPool } from "@/data/player";
 
@@ -125,7 +129,16 @@ export const POOL_ADMIN_META: PoolAdminMeta[] = [
 ];
 
 export const poolMeta = (poolId: string): PoolAdminMeta =>
-  POOL_ADMIN_META.find((m) => m.poolId === poolId) ?? { poolId, publishState: "草稿", lastEditedBy: "Local Mock", lastEditedAt: "未編輯", drawSettingsVersion: "無", synthesisSettingsVersion: "無", drawSettingsState: "草稿", synthesisSettingsState: "草稿" };
+  POOL_ADMIN_META.find((m) => m.poolId === poolId) ?? {
+    poolId,
+    publishState: "草稿",
+    lastEditedBy: "Local Mock",
+    lastEditedAt: "未編輯",
+    drawSettingsVersion: "無",
+    synthesisSettingsVersion: "無",
+    drawSettingsState: "草稿",
+    synthesisSettingsState: "草稿",
+  };
 
 // ── 抽卡機率設定（單一卡池）─────────────────────────────────
 export interface GradeRuleRow {
@@ -189,7 +202,16 @@ export interface SynthGradeRow {
 
 export function buildSynthesisSettings(pool: Pool) {
   const base: Record<string, number> = {
-    C: 60, U: 55, R: 50, RR: 45, RRR: 40, SR: 32, SSR: 24, HR: 16, UR: 10, O: 0,
+    C: 60,
+    U: 55,
+    R: 50,
+    RR: 45,
+    RRR: 40,
+    SR: 32,
+    SSR: 24,
+    HR: 16,
+    UR: 10,
+    O: 0,
   };
   const grades: SynthGradeRow[] = GRADES.map((g) => ({
     grade: g,
@@ -226,8 +248,7 @@ export const SYNTH_TBD_ITEMS = [
   "保底是否依等級分別累積：待定",
 ];
 
-export const NON_RETROACTIVE_NOTE =
-  "僅影響發布後的新合成，不追溯既有紀錄（Demo）。";
+export const NON_RETROACTIVE_NOTE = "僅影響發布後的新合成，不追溯既有紀錄（Demo）。";
 
 // ── 版本紀錄（Mock）─────────────────────────────────────────
 export interface VersionLogRow {
@@ -240,15 +261,57 @@ export interface VersionLogRow {
 }
 
 export const DRAW_VERSION_LOG: VersionLogRow[] = [
-  { id: "dv-4", version: "v4", at: "2026-09-19 17:42", by: "營運・Demo 管理員", action: "儲存草稿", note: "調整 SR／RRR 機率，並排除 1 張卡牌" },
-  { id: "dv-3", version: "v3", at: "2026-09-14 10:21", by: "營運・小星", action: "發布", note: "新增 2 張 RRR 卡面進入抽取範圍" },
-  { id: "dv-2", version: "v2", at: "2026-09-12 09:00", by: "營運・小星", action: "發布", note: "卡池開池初版機率" },
-  { id: "dv-1", version: "v1", at: "2026-09-08 16:30", by: "營運・夜班", action: "儲存草稿", note: "建立卡池抽卡設定" },
+  {
+    id: "dv-4",
+    version: "v4",
+    at: "2026-09-19 17:42",
+    by: "營運・Demo 管理員",
+    action: "儲存草稿",
+    note: "調整 SR／RRR 機率，並排除 1 張卡牌",
+  },
+  {
+    id: "dv-3",
+    version: "v3",
+    at: "2026-09-14 10:21",
+    by: "營運・小星",
+    action: "發布",
+    note: "新增 2 張 RRR 卡面進入抽取範圍",
+  },
+  {
+    id: "dv-2",
+    version: "v2",
+    at: "2026-09-12 09:00",
+    by: "營運・小星",
+    action: "發布",
+    note: "卡池開池初版機率",
+  },
+  {
+    id: "dv-1",
+    version: "v1",
+    at: "2026-09-08 16:30",
+    by: "營運・夜班",
+    action: "儲存草稿",
+    note: "建立卡池抽卡設定",
+  },
 ];
 
 export const SYNTH_VERSION_LOG: VersionLogRow[] = [
-  { id: "sv-2", version: "v2", at: "2026-09-16 13:08", by: "營運・Demo 管理員", action: "儲存草稿", note: "調整 SR 基礎成功率並開啟道具加成" },
-  { id: "sv-1", version: "v1", at: "2026-09-12 09:00", by: "營運・小星", action: "發布", note: "合成條件初版（同卡池、同等級；素材張數見該版設定）" },
+  {
+    id: "sv-2",
+    version: "v2",
+    at: "2026-09-16 13:08",
+    by: "營運・Demo 管理員",
+    action: "儲存草稿",
+    note: "調整 SR 基礎成功率並開啟道具加成",
+  },
+  {
+    id: "sv-1",
+    version: "v1",
+    at: "2026-09-12 09:00",
+    by: "營運・小星",
+    action: "發布",
+    note: "合成條件初版（同卡池、同等級；素材張數見該版設定）",
+  },
 ];
 
 export const ADMIN_POOL_ROWS = POOLS.map((p) => ({ pool: p, meta: poolMeta(p.id) }));
@@ -333,10 +396,18 @@ export const POOL_TEMPLATES: PoolTemplate[] = [
 /** 建立卡池流程（全部為 Demo 草稿，不會真的發布） */
 export const CREATE_POOL_STEPS = [
   { key: "basic", label: "基本資訊", desc: "卡池名稱、英文副標、類型、主題色與說明文案。" },
-  { key: "schedule", label: "期間與狀態", desc: "開始與結束日期、前台狀態（進行中／即將開始／已結束）。" },
+  {
+    key: "schedule",
+    label: "期間與狀態",
+    desc: "開始與結束日期、前台狀態（進行中／即將開始／已結束）。",
+  },
   { key: "cards", label: "女神與卡牌", desc: "參與女神、卡牌總數與各等級卡面清單。" },
   { key: "rates", label: "抽卡機率", desc: "十級機率輸入，已啟用等級總和必須等於 100%。" },
-  { key: "synthesis", label: "合成條件", desc: "可合成等級、素材張數（依卡池設定）、基礎成功率與連續失敗 10 次保底。" },
+  {
+    key: "synthesis",
+    label: "合成條件",
+    desc: "可合成等級、素材張數（依卡池設定）、基礎成功率與連續失敗 10 次保底。",
+  },
   { key: "album", label: "卡冊顯示", desc: "選擇卡冊範本、封面配置、進度欄與鎖定規則。" },
   { key: "preview", label: "預覽", desc: "檢查一致性後儲存為 Demo 草稿（不會真的發布）。" },
 ];

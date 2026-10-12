@@ -2,14 +2,7 @@ import { cn } from "@/lib/utils";
 
 /** 載入中骨架（Mock 載入狀態用） */
 export function SkeletonBlock({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn(
-        "animate-pulse rounded-xl bg-muted/60",
-        className
-      )}
-    />
-  );
+  return <div className={cn("animate-pulse rounded-xl bg-muted/60", className)} />;
 }
 
 /** 卡牌網格載入骨架 */

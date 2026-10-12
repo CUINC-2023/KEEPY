@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { APPLICATION_STATUSES, CONTENT_TYPES, statusTone } from "@/data/partner";
-import { usePartner } from "@/lib/partner-store";
+import { usePartner } from "@/lib/partner-store-shared";
 import { DataTable } from "@/components/ui/data-table";
 import { StatusTag } from "@/components/ui/status-tag";
 import { EmptyState } from "@/components/ui/empty-state";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/admin/goddesses/applications/")({
   head: () => ({
@@ -16,7 +17,10 @@ export const Route = createFileRoute("/admin/goddesses/applications/")({
         content: "依狀態、送出日期、內容類型、負責人與關鍵字篩選合作女神申請案件。（Demo）",
       },
       { property: "og:title", content: "合作申請管理 — KEEPY管理後台" },
-      { property: "og:description", content: "申請編號、藝名、社群摘要、完整度與審核狀態一覽。（Demo）" },
+      {
+        property: "og:description",
+        content: "申請編號、藝名、社群摘要、完整度與審核狀態一覽。（Demo）",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -58,19 +62,28 @@ function AdminApplications() {
           <span className="demo-chip">Demo</span>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
-          共 {applications.length} 筆申請；所有審核操作僅改變本地 Mock 狀態，不寄出通知、不建立真實合作。
+          共 {applications.length} 筆申請；所有審核操作僅改變本地 Mock
+          狀態，不寄出通知、不建立真實合作。
         </p>
       </header>
 
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="沒有符合條件的申請" emptyDescription="調整篩選條件再試。" />
+        <StatePlaceholder
+          state={state}
+          emptyTitle="沒有符合條件的申請"
+          emptyDescription="調整篩選條件再試。"
+        />
       ) : (
         <>
           <section className="panel grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-5">
             <label className="space-y-1">
               <span className="text-[11px] font-bold text-muted-foreground">狀態</span>
-              <select className={inputCls} value={status} onChange={(e) => setStatus(e.target.value)}>
+              <select
+                className={inputCls}
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
                 <option value="all">全部</option>
                 {APPLICATION_STATUSES.map((s) => (
                   <option key={s} value={s}>
@@ -81,11 +94,20 @@ function AdminApplications() {
             </label>
             <label className="space-y-1">
               <span className="text-[11px] font-bold text-muted-foreground">送出日期（起）</span>
-              <input type="date" className={inputCls} value={since} onChange={(e) => setSince(e.target.value)} />
+              <input
+                type="date"
+                className={inputCls}
+                value={since}
+                onChange={(e) => setSince(e.target.value)}
+              />
             </label>
             <label className="space-y-1">
               <span className="text-[11px] font-bold text-muted-foreground">內容類型</span>
-              <select className={inputCls} value={content} onChange={(e) => setContent(e.target.value)}>
+              <select
+                className={inputCls}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              >
                 <option value="all">全部</option>
                 {CONTENT_TYPES.map((c) => (
                   <option key={c} value={c}>
@@ -152,7 +174,9 @@ function AdminApplications() {
                   {a.socials.map((s) => s.platform).join("、")}（{a.socials.length}）
                 </span>
               ),
-              content: <span className="text-xs text-muted-foreground">{a.contentTypes.join("、")}</span>,
+              content: (
+                <span className="text-xs text-muted-foreground">{a.contentTypes.join("、")}</span>
+              ),
               complete: (
                 <span
                   className={`tabular-nums font-semibold ${a.completeness < 70 ? "text-destructive" : "text-muted-foreground"}`}
@@ -170,7 +194,9 @@ function AdminApplications() {
                 </span>
               ),
             }))}
-            empty={<EmptyState icon="◇" title="沒有符合條件的申請" description="調整篩選條件再試。" />}
+            empty={
+              <EmptyState icon="◇" title="沒有符合條件的申請" description="調整篩選條件再試。" />
+            }
           />
         </>
       )}

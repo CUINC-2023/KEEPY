@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { usePlayerUiText } from "@/lib/player-ui-text";
+import { DemoState } from "./state-demo-shared";
+
 import { SkeletonBlock } from "@/components/ui/skeleton-block";
 import { EmptyState } from "@/components/ui/empty-state";
-
-/** 頁面示範狀態：正常 / 載入中 / 無資料 / 錯誤 / 無權限 */
-export type DemoState = "ok" | "loading" | "empty" | "error" | "denied";
 
 const OPTIONS: { key: DemoState; label: string }[] = [
   { key: "ok", label: "正常" },
@@ -13,10 +12,6 @@ const OPTIONS: { key: DemoState; label: string }[] = [
   { key: "denied", label: "無權限" },
 ];
 
-export function useDemoState() {
-  return useState<DemoState>("ok");
-}
-
 export function StateSwitcher({
   state,
   onChange,
@@ -24,10 +19,11 @@ export function StateSwitcher({
   state: DemoState;
   onChange: (s: DemoState) => void;
 }) {
+  const tx = usePlayerUiText();
   return (
     <div className="panel flex flex-wrap items-center gap-2 px-3 py-2.5">
       <span className="demo-chip">Demo</span>
-      <span className="text-[11px] text-muted-foreground">示範狀態</span>
+      <span className="text-[11px] text-muted-foreground">{tx("示範狀態")}</span>
       <div className="flex flex-wrap gap-1.5">
         {OPTIONS.map((o) => (
           <button
@@ -39,7 +35,7 @@ export function StateSwitcher({
                 : "border-border text-muted-foreground hover:text-foreground"
             }`}
           >
-            {o.label}
+            {tx(o.label)}
           </button>
         ))}
       </div>
@@ -57,6 +53,7 @@ export function StatePlaceholder({
   emptyTitle?: string;
   emptyDescription?: string;
 }) {
+  const tx = usePlayerUiText();
   if (state === "ok") return null;
   if (state === "loading") {
     return (
@@ -71,17 +68,17 @@ export function StatePlaceholder({
     );
   }
   if (state === "empty") {
-    return <EmptyState title={emptyTitle} description={emptyDescription} icon="◇" />;
+    return <EmptyState title={tx(emptyTitle)} description={tx(emptyDescription)} icon="◇" />;
   }
   if (state === "error") {
     return (
       <EmptyState
         icon="！"
-        title="資料載入失敗（Demo）"
-        description="這是錯誤狀態示範畫面。原型不會真的重新請求資料。"
+        title={tx("資料載入失敗（Demo）")}
+        description={tx("這是錯誤狀態示範畫面。原型不會真的重新請求資料。")}
         action={
           <span className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-muted-foreground">
-            重新載入（Demo）
+            {tx("重新載入（Demo）")}
           </span>
         }
       />
@@ -90,8 +87,8 @@ export function StatePlaceholder({
   return (
     <EmptyState
       icon="⌁"
-      title="無權限查看（Demo）"
-      description="此區塊需要登入或對應身分權限，此處僅示範無權限狀態。"
+      title={tx("無權限查看（Demo）")}
+      description={tx("此區塊需要登入或對應身分權限，此處僅示範無權限狀態。")}
     />
   );
 }

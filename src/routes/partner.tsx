@@ -23,9 +23,7 @@ function PartnerLayout() {
       </div>
       <SubNav items={ITEMS} />
       <Outlet />
-      <p className="text-[11px] leading-relaxed text-muted-foreground">
-        {NO_SENSITIVE_DATA_NOTE}
-      </p>
+      <p className="text-[11px] leading-relaxed text-muted-foreground">{NO_SENSITIVE_DATA_NOTE}</p>
     </div>
   );
 }

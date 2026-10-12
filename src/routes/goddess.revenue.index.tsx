@@ -1,3 +1,5 @@
+import { useLocalTest } from "@/lib/local-test-client";
+import { LocalAccountOverview } from "@/components/player/LocalAccountOverview";
 import { QaHint } from "@/components/content/QaHint";
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -16,15 +18,22 @@ import { DataTable } from "@/components/ui/data-table";
 import { StatusTag } from "@/components/ui/status-tag";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FilterBar } from "@/components/ui/filter-bar";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/goddess/revenue/")({
   head: () => ({
     meta: [
       { title: "收益與分潤 — KEEPY" },
-      { name: "description", content: "依日期、卡池、訂單與結算狀態篩選分潤明細，全部以新台幣顯示。（Demo）" },
+      {
+        name: "description",
+        content: "依日期、卡池、訂單與結算狀態篩選分潤明細，全部以新台幣顯示。（Demo）",
+      },
       { property: "og:title", content: "收益與分潤 — KEEPY" },
-      { property: "og:description", content: "依日期、卡池、訂單與結算狀態篩選分潤明細，全部以新台幣顯示。（Demo）" },
+      {
+        property: "og:description",
+        content: "依日期、卡池、訂單與結算狀態篩選分潤明細，全部以新台幣顯示。（Demo）",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -46,6 +55,7 @@ const POOL_FILTERS = [
 ];
 
 function GoddessRevenue() {
+  const local = useLocalTest();
   const [state, setState] = useDemoState();
   const [status, setStatus] = useState("all");
   const [pool, setPool] = useState("all");
@@ -66,12 +76,13 @@ function GoddessRevenue() {
         if (orderQuery && !o.orderNo.toLowerCase().includes(orderQuery.toLowerCase())) return false;
         return true;
       }),
-    [status, pool, periodId, from, to, orderQuery]
+    [status, pool, periodId, from, to, orderQuery],
   );
 
   const spend = rows.reduce((s, o) => s + o.eligibleSpendTwd, 0);
   const share = rows.reduce((s, o) => s + o.shareTwd, 0);
 
+  if (local.enabled) return <LocalAccountOverview kind="revenue" />;
   return (
     <div className="space-y-5">
       <header>
@@ -88,13 +99,27 @@ function GoddessRevenue() {
 
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="此條件下沒有分潤紀錄" emptyDescription="調整日期、卡池或結算狀態再試。" />
+        <StatePlaceholder
+          state={state}
+          emptyTitle="此條件下沒有分潤紀錄"
+          emptyDescription="調整日期、卡池或結算狀態再試。"
+        />
       ) : (
         <>
           <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <StatCard label="筆數" value={rows.length} sub="符合篩選的付費抽卡訂單" />
-            <StatCard label="符合分潤消費" value={`NT$ ${spend.toLocaleString()}`} sub="僅現金／付費點數抽卡" tone="violet" />
-            <StatCard label="女神分潤" value={`NT$ ${share.toLocaleString()}`} sub={SPLIT_POLICY_NOTE} tone="gold" />
+            <StatCard
+              label="符合分潤消費"
+              value={`NT$ ${spend.toLocaleString()}`}
+              sub="僅現金／付費點數抽卡"
+              tone="violet"
+            />
+            <StatCard
+              label="女神分潤"
+              value={`NT$ ${share.toLocaleString()}`}
+              sub={SPLIT_POLICY_NOTE}
+              tone="gold"
+            />
             <StatCard label="結算期" value={REVENUE_PERIODS.length} sub="可點擊查看結算期明細" />
           </section>
 
@@ -103,7 +128,10 @@ function GoddessRevenue() {
             <FilterBar filters={STATUS_FILTERS} active={status} onChange={setStatus} />
             <FilterBar filters={POOL_FILTERS} active={pool} onChange={setPool} />
             <FilterBar
-              filters={[{ key: "all", label: "全部結算期" }, ...REVENUE_PERIODS.map((p) => ({ key: p.id, label: p.label }))]}
+              filters={[
+                { key: "all", label: "全部結算期" },
+                ...REVENUE_PERIODS.map((p) => ({ key: p.id, label: p.label })),
+              ]}
               active={periodId}
               onChange={setPeriodId}
             />
@@ -150,18 +178,41 @@ function GoddessRevenue() {
             ]}
             rows={rows.map((o) => ({
               order: (
-                <Link to="/goddess/revenue/$id" params={{ id: o.periodId }} className="font-mono text-xs text-primary hover:underline">
+                <Link
+                  to="/goddess/revenue/$id"
+                  params={{ id: o.periodId }}
+                  className="font-mono text-xs text-primary hover:underline"
+                >
                   {o.orderNo}
                 </Link>
               ),
               at: <span className="tabular-nums text-muted-foreground">{o.drawAt}</span>,
               pool: o.poolName,
-              type: <span className="text-muted-foreground">{o.drawType}・{o.payMethod}</span>,
-              spend: <span className="tabular-nums text-muted-foreground">{o.eligibleSpendTwd.toLocaleString()}</span>,
+              type: (
+                <span className="text-muted-foreground">
+                  {o.drawType}・{o.payMethod}
+                </span>
+              ),
+              spend: (
+                <span className="tabular-nums text-muted-foreground">
+                  {o.eligibleSpendTwd.toLocaleString()}
+                </span>
+              ),
               share: <span className="font-black tabular-nums">{o.shareTwd.toLocaleString()}</span>,
-              status: <StatusTag tone={o.status === "可結算" ? "gold" : o.status === "待結算" ? "pending" : "live"} label={o.status} />,
+              status: (
+                <StatusTag
+                  tone={o.status === "可結算" ? "gold" : o.status === "待結算" ? "pending" : "live"}
+                  label={o.status}
+                />
+              ),
             }))}
-            empty={<EmptyState icon="◇" title="此條件下沒有分潤紀錄" description="調整日期、卡池、訂單編號或結算狀態再試。" />}
+            empty={
+              <EmptyState
+                icon="◇"
+                title="此條件下沒有分潤紀錄"
+                description="調整日期、卡池、訂單編號或結算狀態再試。"
+              />
+            }
           />
 
           <section className="panel p-4 text-xs leading-relaxed text-muted-foreground">

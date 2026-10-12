@@ -1,14 +1,24 @@
 import { useEffect, useState } from "react";
 
 /** Keep SSR and the first client render identical; only start the clock after hydration. */
-export function useSeasonClock() {
+export function useSeasonClock(nextBoundary: number | null = null) {
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
     const update = () => setNow(Date.now());
     update();
     const timer = window.setInterval(update, 30_000);
-    return () => window.clearInterval(timer);
-  }, []);
+    const boundaryTimer =
+      nextBoundary === null
+        ? null
+        : window.setTimeout(
+            update,
+            Math.min(2147483647, Math.max(0, nextBoundary - Date.now() + 1)),
+          );
+    return () => {
+      window.clearInterval(timer);
+      if (boundaryTimer !== null) window.clearTimeout(boundaryTimer);
+    };
+  }, [nextBoundary]);
   return now;
 }
 

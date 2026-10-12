@@ -15,12 +15,13 @@ import {
   STYLE_TAGS,
   isLikelyUrl,
 } from "@/data/partner";
-import { usePartner } from "@/lib/partner-store";
-import { useToast } from "@/components/ui/toast";
+import { usePartner } from "@/lib/partner-store-shared";
+import { useToast } from "@/components/ui/toast-shared";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusTag } from "@/components/ui/status-tag";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/partner/apply/")({
   head: () => ({
@@ -28,7 +29,8 @@ export const Route = createFileRoute("/partner/apply/")({
       { title: "填寫合作申請 — KEEPY" },
       {
         name: "description",
-        content: "分步填寫藝名、公開社群、創作資料、素材與合作規則確認，送出後進入官方審核。（Demo）",
+        content:
+          "分步填寫藝名、公開社群、創作資料、素材與合作規則確認，送出後進入官方審核。（Demo）",
       },
       { property: "og:title", content: "填寫合作申請 — KEEPY" },
       {
@@ -42,24 +44,9 @@ export const Route = createFileRoute("/partner/apply/")({
   component: PartnerApply,
 });
 
-const STEPS = [
-  "基本資料",
-  "公開社群",
-  "創作與合作",
-  "素材與權利",
-  "合作規則確認",
-  "預覽與送出",
-];
+const STEPS = ["基本資料", "公開社群", "創作與合作", "素材與權利", "合作規則確認", "預覽與送出"];
 
-function Chip({
-  active,
-  label,
-  onClick,
-}: {
-  active: boolean;
-  label: string;
-  onClick: () => void;
-}) {
+function Chip({ active, label, onClick }: { active: boolean; label: string; onClick: () => void }) {
   return (
     <button
       type="button"
@@ -114,7 +101,10 @@ function PartnerApply() {
   const { push } = useToast();
   const { draft, updateDraft, draftSavedAt, myStatus, setMyStatus, resetDraft } = usePartner();
 
-  const toggle = (key: "languages" | "contentTypes" | "styleTags" | "cardThemes" | "materialsReady" | "ruleAcks", v: string) => {
+  const toggle = (
+    key: "languages" | "contentTypes" | "styleTags" | "cardThemes" | "materialsReady" | "ruleAcks",
+    v: string,
+  ) => {
     const list = draft[key];
     updateDraft({
       [key]: list.includes(v) ? list.filter((x) => x !== v) : [...list, v],
@@ -127,7 +117,7 @@ function PartnerApply() {
       Object.entries(draft.socials)
         .filter(([, v]) => v.trim() !== "" && !isLikelyUrl(v))
         .map(([k]) => k),
-    [draft.socials]
+    [draft.socials],
   );
   const socialCount = Object.values(draft.socials).filter((v) => v.trim() !== "").length;
 
@@ -148,15 +138,19 @@ function PartnerApply() {
       draft.styleTags.length === 0 && "請選擇至少 1 個風格標籤",
       !draft.shootWilling && "請選擇是否願意參與拍攝／活動",
     ].filter(Boolean) as string[],
-    3: [draft.materialsReady.length === 0 && "請至少勾選 1 項素材（Mock）"].filter(Boolean) as string[],
-    4: [draft.ruleAcks.length !== RULE_ACKS.length && "請確認全部合作規則"].filter(Boolean) as string[],
+    3: [draft.materialsReady.length === 0 && "請至少勾選 1 項素材（Mock）"].filter(
+      Boolean,
+    ) as string[],
+    4: [draft.ruleAcks.length !== RULE_ACKS.length && "請確認全部合作規則"].filter(
+      Boolean,
+    ) as string[],
     5: [],
   };
   const stepErrors = errors[step] ?? [];
   const allValid = [0, 1, 2, 3, 4].every((s) => (errors[s] ?? []).length === 0);
 
   // 已送出且尚未結案的狀態：不可再次送出新申請，引導至進度頁
-  const BLOCKED: typeof myStatus[] = ["已送出", "審核中", "待補件", "已核准", "待合約確認"];
+  const BLOCKED: (typeof myStatus)[] = ["已送出", "審核中", "待補件", "已核准", "待合約確認"];
   if (BLOCKED.includes(myStatus)) {
     return (
       <EmptyState
@@ -345,7 +339,9 @@ function PartnerApply() {
                             className={inputCls}
                             value={draft.followers[p] ?? ""}
                             onChange={(e) => {
-                              updateDraft({ followers: { ...draft.followers, [p]: e.target.value } });
+                              updateDraft({
+                                followers: { ...draft.followers, [p]: e.target.value },
+                              });
                               setTouched(true);
                             }}
                           >
@@ -478,7 +474,9 @@ function PartnerApply() {
                       >
                         <span
                           className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border text-[11px] font-black ${
-                            on ? "border-primary bg-primary text-primary-foreground" : "border-border"
+                            on
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border"
                           }`}
                         >
                           {on ? "✓" : ""}
@@ -510,7 +508,10 @@ function PartnerApply() {
                     ["風格標籤", draft.styleTags.join("、") || "—"],
                     ["拍攝／活動", draft.shootWilling || "—"],
                     ["可合作卡牌主題", draft.cardThemes.join("、") || "—"],
-                    ["素材（Mock）", `${draft.materialsReady.length} / ${MATERIAL_SLOTS.length} 項已勾選`],
+                    [
+                      "素材（Mock）",
+                      `${draft.materialsReady.length} / ${MATERIAL_SLOTS.length} 項已勾選`,
+                    ],
                     ["規則確認", `${draft.ruleAcks.length} / ${RULE_ACKS.length} 項`],
                   ].map(([k, v]) => (
                     <div key={k as string} className="flex gap-2 border-b border-border/50 pb-1.5">
@@ -519,7 +520,9 @@ function PartnerApply() {
                     </div>
                   ))}
                 </dl>
-                <p className="text-sm leading-relaxed text-muted-foreground">{draft.intro || "（尚未填寫簡介）"}</p>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {draft.intro || "（尚未填寫簡介）"}
+                </p>
                 {!allValid && (
                   <div className="rounded-xl border border-destructive/50 bg-destructive/10 p-3 text-xs font-semibold text-destructive">
                     仍有必填欄位未完成，請回到前面的步驟補齊後再送出。
@@ -590,7 +593,11 @@ function PartnerApply() {
           setTimeout(() => {
             setSubmitting(false);
             setMyStatus("已送出");
-            push({ title: "已送出申請（Demo）", description: "可到申請進度頁查看審核狀態。", tone: "gold" });
+            push({
+              title: "已送出申請（Demo）",
+              description: "可到申請進度頁查看審核狀態。",
+              tone: "gold",
+            });
           }, 600);
         }}
       />

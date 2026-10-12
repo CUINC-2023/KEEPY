@@ -1,5 +1,7 @@
+import { useLocalTest } from "@/lib/local-test-client";
+import { useCopy } from "@/lib/keepy-i18n-shared";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { useMode } from "@/components/layout/AppShell";
+import { useMode } from "@/components/layout/AppShell-shared";
 import { SubNav } from "@/components/layout/SubNav";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SETTLE_DEMO_NOTE } from "@/data/goddess-backstage";
@@ -9,6 +11,8 @@ export const Route = createFileRoute("/goddess")({
 });
 
 const ITEMS = [
+  { to: "/goddess/supply", label: "七步交付 / Seven-step delivery" },
+  { to: "/goddess/cooperation", label: "合作與合約 / Cooperation" },
   { to: "/goddess", label: "總覽", exact: true },
   { to: "/goddess/dashboard", label: "儀表板" },
   { to: "/goddess/revenue", label: "收益與分潤" },
@@ -17,6 +21,8 @@ const ITEMS = [
 ];
 
 function GoddessLayout() {
+  const copy = useCopy();
+  const local = useLocalTest();
   const { mode, setMode, goddessEligible, setGoddessEligible } = useMode();
 
   return (
@@ -47,13 +53,21 @@ function GoddessLayout() {
         </div>
       </div>
 
-      {goddessEligible ? (
+      {goddessEligible || local.enabled ? (
         <>
-          <SubNav items={ITEMS} />
+          <SubNav
+            items={ITEMS.map((item) => ({
+              ...item,
+              label:
+                item.label === "七步交付 / Seven-step delivery"
+                  ? copy("supplyCreator")
+                  : item.label === "合作與合約 / Cooperation"
+                    ? copy("cooperation")
+                    : item.label,
+            }))}
+          />
           <Outlet />
-          <p className="text-[11px] leading-relaxed text-muted-foreground">
-            {SETTLE_DEMO_NOTE}
-          </p>
+          <p className="text-[11px] leading-relaxed text-muted-foreground">{SETTLE_DEMO_NOTE}</p>
         </>
       ) : (
         <EmptyState

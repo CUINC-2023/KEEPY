@@ -15,14 +15,18 @@ import {
 } from "@/data/admin";
 import { StatusTag } from "@/components/ui/status-tag";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { useToast } from "@/components/ui/toast";
-import { StatePlaceholder, StateSwitcher, useDemoState } from "@/components/ui/state-demo";
+import { useToast } from "@/components/ui/toast-shared";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StatePlaceholder, StateSwitcher } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/admin/pools/templates")({
   head: () => ({
     meta: [
       { title: "卡池建立範本 — KEEPY管理後台" },
-      { name: "description", content: "常駐、期間限定、合作企劃與復刻四種卡池建立範本，預覽欄位並以 Demo 草稿建立。" },
+      {
+        name: "description",
+        content: "常駐、期間限定、合作企劃與復刻四種卡池建立範本，預覽欄位並以 Demo 草稿建立。",
+      },
       { property: "og:title", content: "卡池建立範本 — KEEPY管理後台" },
       { property: "og:description", content: "四種卡池建立範本與七步建立流程（Demo）。" },
       { property: "og:type", content: "website" },
@@ -99,7 +103,9 @@ function PoolTemplatesPage() {
           </section>
 
           <section className="panel p-4 sm:p-5">
-            <h2 className="text-sm font-black tracking-widest text-muted-foreground">建立流程（7 步）</h2>
+            <h2 className="text-sm font-black tracking-widest text-muted-foreground">
+              建立流程（7 步）
+            </h2>
             <ol className="mt-3 space-y-2">
               {CREATE_POOL_STEPS.map((s, i) => (
                 <li key={s.key} className="flex gap-3 rounded-xl bg-muted/30 p-3">
@@ -120,7 +126,10 @@ function PoolTemplatesPage() {
               >
                 以此範本建立（Demo）
               </button>
-              <Link to="/admin/pools" className="text-xs font-bold text-muted-foreground hover:text-foreground">
+              <Link
+                to="/admin/pools"
+                className="text-xs font-bold text-muted-foreground hover:text-foreground"
+              >
                 回到卡池管理
               </Link>
               <span className="text-[11px] text-muted-foreground">
@@ -128,7 +137,8 @@ function PoolTemplatesPage() {
               </span>
             </div>
             <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-              合成規則（已核定）：僅能使用同一卡池、同等級卡牌；連續失敗 10 次保底；合成不產生女神分潤。合成素材張數依各卡池合成設定，尚未核定時顯示 Demo／待定。
+              合成規則（已核定）：僅能使用同一卡池、同等級卡牌；連續失敗 10
+              次保底；合成不產生女神分潤。合成素材張數依各卡池合成設定，尚未核定時顯示 Demo／待定。
             </p>
           </section>
         </>

@@ -340,4 +340,5 @@
 @media (prefers-reduced-motion: reduce) {
   .reveal-high-grade .card-frame { animation: none; }
   .hover-lift { transition: none; }
+  .hover-lift:hover { transform: none; }
 }

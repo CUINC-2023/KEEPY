@@ -1,19 +1,14 @@
+import { CollectionPage as CurrentCollection } from "@/components/collection/CollectionViews";
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  CARDS,
-  GRADES,
-  OWNED_CARDS,
-  goddessById,
-  type Rarity,
-} from "@/data/mock";
+import { CARDS, GRADES, OWNED_CARDS, goddessById, type Rarity } from "@/data/mock";
 import { CardFrame } from "@/components/ui/card-frame";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SkeletonCardGrid } from "@/components/ui/skeleton-block";
 import { useMockLoading } from "@/hooks/use-mock-loading";
-import { useToast } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/toast-shared";
 
 export const Route = createFileRoute("/collection")({
   head: () => ({
@@ -26,7 +21,7 @@ export const Route = createFileRoute("/collection")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: CollectionPage,
+  component: CurrentCollection,
 });
 
 const OWN_FILTERS = [
@@ -82,7 +77,10 @@ function CollectionPage() {
           title="沒有符合條件的卡牌"
           description="換個篩選條件試試，或前往卡池補齊圖鑑。"
           action={
-            <Link to="/pools" className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground">
+            <Link
+              to="/pools"
+              className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground"
+            >
               查看卡池
             </Link>
           }

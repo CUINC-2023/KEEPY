@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
-
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./dialog";
+import { usePlayerCopy } from "@/lib/player-copy";
 export function ConfirmDialog({
   open,
   title,
   description,
-  confirmLabel = "確認",
-  cancelLabel = "取消",
+  confirmLabel,
+  cancelLabel,
   tone = "violet",
   onConfirm,
   onCancel,
@@ -21,43 +22,45 @@ export function ConfirmDialog({
   onCancel: () => void;
   children?: ReactNode;
 }) {
-  if (!open) return null;
-  const confirmCls =
+  const t = usePlayerCopy();
+  const cls =
     tone === "gold"
       ? "bg-gold text-ink hover:bg-gold/90"
       : tone === "danger"
         ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
         : "bg-primary text-primary-foreground hover:bg-primary/90";
-
   return (
-    <div className="fixed inset-0 z-[70] grid place-items-center bg-ink/70 p-4 backdrop-blur-sm">
-      <div className="panel panel-glow w-full max-w-md animate-in fade-in zoom-in-95 p-6">
-        <h3 className="text-lg font-black">{title}</h3>
-        {description && (
-          <p className="mt-2 text-sm text-muted-foreground">{description}</p>
-        )}
-        {children && <div className="mt-4">{children}</div>}
-        <p className="mt-4">
-          <span className="demo-chip">Demo</span>
-          <span className="ml-2 text-xs text-muted-foreground">
-            此操作僅為介面示意，不會真的執行。
-          </span>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        if (!value) onCancel();
+      }}
+    >
+      <DialogContent className="panel panel-glow z-[90] max-h-[90dvh] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl p-6">
+        <DialogTitle className="font-black">{title}</DialogTitle>
+        <DialogDescription>
+          {description ?? t("此操作為本機介面示意。", "This is a local interface preview.")}
+        </DialogDescription>
+        {children && <div>{children}</div>}
+        <p className="text-xs text-muted-foreground">
+          <span className="demo-chip">Demo</span>{" "}
+          {t("本機測試操作，不執行正式交易。", "Local test operation; no production transaction.")}
         </p>
-        <div className="mt-5 flex justify-end gap-2">
+        <div className="flex flex-wrap justify-end gap-2">
           <button
             onClick={onCancel}
-            className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="min-h-11 rounded-xl border border-border px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted"
           >
-            {cancelLabel}
+            {cancelLabel ?? t("取消", "Cancel")}
           </button>
           <button
             onClick={onConfirm}
-            className={`rounded-xl px-4 py-2 text-sm font-bold transition-colors ${confirmCls}`}
+            className={"min-h-11 rounded-xl px-4 py-2 text-sm font-bold " + cls}
           >
-            {confirmLabel}
+            {confirmLabel ?? t("確認", "Confirm")}
           </button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

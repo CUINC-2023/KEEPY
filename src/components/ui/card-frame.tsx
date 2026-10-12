@@ -1,6 +1,8 @@
+import { usePlayerUiText } from "@/lib/player-ui-text";
 import { cn } from "@/lib/utils";
 import { GRADE_GRADIENT, isHighGrade, type Goddess, type Rarity } from "@/data/mock";
 import { RarityBadge } from "@/components/ui/rarity-badge";
+import { useState } from "react";
 
 /** 抽象人物剪影（暫用），4 種變化 */
 export function GoddessSilhouette({
@@ -53,6 +55,8 @@ export function CardFrame({
   art?: string | undefined;
   missingDisplay?: "grayscale" | "silhouette" | undefined;
 }) {
+  const tx = usePlayerUiText();
+  const [failedArt, setFailedArt] = useState<string | null>(null);
   const g: Rarity = grade ?? goddess.grade;
   const hidden = locked && missingDisplay === "silhouette";
   const Element = onClick ? "button" : "div";
@@ -61,15 +65,31 @@ export function CardFrame({
       {...(onClick ? { onClick, type: "button" as const } : {})}
       className={cn(
         "card-frame block w-full text-left",
-        onClick && "hover-lift",
+        onClick &&
+          "hover-lift focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary motion-reduce:transform-none",
         GRADE_GRADIENT[g],
         isHighGrade(g) && "card-frame-gold-edge",
-        className
+        className,
       )}
     >
       {/* 卡面：舊卡保留剪影，示意卡使用各自獨立圖片 */}
-      <div className={cn("absolute inset-0", locked && !hidden && "grayscale", locked && "opacity-60")}>
-        {hidden ? <GoddessSilhouette variant={goddess.silhouette} /> : art ? <img src={art} alt="" className="h-full w-full object-cover object-center" /> : <GoddessSilhouette variant={goddess.silhouette} />}
+      <div
+        className={cn("absolute inset-0", locked && !hidden && "grayscale", locked && "opacity-60")}
+      >
+        {hidden ? (
+          <GoddessSilhouette variant={goddess.silhouette} />
+        ) : art && failedArt !== art ? (
+          <img
+            src={art}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            onError={() => setFailedArt(art)}
+            className="h-full w-full object-cover object-center"
+          />
+        ) : (
+          <GoddessSilhouette variant={goddess.silhouette} />
+        )}
       </div>
       {/* 底部漸層遮罩 */}
       <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-ink/85 to-transparent" />
@@ -77,7 +97,11 @@ export function CardFrame({
       {/* 頂部資訊 */}
       <div className="absolute inset-x-0 top-0 flex items-start justify-between p-2.5">
         <RarityBadge rarity={g} />
-        {art && <span className="rounded bg-ink/80 px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground">範例／非正式上架</span>}
+        {art && (
+          <span className="rounded bg-ink/80 px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground">
+            {tx("範例／非正式上架")}
+          </span>
+        )}
         {level !== undefined && (
           <span className="rounded-md bg-ink/60 px-1.5 py-0.5 text-[11px] font-bold text-foreground backdrop-blur-sm">
             Lv.{level}
@@ -88,7 +112,7 @@ export function CardFrame({
       {locked && (
         <div className="absolute inset-0 grid place-items-center">
           <span className="rounded-full bg-ink/70 px-3 py-1 text-xs font-bold text-muted-foreground backdrop-blur-sm">
-            未持有
+            {tx("未持有")}
           </span>
         </div>
       )}
@@ -96,13 +120,13 @@ export function CardFrame({
       {/* 底部名稱 */}
       <div className="absolute inset-x-0 bottom-0 p-3">
         <p className="text-[10px] font-semibold tracking-widest text-gold/80">
-          {art ? "KEEPY · 虛構卡面" : goddess.element}
+          {art ? tx("KEEPY · 虛構卡面") : goddess.element}
         </p>
         <p className="truncate text-base font-black leading-tight text-foreground drop-shadow">
           {locked ? "？？？" : art ? "星光收藏" : goddess.name}
         </p>
         <p className="truncate text-[11px] text-muted-foreground">
-          {locked ? "未取得的卡牌" : (cardName ?? goddess.title)}
+          {locked ? tx("未取得的卡牌") : (cardName ?? goddess.title)}
         </p>
       </div>
     </Element>

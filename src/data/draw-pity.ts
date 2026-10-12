@@ -2,6 +2,10 @@
  * 抽卡保底規則配置預覽（Local Mock）。
  * 與「合成連續失敗 10 次保底」完全獨立，本模組只處理抽卡保底；數值皆為未核定 Demo。
  */
+/**
+ * 抽卡保底規則配置預覽（Local Mock）。
+ * 與「合成連續失敗 10 次保底」完全獨立，本模組只處理抽卡保底；數值皆為未核定 Demo。
+ */
 import { GRADES, type Rarity } from "@/data/mock";
 import type { DrawCardRow, GradeRuleRow } from "@/data/admin";
 
@@ -59,7 +63,8 @@ export const PITY_FIELD_HINTS = {
   targetGrade: "到門檻該抽結果至少此等級；自然已達此等級或更高則保留自然卡。",
   targetCards: "保底替換時從這些目標等級卡牌產生，須在抽取範圍內。",
   triggerType: "到達門檻的那一抽保證至少目標等級。",
-  resetOnHit: "自然抽中目標或更高（含到門檻同抽）時是否歸零；不重置時下一檢查點延後一個門檻（待核定）。",
+  resetOnHit:
+    "自然抽中目標或更高（含到門檻同抽）時是否歸零；不重置時下一檢查點延後一個門檻（待核定）。",
   resetOnTrigger: "只套用於保底替換（自然低於目標）後的計數。",
   poolEnd: "卡池結束後尚未觸發的計數如何處理。",
   version: "每次發布需新版本號，舊版本保留供交易追溯。",
@@ -76,19 +81,26 @@ export function parseThreshold(s: string): number | null {
 }
 
 export function sameConfig(a: DrawPityConfig, b: DrawPityConfig) {
-  const strip = (c: DrawPityConfig) => JSON.stringify({ ...c, reviewStatus: "", targetCardIds: [...c.targetCardIds].sort() });
+  const strip = (c: DrawPityConfig) =>
+    JSON.stringify({ ...c, reviewStatus: "", targetCardIds: [...c.targetCardIds].sort() });
   return strip(a) === strip(b);
 }
 
 /** 設定驗證（儲存草稿用）；啟用時所有欄位必填且須與機率設定一致 */
-export function validatePity(c: DrawPityConfig, grades: GradeRuleRow[], cards: DrawCardRow[]): string[] {
+export function validatePity(
+  c: DrawPityConfig,
+  grades: GradeRuleRow[],
+  cards: DrawCardRow[],
+): string[] {
   if (!c.enabled) return [];
   const errs: string[] = [];
-  if (parseThreshold(c.threshold) === null) errs.push("觸發門檻必須是正整數（不可空白、0、小數或負數）。");
+  if (parseThreshold(c.threshold) === null)
+    errs.push("觸發門檻必須是正整數（不可空白、0、小數或負數）。");
   if (!c.targetGrade) errs.push("請選擇保底目標等級。");
   else {
     const g = grades.find((x) => x.grade === c.targetGrade);
-    if (!g || !g.enabled || g.pct <= 0) errs.push(`目標等級 ${c.targetGrade} 在機率設定中未啟用或機率為 0。`);
+    if (!g || !g.enabled || g.pct <= 0)
+      errs.push(`目標等級 ${c.targetGrade} 在機率設定中未啟用或機率為 0。`);
     const drawable = cards.filter((x) => x.grade === c.targetGrade && x.included);
     if (drawable.length === 0) errs.push(`目標等級 ${c.targetGrade} 沒有任何在抽取範圍內的卡牌。`);
     else if (c.targetCardIds.filter((id) => drawable.some((d) => d.id === id)).length === 0)
@@ -177,7 +189,9 @@ export function simulatePity(
   const threshold = parseThreshold(c.threshold);
   const target = c.targetGrade || null;
   const active = c.enabled && !!threshold && !!target;
-  const pool = cards.filter((x) => c.targetCardIds.includes(x.id) && x.grade === target && x.included);
+  const pool = cards.filter(
+    (x) => c.targetCardIds.includes(x.id) && x.grade === target && x.included,
+  );
   let count = startCount;
   let checkpoint = threshold ?? Infinity;
   let pick = 0;
@@ -186,7 +200,9 @@ export function simulatePity(
     const before = count;
     let result: Rarity = nat;
     let resultCardName: string | null = null;
-    let thresholdReached = false, guaranteeApplied = false, naturalHitAtThreshold = false;
+    let thresholdReached = false,
+      guaranteeApplied = false,
+      naturalHitAtThreshold = false;
     let reset: SimReset = "none";
     const notes: string[] = [];
     if (!active) {
@@ -198,8 +214,17 @@ export function simulatePity(
         thresholdReached = true;
         if (hit) {
           naturalHitAtThreshold = true;
-          if (c.resetOnHitOrHigher) { count = 0; checkpoint = threshold!; reset = "hit_at_threshold"; notes.push("到門檻同抽自然達標：保留自然卡，依「抽中重置」歸零"); }
-          else { checkpoint = count + threshold!; notes.push("到門檻同抽自然達標：保留自然卡，設定不重置→計數保留，下一檢查點延後一個門檻（待核定）"); }
+          if (c.resetOnHitOrHigher) {
+            count = 0;
+            checkpoint = threshold!;
+            reset = "hit_at_threshold";
+            notes.push("到門檻同抽自然達標：保留自然卡，依「抽中重置」歸零");
+          } else {
+            checkpoint = count + threshold!;
+            notes.push(
+              "到門檻同抽自然達標：保留自然卡，設定不重置→計數保留，下一檢查點延後一個門檻（待核定）",
+            );
+          }
         } else {
           guaranteeApplied = true;
           result = target!;
@@ -208,21 +233,39 @@ export function simulatePity(
           count = c.resetOnTrigger === "carry_excess" ? Math.max(0, count - checkpoint) : 0;
           checkpoint = threshold!;
           reset = "trigger";
-          notes.push(`保底替換：自然 ${nat} 低於 ${target}，依「${c.resetOnTrigger === "carry_excess" ? "保留餘數" : "歸零"}」處理`);
+          notes.push(
+            `保底替換：自然 ${nat} 低於 ${target}，依「${c.resetOnTrigger === "carry_excess" ? "保留餘數" : "歸零"}」處理`,
+          );
         }
       } else if (hit && c.resetOnHitOrHigher) {
-        count = 0; checkpoint = threshold!; reset = "hit";
+        count = 0;
+        checkpoint = threshold!;
+        reset = "hit";
         notes.push("自然抽中目標或更高，計數重置");
       }
     }
     if (kind === "bonus") notes.unshift("第 11 次額外抽卡（bonus draw）");
     const zero = kind === "bonus" || guaranteeApplied;
-    const shareReason = kind === "bonus"
-      ? (guaranteeApplied ? "第 11 次額外抽卡＋保底替換：0" : "第 11 次額外抽卡：付費 KP 0，不分潤")
-      : guaranteeApplied ? "保底替換結果不分潤" : "付費自然抽中：依原卡合作模式";
+    const shareReason =
+      kind === "bonus"
+        ? guaranteeApplied
+          ? "第 11 次額外抽卡＋保底替換：0"
+          : "第 11 次額外抽卡：付費 KP 0，不分潤"
+        : guaranteeApplied
+          ? "保底替換結果不分潤"
+          : "付費自然抽中：依原卡合作模式";
     return {
-      step: i + 1, kind, countBefore: before, countAfter: count, natural: nat, result, resultCardName,
-      thresholdReached, guaranteeApplied, naturalHitAtThreshold, reset,
+      step: i + 1,
+      kind,
+      countBefore: before,
+      countAfter: count,
+      natural: nat,
+      result,
+      resultCardName,
+      thresholdReached,
+      guaranteeApplied,
+      naturalHitAtThreshold,
+      reset,
       paidKp: kind === "bonus" ? "0" : "付費",
       creatorShare: zero ? "0" : "依原卡合作模式",
       shareReason,
@@ -237,7 +280,10 @@ const TEN_PLUS_ONE: SimDrawKind[] = [...Array<SimDrawKind>(10).fill("paid"), "bo
 const FIXED_NATURAL: Rarity[] = ["C", "U", "C", "R", "C", "U", "SSR", "C", "RR", "U", "C"];
 
 /** 獨立測試情境：Demo 範例值，非正式門檻 */
-export function demoScenarios(targetCardIds: string[], noTargetGrade: Rarity = "UR"): SimScenario[] {
+export function demoScenarios(
+  targetCardIds: string[],
+  noTargetGrade: Rarity = "UR",
+): SimScenario[] {
   const base: DrawPityConfig = {
     ...defaultPityConfig(),
     enabled: true,
@@ -251,16 +297,98 @@ export function demoScenarios(targetCardIds: string[], noTargetGrade: Rarity = "
     reviewStatus: "待覆核",
   };
   return [
-    { id: "legal", label: "合法設定・單抽", desc: "Demo 門檻 40，起始 12，單抽不跨門檻。", config: base, startCount: 12, draws: ["paid"], natural: ["U"] },
-    { id: "cross11", label: "bonus 強制替換（10+1）", desc: "起始 29，十抽送一抽 +11，第 11 次到達 40 觸發保底，分潤仍為 0。", config: { ...base, resetOnHitOrHigher: false }, startCount: 29, draws: TEN_PLUS_ONE, natural: ["C", "U", "C", "R", "C", "U", "R", "C", "RR", "U", "C"] },
-    { id: "reset", label: "觸發後重置再累計", desc: "起始 36，第 4 抽觸發並歸零，之後繼續累計；第 7 抽自然 SSR 再重置。", config: base, startCount: 36, draws: TEN_PLUS_ONE, natural: FIXED_NATURAL },
-    { id: "no-target", label: "無可抽目標卡", desc: `測試情境將 ${noTargetGrade} 卡牌全部移出抽取範圍，目標等級沒有可抽卡，驗證應阻擋。`, config: { ...base, targetGrade: noTargetGrade, targetCardIds: [] }, startCount: 0, draws: ["paid"], natural: ["C"], excludeGrade: noTargetGrade },
-    { id: "empty", label: "空門檻", desc: "門檻未填，驗證應阻擋，模擬不觸發。", config: { ...base, threshold: "" }, startCount: 0, draws: ["paid"], natural: ["C"] },
-    { id: "hit-at-threshold", label: "自然命中＋門檻同抽", desc: "起始 39，第 1 抽到達 40 且自然 SSR：保留自然卡、非保底替換、付費依原卡分潤；依「抽中重置」歸零。", config: base, startCount: 39, draws: ["paid", "paid"], natural: ["SSR", "C"] },
-    { id: "hit-no-reset", label: "自然命中＋不重置", desc: "同上但「抽中不重置」：計數保留，下一檢查點延後一個門檻，後續抽不會每抽觸發（待核定解讀）。", config: { ...base, resetOnHitOrHigher: false }, startCount: 39, draws: ["paid", "paid", "paid"], natural: ["SSR", "C", "U"] },
-    { id: "paid-forced", label: "付費強制替換", desc: "起始 39，付費抽自然 C，保底替換為所選 SSR 卡，分潤 0。", config: base, startCount: 39, draws: ["paid"], natural: ["C"] },
-    { id: "disabled", label: "停用不計數", desc: "保底停用：十抽送一抽不累計計數、不替換。", config: { ...base, enabled: false }, startCount: 5, draws: TEN_PLUS_ONE, natural: FIXED_NATURAL },
-    { id: "ended", label: "卡池結束", desc: "卡池結束時計數 18，依 Demo 設定「清除」，不轉移至其他卡池。", config: base, startCount: 18, draws: [], natural: [], poolEnded: true },
+    {
+      id: "legal",
+      label: "合法設定・單抽",
+      desc: "Demo 門檻 40，起始 12，單抽不跨門檻。",
+      config: base,
+      startCount: 12,
+      draws: ["paid"],
+      natural: ["U"],
+    },
+    {
+      id: "cross11",
+      label: "bonus 強制替換（10+1）",
+      desc: "起始 29，十抽送一抽 +11，第 11 次到達 40 觸發保底，分潤仍為 0。",
+      config: { ...base, resetOnHitOrHigher: false },
+      startCount: 29,
+      draws: TEN_PLUS_ONE,
+      natural: ["C", "U", "C", "R", "C", "U", "R", "C", "RR", "U", "C"],
+    },
+    {
+      id: "reset",
+      label: "觸發後重置再累計",
+      desc: "起始 36，第 4 抽觸發並歸零，之後繼續累計；第 7 抽自然 SSR 再重置。",
+      config: base,
+      startCount: 36,
+      draws: TEN_PLUS_ONE,
+      natural: FIXED_NATURAL,
+    },
+    {
+      id: "no-target",
+      label: "無可抽目標卡",
+      desc: `測試情境將 ${noTargetGrade} 卡牌全部移出抽取範圍，目標等級沒有可抽卡，驗證應阻擋。`,
+      config: { ...base, targetGrade: noTargetGrade, targetCardIds: [] },
+      startCount: 0,
+      draws: ["paid"],
+      natural: ["C"],
+      excludeGrade: noTargetGrade,
+    },
+    {
+      id: "empty",
+      label: "空門檻",
+      desc: "門檻未填，驗證應阻擋，模擬不觸發。",
+      config: { ...base, threshold: "" },
+      startCount: 0,
+      draws: ["paid"],
+      natural: ["C"],
+    },
+    {
+      id: "hit-at-threshold",
+      label: "自然命中＋門檻同抽",
+      desc: "起始 39，第 1 抽到達 40 且自然 SSR：保留自然卡、非保底替換、付費依原卡分潤；依「抽中重置」歸零。",
+      config: base,
+      startCount: 39,
+      draws: ["paid", "paid"],
+      natural: ["SSR", "C"],
+    },
+    {
+      id: "hit-no-reset",
+      label: "自然命中＋不重置",
+      desc: "同上但「抽中不重置」：計數保留，下一檢查點延後一個門檻，後續抽不會每抽觸發（待核定解讀）。",
+      config: { ...base, resetOnHitOrHigher: false },
+      startCount: 39,
+      draws: ["paid", "paid", "paid"],
+      natural: ["SSR", "C", "U"],
+    },
+    {
+      id: "paid-forced",
+      label: "付費強制替換",
+      desc: "起始 39，付費抽自然 C，保底替換為所選 SSR 卡，分潤 0。",
+      config: base,
+      startCount: 39,
+      draws: ["paid"],
+      natural: ["C"],
+    },
+    {
+      id: "disabled",
+      label: "停用不計數",
+      desc: "保底停用：十抽送一抽不累計計數、不替換。",
+      config: { ...base, enabled: false },
+      startCount: 5,
+      draws: TEN_PLUS_ONE,
+      natural: FIXED_NATURAL,
+    },
+    {
+      id: "ended",
+      label: "卡池結束",
+      desc: "卡池結束時計數 18，依 Demo 設定「清除」，不轉移至其他卡池。",
+      config: base,
+      startCount: 18,
+      draws: [],
+      natural: [],
+      poolEnded: true,
+    },
   ];
 }
 

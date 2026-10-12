@@ -26,7 +26,7 @@ export function StatCard({
         className={cn(
           "mt-2 text-2xl font-black tracking-tight sm:text-3xl",
           tone === "gold" && "text-gold-gradient",
-          tone === "violet" && "text-violet-gradient"
+          tone === "violet" && "text-violet-gradient",
         )}
       >
         {value}

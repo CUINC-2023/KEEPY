@@ -1,18 +1,27 @@
+import { useLocalTest } from "@/lib/local-test-client";
+import { LocalAccountOverview } from "@/components/player/LocalAccountOverview";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ADMIN_POOL_ROWS, ADMIN_USER, ALL_POOLS_TBD, DRAW_SCOPES } from "@/data/admin";
 import { DataTable } from "@/components/ui/data-table";
 import { StatusTag } from "@/components/ui/status-tag";
 import { StatCard } from "@/components/ui/stat-card";
 import { PoolStatusTag } from "@/components/ui/pool-cover";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
       { title: "營運總覽 — KEEPY管理後台" },
-      { name: "description", content: "卡池草稿與發布狀態、最後修改者與修改時間的營運總覽骨架。（Demo）" },
+      {
+        name: "description",
+        content: "卡池草稿與發布狀態、最後修改者與修改時間的營運總覽骨架。（Demo）",
+      },
       { property: "og:title", content: "營運總覽 — KEEPY管理後台" },
-      { property: "og:description", content: "卡池草稿與發布狀態、最後修改者與修改時間的營運總覽骨架。（Demo）" },
+      {
+        property: "og:description",
+        content: "卡池草稿與發布狀態、最後修改者與修改時間的營運總覽骨架。（Demo）",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -21,9 +30,11 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminHome() {
+  const local = useLocalTest();
   const [state, setState] = useDemoState();
   const drafts = ADMIN_POOL_ROWS.filter((r) => r.meta.publishState !== "已發布").length;
 
+  if (local.enabled) return <LocalAccountOverview kind="admin" />;
   return (
     <div className="space-y-5">
       <header>
@@ -38,14 +49,22 @@ function AdminHome() {
 
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="尚無卡池" emptyDescription="建立卡池後即可設定抽卡與合成規則。" />
+        <StatePlaceholder
+          state={state}
+          emptyTitle="尚無卡池"
+          emptyDescription="建立卡池後即可設定抽卡與合成規則。"
+        />
       ) : (
         <>
           <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <StatCard label="卡池數" value={ADMIN_POOL_ROWS.length} sub="Mock 卡池" />
             <StatCard label="待處理草稿" value={drafts} sub="含未發布變更" tone="gold" />
             <StatCard label="抽卡範圍" value="單一卡池" sub="V1 僅啟用 single_pool" tone="violet" />
-            <StatCard label="權限" value={<span className="text-base">{ADMIN_USER.permissions.length} 項</span>} sub={ADMIN_USER.permissions.join("、")} />
+            <StatCard
+              label="權限"
+              value={<span className="text-base">{ADMIN_USER.permissions.length} 項</span>}
+              sub={ADMIN_USER.permissions.join("、")}
+            />
           </section>
 
           <section>
@@ -64,7 +83,13 @@ function AdminHome() {
                 status: <PoolStatusTag status={pool.status} />,
                 publish: (
                   <StatusTag
-                    tone={meta.publishState === "已發布" ? "live" : meta.publishState === "草稿" ? "pending" : "gold"}
+                    tone={
+                      meta.publishState === "已發布"
+                        ? "live"
+                        : meta.publishState === "草稿"
+                          ? "pending"
+                          : "gold"
+                    }
                     label={meta.publishState}
                   />
                 ),
@@ -101,7 +126,10 @@ function AdminHome() {
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="font-black">{s.label}</h3>
-                  <StatusTag tone={s.enabled ? "live" : "resting"} label={s.enabled ? "已啟用" : "尚未啟用"} />
+                  <StatusTag
+                    tone={s.enabled ? "live" : "resting"}
+                    label={s.enabled ? "已啟用" : "尚未啟用"}
+                  />
                 </div>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
                 {!s.enabled && (

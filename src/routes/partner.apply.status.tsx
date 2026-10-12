@@ -8,12 +8,13 @@ import {
   statusTone,
   type ApplicationStatus,
 } from "@/data/partner";
-import { usePartner } from "@/lib/partner-store";
-import { useMode } from "@/components/layout/AppShell";
+import { usePartner } from "@/lib/partner-store-shared";
+import { useMode } from "@/components/layout/AppShell-shared";
 import { StatusTag } from "@/components/ui/status-tag";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { useToast } from "@/components/ui/toast";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useToast } from "@/components/ui/toast-shared";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/partner/apply/status")({
   head: () => ({
@@ -33,8 +34,16 @@ export const Route = createFileRoute("/partner/apply/status")({
 });
 
 const TIMELINE: { key: string; label: string; statuses: ApplicationStatus[] }[] = [
-  { key: "submit", label: "送出申請", statuses: ["已送出", "審核中", "待補件", "已核准", "未通過", "待合約確認", "女神身分已開通"] },
-  { key: "review", label: "官方審核", statuses: ["審核中", "待補件", "已核准", "未通過", "待合約確認", "女神身分已開通"] },
+  {
+    key: "submit",
+    label: "送出申請",
+    statuses: ["已送出", "審核中", "待補件", "已核准", "未通過", "待合約確認", "女神身分已開通"],
+  },
+  {
+    key: "review",
+    label: "官方審核",
+    statuses: ["審核中", "待補件", "已核准", "未通過", "待合約確認", "女神身分已開通"],
+  },
   { key: "resubmit", label: "補件（必要時）", statuses: ["待補件"] },
   { key: "approve", label: "核准", statuses: ["已核准", "待合約確認", "女神身分已開通"] },
   { key: "contract", label: "合約確認（Demo）", statuses: ["女神身分已開通"] },
@@ -44,7 +53,8 @@ const TIMELINE: { key: string; label: string; statuses: ApplicationStatus[] }[] 
 function ApplyStatus() {
   const [state, setState] = useDemoState();
   const [confirm, setConfirm] = useState(false);
-  const { myStatus, setMyStatus, myApplicationId, confirmContract, contractConfirmed } = usePartner();
+  const { myStatus, setMyStatus, myApplicationId, confirmContract, contractConfirmed } =
+    usePartner();
   const { setMode, setGoddessEligible } = useMode();
   const { push } = useToast();
   const app = applicationById(myApplicationId);
@@ -100,8 +110,7 @@ function ApplyStatus() {
               {TIMELINE.map((t) => {
                 const done = t.statuses.includes(myStatus);
                 const skipped = t.key === "resubmit" && !done;
-                const inProgress =
-                  !done && t.key === "contract" && myStatus === "待合約確認";
+                const inProgress = !done && t.key === "contract" && myStatus === "待合約確認";
                 return (
                   <li key={t.key} className="flex gap-3">
                     <span
@@ -138,7 +147,9 @@ function ApplyStatus() {
           {myStatus === "草稿" && (
             <section className="panel p-5">
               <h2 className="font-black">申請尚未送出</h2>
-              <p className="mt-1.5 text-sm text-muted-foreground">草稿已自動儲存（Demo），可回到申請表繼續填寫。</p>
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                草稿已自動儲存（Demo），可回到申請表繼續填寫。
+              </p>
               <Link
                 to="/partner/apply"
                 className="mt-3 inline-block rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:bg-primary/90"
@@ -201,7 +212,8 @@ function ApplyStatus() {
                 <StatusTag tone="gold" label={myStatus} />
               </div>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                審核已核准。完成 Demo 合約確認後，同一帳號才會新增女神身分；在此之前女神後台仍為無權限狀態。
+                審核已核准。完成 Demo
+                合約確認後，同一帳號才會新增女神身分；在此之前女神後台仍為無權限狀態。
                 實際分潤比例依合作合約，介面不顯示未核定比例；原型不進行真實電子簽署。
               </p>
               <button
@@ -250,7 +262,10 @@ function ApplyStatus() {
               <h2 className="font-black">審核紀錄</h2>
               <ul className="mt-3 space-y-2 text-sm">
                 {app.logs.map((l, i) => (
-                  <li key={i} className="flex flex-wrap gap-2 border-b border-border/50 pb-2 last:border-0">
+                  <li
+                    key={i}
+                    className="flex flex-wrap gap-2 border-b border-border/50 pb-2 last:border-0"
+                  >
                     <span className="tabular-nums text-muted-foreground">{l.at}</span>
                     <span className="font-semibold">{l.by}</span>
                     <span className="text-primary">{l.action}</span>

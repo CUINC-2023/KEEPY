@@ -7,8 +7,9 @@ import { StatusTag } from "@/components/ui/status-tag";
 import { StatCard } from "@/components/ui/stat-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { useToast } from "@/components/ui/toast";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useToast } from "@/components/ui/toast-shared";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/admin/goddesses/$id")({
   head: () => ({
@@ -62,7 +63,15 @@ function AdminGoddessDetail() {
           <h1 className="text-2xl font-black tracking-wide">{g.name}</h1>
           <span className="text-sm text-muted-foreground">{g.title}</span>
           <StatusTag
-            tone={g.status === "合作中" ? "live" : g.status === "待合約" ? "gold" : g.status === "暫停合作" ? "pending" : "resting"}
+            tone={
+              g.status === "合作中"
+                ? "live"
+                : g.status === "待合約"
+                  ? "gold"
+                  : g.status === "暫停合作"
+                    ? "pending"
+                    : "resting"
+            }
             label={g.status}
           />
           <span className="demo-chip">Demo</span>
@@ -75,12 +84,20 @@ function AdminGoddessDetail() {
 
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="尚無合作資料" emptyDescription="合作建立後才會顯示卡池與卡牌資訊。" />
+        <StatePlaceholder
+          state={state}
+          emptyTitle="尚無合作資料"
+          emptyDescription="合作建立後才會顯示卡池與卡牌資訊。"
+        />
       ) : (
         <>
           <div className="grid gap-3 sm:grid-cols-4">
             <StatCard label="女神後台" value={g.backstage} />
-            <StatCard label="參與卡池" value={String(g.pools.length)} sub={g.pools.join("、") || "尚未指派"} />
+            <StatCard
+              label="參與卡池"
+              value={String(g.pools.length)}
+              sub={g.pools.join("、") || "尚未指派"}
+            />
             <StatCard label="卡牌數" value={String(g.cardCount)} tone="violet" />
             <StatCard label="合約版本" value={g.contractVersion} tone="gold" />
           </div>
@@ -129,7 +146,11 @@ function AdminGoddessDetail() {
       <ConfirmDialog
         open={action !== null}
         title={
-          action === "end" ? "結束合作（Demo）" : action === "resume" ? "恢復合作（Demo）" : "暫停合作（Demo）"
+          action === "end"
+            ? "結束合作（Demo）"
+            : action === "resume"
+              ? "恢復合作（Demo）"
+              : "暫停合作（Demo）"
         }
         description={`${g.name}。此操作僅改變本地 Mock 狀態，不會刪除女神資料、卡牌或玩家既有卡冊，也不影響既有分潤紀錄。`}
         confirmLabel="模擬執行"

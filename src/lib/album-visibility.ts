@@ -1,3 +1,5 @@
+import { useCollection } from "./collection-store";
+import { useLocalTest } from "./local-test-client";
 import { useSyncExternalStore } from "react";
 import { GRADES, POOLS, type Rarity } from "@/data/mock";
 
@@ -17,7 +19,13 @@ function read(): Overrides {
     const parsed: unknown = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
     const data = parsed as { version?: unknown; pools?: unknown };
-    if (data.version !== 1 || !data.pools || typeof data.pools !== "object" || Array.isArray(data.pools)) return {};
+    if (
+      data.version !== 1 ||
+      !data.pools ||
+      typeof data.pools !== "object" ||
+      Array.isArray(data.pools)
+    )
+      return {};
     const pools = data.pools as Record<string, unknown>;
     const clean: Overrides = {};
     for (const pool of POOLS) {
@@ -26,12 +34,15 @@ function read(): Overrides {
       const values = record as Record<string, unknown>;
       const grades: Partial<Record<Rarity, MissingCardDisplay>> = {};
       for (const grade of GRADES) {
-        if (values[grade] === "grayscale" || values[grade] === "silhouette") grades[grade] = values[grade];
+        if (values[grade] === "grayscale" || values[grade] === "silhouette")
+          grades[grade] = values[grade];
       }
       if (Object.keys(grades).length) clean[pool.id] = grades;
     }
     return clean;
-  } catch { return {}; }
+  } catch {
+    return {};
+  }
 }
 
 function subscribe(listener: () => void) {
@@ -49,24 +60,45 @@ function onStorage(event: StorageEvent) {
   listeners.forEach((listener) => listener());
 }
 function getSnapshot() {
-  if (!initialized && typeof window !== "undefined") { snapshot = read(); initialized = true; }
+  if (!initialized && typeof window !== "undefined") {
+    snapshot = read();
+    initialized = true;
+  }
   return snapshot;
 }
 // SSR cannot read this browser's Local Mock preference. Fail closed until hydration:
 // never send a hidden card image URL in server HTML before localStorage is checked.
 const serverSnapshot: Overrides = Object.fromEntries(
-  POOLS.map((pool) => [pool.id, Object.fromEntries(GRADES.map((grade) => [grade, "silhouette"]))])
+  POOLS.map((pool) => [pool.id, Object.fromEntries(GRADES.map((grade) => [grade, "silhouette"]))]),
 ) as Overrides;
 
 export function useAlbumVisibility() {
-  return useSyncExternalStore(subscribe, getSnapshot, () => serverSnapshot);
+  const stored = useSyncExternalStore(subscribe, getSnapshot, () => serverSnapshot);
+  const data = useCollection(),
+    local = useLocalTest();
+  if (!data.catalogue && !local.enabled) return stored;
+  const result: Overrides = { ...stored };
+  for (const pool of POOLS) {
+    const allowed = data.catalogue?.cards.filter((c) => c.poolId === pool.id) ?? [];
+    result[pool.id] = { ...stored[pool.id] };
+    for (const grade of GRADES)
+      if (!allowed.some((c) => c.rarity === grade)) result[pool.id]![grade] = "silhouette";
+  }
+  return result;
 }
 
-export function missingCardDisplay(overrides: Overrides, poolId: string, grade: Rarity): MissingCardDisplay {
+export function missingCardDisplay(
+  overrides: Overrides,
+  poolId: string,
+  grade: Rarity,
+): MissingCardDisplay {
   return overrides[poolId]?.[grade] ?? "grayscale";
 }
 
-export function saveAlbumVisibility(poolId: string, values: Partial<Record<Rarity, MissingCardDisplay>>) {
+export function saveAlbumVisibility(
+  poolId: string,
+  values: Partial<Record<Rarity, MissingCardDisplay>>,
+) {
   if (!POOLS.some((pool) => pool.id === poolId)) return false;
   const next = { ...getSnapshot(), [poolId]: values };
   try {
@@ -74,7 +106,9 @@ export function saveAlbumVisibility(poolId: string, values: Partial<Record<Rarit
     snapshot = next;
     listeners.forEach((listener) => listener());
     return true;
-  } catch { return false; }
+  } catch {
+    return false;
+  }
 }
 
 export function resetAlbumVisibility(poolId: string) {
@@ -85,5 +119,7 @@ export function resetAlbumVisibility(poolId: string) {
     snapshot = next;
     listeners.forEach((listener) => listener());
     return true;
-  } catch { return false; }
+  } catch {
+    return false;
+  }
 }

@@ -2,6 +2,10 @@
 // Phase 6D-1：共用卡牌詳情資料解析（Local Mock）
 // 僅整合既有 CARDS / ALBUM / OWNED_CARDS，不新增矛盾卡牌資料。
 // ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// Phase 6D-1：共用卡牌詳情資料解析（Local Mock）
+// 僅整合既有 CARDS / ALBUM / OWNED_CARDS，不新增矛盾卡牌資料。
+// ─────────────────────────────────────────────────────────────
 import {
   CARDS,
   OWNED_CARDS,
@@ -13,7 +17,7 @@ import {
   type Pool,
   type Rarity,
 } from "@/data/mock";
-import { ALBUM, albumCardById } from "@/data/player";
+import { ALBUM, type AlbumCard } from "@/data/player";
 import { sampleCardById } from "@/data/keepy-sample";
 
 export interface CardDetail {
@@ -42,13 +46,19 @@ export interface CardDetail {
 }
 
 const seqOf = (poolId: string, id: string) => {
-  const inPool = [...ALBUM.filter((c) => c.poolId === poolId).map((c) => c.id), ...CARDS.filter((c) => c.poolId === poolId).map((c) => c.id)];
+  const inPool = [
+    ...ALBUM.filter((c) => c.poolId === poolId).map((c) => c.id),
+    ...CARDS.filter((c) => c.poolId === poolId).map((c) => c.id),
+  ];
   const i = inPool.indexOf(id);
   return String((i < 0 ? 0 : i) + 1).padStart(3, "0");
 };
 
-export function resolveCardDetail(cardId: string): CardDetail | undefined {
-  const album = albumCardById(cardId);
+export function resolveCardDetail(
+  cardId: string,
+  cards: AlbumCard[] = ALBUM,
+): CardDetail | undefined {
+  const album = cards.find((c) => c.id === cardId);
   const def = cardById(cardId);
   const base = album ?? def;
   if (!base) return undefined;
@@ -64,7 +74,8 @@ export function resolveCardDetail(cardId: string): CardDetail | undefined {
   const obtainedAt = album?.obtainedAt ?? legacyOwned?.obtainedAt;
 
   // 展示卡：沿用卡冊中已取得、成長值最高的前 6 張（與公開頁預設一致）
-  const showcaseIds = ALBUM.filter((c) => c.owned)
+  const showcaseIds = cards
+    .filter((c) => c.owned)
     .slice(0, 6)
     .map((c) => c.id);
 

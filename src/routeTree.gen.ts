@@ -14,10 +14,12 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as DrawRouteImport } from './routes/draw'
+import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as FusionRouteImport } from './routes/fusion'
 import { Route as GoddessRouteImport } from './routes/goddess'
 import { Route as LeaderboardsRouteImport } from './routes/leaderboards'
+import { Route as LocalTestRouteImport } from './routes/local-test'
 import { Route as PartnerRouteImport } from './routes/partner'
 import { Route as PhysicalCollectionRouteImport } from './routes/physical-collection'
 import { Route as RankingsRouteImport } from './routes/rankings'
@@ -28,23 +30,40 @@ import { Route as ActivitiesIndexRouteImport } from './routes/activities.index'
 import { Route as ActivitiesActivityIdRouteImport } from './routes/activities.$activityId'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAlbumTemplatesRouteImport } from './routes/admin.album-templates'
+import { Route as AdminCollectionRouteImport } from './routes/admin.collection'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
+import { Route as AdminDiscoveryRouteImport } from './routes/admin.discovery'
 import { Route as AdminGoddessesRouteImport } from './routes/admin.goddesses'
+import { Route as AdminOperationsRouteImport } from './routes/admin.operations'
+import { Route as AdminParticipationRouteImport } from './routes/admin.participation'
+import { Route as AdminSupplyRouteImport } from './routes/admin.supply'
 import { Route as AnnouncementsIndexRouteImport } from './routes/announcements.index'
 import { Route as AnnouncementsAnnouncementIdRouteImport } from './routes/announcements.$announcementId'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppAchievementsRouteImport } from './routes/app.achievements'
+import { Route as AppCollectionRouteImport } from './routes/app.collection'
+import { Route as AppCurationsRouteImport } from './routes/app.curations'
 import { Route as AppGrowthRouteImport } from './routes/app.growth'
 import { Route as AppHistoryRouteImport } from './routes/app.history'
+import { Route as AppLevelsRouteImport } from './routes/app.levels'
+import { Route as AppParticipationLevelRouteImport } from './routes/app.participation-level'
+import { Route as AppRankingsRouteImport } from './routes/app.rankings'
+import { Route as AppReadingRouteImport } from './routes/app.reading'
 import { Route as AppSynthesisRouteImport } from './routes/app.synthesis'
+import { Route as AppTasksRouteImport } from './routes/app.tasks'
 import { Route as AppWalletRouteImport } from './routes/app.wallet'
 import { Route as CardsCardIdRouteImport } from './routes/cards.$cardId'
+import { Route as CollectorsCollectorIdRouteImport } from './routes/collectors.$collectorId'
 import { Route as CollectorsDemoPlayerRouteImport } from './routes/collectors.demo-player'
 import { Route as GoddessIndexRouteImport } from './routes/goddess.index'
+import { Route as GoddessCooperationRouteImport } from './routes/goddess.cooperation'
 import { Route as GoddessDashboardRouteImport } from './routes/goddess.dashboard'
 import { Route as GoddessProfileRouteImport } from './routes/goddess.profile'
+import { Route as GoddessSupplyRouteImport } from './routes/goddess.supply'
 import { Route as GoddessesIndexRouteImport } from './routes/goddesses.index'
 import { Route as GoddessesGoddessIdRouteImport } from './routes/goddesses.$goddessId'
+import { Route as JournalIndexRouteImport } from './routes/journal.index'
+import { Route as JournalArticleIdRouteImport } from './routes/journal.$articleId'
 import { Route as PartnerIndexRouteImport } from './routes/partner.index'
 import { Route as PoolsIndexRouteImport } from './routes/pools.index'
 import { Route as PoolsPoolIdRouteImport } from './routes/pools.$poolId'
@@ -99,6 +118,11 @@ const DrawRoute = DrawRouteImport.update({
   path: '/draw',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
@@ -117,6 +141,11 @@ const GoddessRoute = GoddessRouteImport.update({
 const LeaderboardsRoute = LeaderboardsRouteImport.update({
   id: '/leaderboards',
   path: '/leaderboards',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocalTestRoute = LocalTestRouteImport.update({
+  id: '/local-test',
+  path: '/local-test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnerRoute = PartnerRouteImport.update({
@@ -169,14 +198,39 @@ const AdminAlbumTemplatesRoute = AdminAlbumTemplatesRouteImport.update({
   path: '/album-templates',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCollectionRoute = AdminCollectionRouteImport.update({
+  id: '/collection',
+  path: '/collection',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminContentRoute = AdminContentRouteImport.update({
   id: '/content',
   path: '/content',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminDiscoveryRoute = AdminDiscoveryRouteImport.update({
+  id: '/discovery',
+  path: '/discovery',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminGoddessesRoute = AdminGoddessesRouteImport.update({
   id: '/goddesses',
   path: '/goddesses',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOperationsRoute = AdminOperationsRouteImport.update({
+  id: '/operations',
+  path: '/operations',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminParticipationRoute = AdminParticipationRouteImport.update({
+  id: '/participation',
+  path: '/participation',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSupplyRoute = AdminSupplyRouteImport.update({
+  id: '/supply',
+  path: '/supply',
   getParentRoute: () => AdminRoute,
 } as any)
 const AnnouncementsIndexRoute = AnnouncementsIndexRouteImport.update({
@@ -200,6 +254,16 @@ const AppAchievementsRoute = AppAchievementsRouteImport.update({
   path: '/achievements',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCollectionRoute = AppCollectionRouteImport.update({
+  id: '/collection',
+  path: '/collection',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCurationsRoute = AppCurationsRouteImport.update({
+  id: '/curations',
+  path: '/curations',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppGrowthRoute = AppGrowthRouteImport.update({
   id: '/growth',
   path: '/growth',
@@ -210,9 +274,34 @@ const AppHistoryRoute = AppHistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLevelsRoute = AppLevelsRouteImport.update({
+  id: '/levels',
+  path: '/levels',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppParticipationLevelRoute = AppParticipationLevelRouteImport.update({
+  id: '/participation-level',
+  path: '/participation-level',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRankingsRoute = AppRankingsRouteImport.update({
+  id: '/rankings',
+  path: '/rankings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReadingRoute = AppReadingRouteImport.update({
+  id: '/reading',
+  path: '/reading',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppSynthesisRoute = AppSynthesisRouteImport.update({
   id: '/synthesis',
   path: '/synthesis',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTasksRoute = AppTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
   getParentRoute: () => AppRoute,
 } as any)
 const AppWalletRoute = AppWalletRouteImport.update({
@@ -225,6 +314,11 @@ const CardsCardIdRoute = CardsCardIdRouteImport.update({
   path: '/cards/$cardId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollectorsCollectorIdRoute = CollectorsCollectorIdRouteImport.update({
+  id: '/collectors/$collectorId',
+  path: '/collectors/$collectorId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollectorsDemoPlayerRoute = CollectorsDemoPlayerRouteImport.update({
   id: '/collectors/demo-player',
   path: '/collectors/demo-player',
@@ -233,6 +327,11 @@ const CollectorsDemoPlayerRoute = CollectorsDemoPlayerRouteImport.update({
 const GoddessIndexRoute = GoddessIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => GoddessRoute,
+} as any)
+const GoddessCooperationRoute = GoddessCooperationRouteImport.update({
+  id: '/cooperation',
+  path: '/cooperation',
   getParentRoute: () => GoddessRoute,
 } as any)
 const GoddessDashboardRoute = GoddessDashboardRouteImport.update({
@@ -245,6 +344,11 @@ const GoddessProfileRoute = GoddessProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => GoddessRoute,
 } as any)
+const GoddessSupplyRoute = GoddessSupplyRouteImport.update({
+  id: '/supply',
+  path: '/supply',
+  getParentRoute: () => GoddessRoute,
+} as any)
 const GoddessesIndexRoute = GoddessesIndexRouteImport.update({
   id: '/goddesses/',
   path: '/goddesses/',
@@ -253,6 +357,16 @@ const GoddessesIndexRoute = GoddessesIndexRouteImport.update({
 const GoddessesGoddessIdRoute = GoddessesGoddessIdRouteImport.update({
   id: '/goddesses/$goddessId',
   path: '/goddesses/$goddessId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JournalIndexRoute = JournalIndexRouteImport.update({
+  id: '/journal/',
+  path: '/journal/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JournalArticleIdRoute = JournalArticleIdRouteImport.update({
+  id: '/journal/$articleId',
+  path: '/journal/$articleId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnerIndexRoute = PartnerIndexRouteImport.update({
@@ -406,10 +520,12 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/collection': typeof CollectionRoute
   '/draw': typeof DrawRoute
+  '/explore': typeof ExploreRoute
   '/faq': typeof FaqRoute
   '/fusion': typeof FusionRoute
   '/goddess': typeof GoddessRouteWithChildren
   '/leaderboards': typeof LeaderboardsRoute
+  '/local-test': typeof LocalTestRoute
   '/partner': typeof PartnerRouteWithChildren
   '/physical-collection': typeof PhysicalCollectionRoute
   '/rankings': typeof RankingsRoute
@@ -418,19 +534,35 @@ export interface FileRoutesByFullPath {
   '/wish-pools': typeof WishPoolsRoute
   '/activities/$activityId': typeof ActivitiesActivityIdRoute
   '/admin/album-templates': typeof AdminAlbumTemplatesRoute
+  '/admin/collection': typeof AdminCollectionRoute
   '/admin/content': typeof AdminContentRoute
+  '/admin/discovery': typeof AdminDiscoveryRoute
   '/admin/goddesses': typeof AdminGoddessesRouteWithChildren
+  '/admin/operations': typeof AdminOperationsRoute
+  '/admin/participation': typeof AdminParticipationRoute
+  '/admin/supply': typeof AdminSupplyRoute
   '/announcements/$announcementId': typeof AnnouncementsAnnouncementIdRoute
   '/app/achievements': typeof AppAchievementsRoute
+  '/app/collection': typeof AppCollectionRoute
+  '/app/curations': typeof AppCurationsRoute
   '/app/growth': typeof AppGrowthRoute
   '/app/history': typeof AppHistoryRoute
+  '/app/levels': typeof AppLevelsRoute
+  '/app/participation-level': typeof AppParticipationLevelRoute
+  '/app/rankings': typeof AppRankingsRoute
+  '/app/reading': typeof AppReadingRoute
   '/app/synthesis': typeof AppSynthesisRoute
+  '/app/tasks': typeof AppTasksRoute
   '/app/wallet': typeof AppWalletRoute
   '/cards/$cardId': typeof CardsCardIdRoute
+  '/collectors/$collectorId': typeof CollectorsCollectorIdRoute
   '/collectors/demo-player': typeof CollectorsDemoPlayerRoute
+  '/goddess/cooperation': typeof GoddessCooperationRoute
   '/goddess/dashboard': typeof GoddessDashboardRoute
   '/goddess/profile': typeof GoddessProfileRoute
+  '/goddess/supply': typeof GoddessSupplyRoute
   '/goddesses/$goddessId': typeof GoddessesGoddessIdRoute
+  '/journal/$articleId': typeof JournalArticleIdRoute
   '/pools/$poolId': typeof PoolsPoolIdRoute
   '/seasons/next': typeof SeasonsNextRoute
   '/activities/': typeof ActivitiesIndexRoute
@@ -439,6 +571,7 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AppIndexRoute
   '/goddess/': typeof GoddessIndexRoute
   '/goddesses/': typeof GoddessesIndexRoute
+  '/journal/': typeof JournalIndexRoute
   '/partner/': typeof PartnerIndexRoute
   '/pools/': typeof PoolsIndexRoute
   '/admin/goddesses/$id': typeof AdminGoddessesIdRoute
@@ -470,9 +603,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/collection': typeof CollectionRoute
   '/draw': typeof DrawRoute
+  '/explore': typeof ExploreRoute
   '/faq': typeof FaqRoute
   '/fusion': typeof FusionRoute
   '/leaderboards': typeof LeaderboardsRoute
+  '/local-test': typeof LocalTestRoute
   '/physical-collection': typeof PhysicalCollectionRoute
   '/rankings': typeof RankingsRoute
   '/recruitment': typeof RecruitmentRoute
@@ -480,18 +615,34 @@ export interface FileRoutesByTo {
   '/wish-pools': typeof WishPoolsRoute
   '/activities/$activityId': typeof ActivitiesActivityIdRoute
   '/admin/album-templates': typeof AdminAlbumTemplatesRoute
+  '/admin/collection': typeof AdminCollectionRoute
   '/admin/content': typeof AdminContentRoute
+  '/admin/discovery': typeof AdminDiscoveryRoute
+  '/admin/operations': typeof AdminOperationsRoute
+  '/admin/participation': typeof AdminParticipationRoute
+  '/admin/supply': typeof AdminSupplyRoute
   '/announcements/$announcementId': typeof AnnouncementsAnnouncementIdRoute
   '/app/achievements': typeof AppAchievementsRoute
+  '/app/collection': typeof AppCollectionRoute
+  '/app/curations': typeof AppCurationsRoute
   '/app/growth': typeof AppGrowthRoute
   '/app/history': typeof AppHistoryRoute
+  '/app/levels': typeof AppLevelsRoute
+  '/app/participation-level': typeof AppParticipationLevelRoute
+  '/app/rankings': typeof AppRankingsRoute
+  '/app/reading': typeof AppReadingRoute
   '/app/synthesis': typeof AppSynthesisRoute
+  '/app/tasks': typeof AppTasksRoute
   '/app/wallet': typeof AppWalletRoute
   '/cards/$cardId': typeof CardsCardIdRoute
+  '/collectors/$collectorId': typeof CollectorsCollectorIdRoute
   '/collectors/demo-player': typeof CollectorsDemoPlayerRoute
+  '/goddess/cooperation': typeof GoddessCooperationRoute
   '/goddess/dashboard': typeof GoddessDashboardRoute
   '/goddess/profile': typeof GoddessProfileRoute
+  '/goddess/supply': typeof GoddessSupplyRoute
   '/goddesses/$goddessId': typeof GoddessesGoddessIdRoute
+  '/journal/$articleId': typeof JournalArticleIdRoute
   '/pools/$poolId': typeof PoolsPoolIdRoute
   '/seasons/next': typeof SeasonsNextRoute
   '/activities': typeof ActivitiesIndexRoute
@@ -500,6 +651,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppIndexRoute
   '/goddess': typeof GoddessIndexRoute
   '/goddesses': typeof GoddessesIndexRoute
+  '/journal': typeof JournalIndexRoute
   '/partner': typeof PartnerIndexRoute
   '/pools': typeof PoolsIndexRoute
   '/admin/goddesses/$id': typeof AdminGoddessesIdRoute
@@ -533,10 +685,12 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/collection': typeof CollectionRoute
   '/draw': typeof DrawRoute
+  '/explore': typeof ExploreRoute
   '/faq': typeof FaqRoute
   '/fusion': typeof FusionRoute
   '/goddess': typeof GoddessRouteWithChildren
   '/leaderboards': typeof LeaderboardsRoute
+  '/local-test': typeof LocalTestRoute
   '/partner': typeof PartnerRouteWithChildren
   '/physical-collection': typeof PhysicalCollectionRoute
   '/rankings': typeof RankingsRoute
@@ -545,19 +699,35 @@ export interface FileRoutesById {
   '/wish-pools': typeof WishPoolsRoute
   '/activities/$activityId': typeof ActivitiesActivityIdRoute
   '/admin/album-templates': typeof AdminAlbumTemplatesRoute
+  '/admin/collection': typeof AdminCollectionRoute
   '/admin/content': typeof AdminContentRoute
+  '/admin/discovery': typeof AdminDiscoveryRoute
   '/admin/goddesses': typeof AdminGoddessesRouteWithChildren
+  '/admin/operations': typeof AdminOperationsRoute
+  '/admin/participation': typeof AdminParticipationRoute
+  '/admin/supply': typeof AdminSupplyRoute
   '/announcements/$announcementId': typeof AnnouncementsAnnouncementIdRoute
   '/app/achievements': typeof AppAchievementsRoute
+  '/app/collection': typeof AppCollectionRoute
+  '/app/curations': typeof AppCurationsRoute
   '/app/growth': typeof AppGrowthRoute
   '/app/history': typeof AppHistoryRoute
+  '/app/levels': typeof AppLevelsRoute
+  '/app/participation-level': typeof AppParticipationLevelRoute
+  '/app/rankings': typeof AppRankingsRoute
+  '/app/reading': typeof AppReadingRoute
   '/app/synthesis': typeof AppSynthesisRoute
+  '/app/tasks': typeof AppTasksRoute
   '/app/wallet': typeof AppWalletRoute
   '/cards/$cardId': typeof CardsCardIdRoute
+  '/collectors/$collectorId': typeof CollectorsCollectorIdRoute
   '/collectors/demo-player': typeof CollectorsDemoPlayerRoute
+  '/goddess/cooperation': typeof GoddessCooperationRoute
   '/goddess/dashboard': typeof GoddessDashboardRoute
   '/goddess/profile': typeof GoddessProfileRoute
+  '/goddess/supply': typeof GoddessSupplyRoute
   '/goddesses/$goddessId': typeof GoddessesGoddessIdRoute
+  '/journal/$articleId': typeof JournalArticleIdRoute
   '/pools/$poolId': typeof PoolsPoolIdRoute
   '/seasons/next': typeof SeasonsNextRoute
   '/activities/': typeof ActivitiesIndexRoute
@@ -566,6 +736,7 @@ export interface FileRoutesById {
   '/app/': typeof AppIndexRoute
   '/goddess/': typeof GoddessIndexRoute
   '/goddesses/': typeof GoddessesIndexRoute
+  '/journal/': typeof JournalIndexRoute
   '/partner/': typeof PartnerIndexRoute
   '/pools/': typeof PoolsIndexRoute
   '/admin/goddesses/$id': typeof AdminGoddessesIdRoute
@@ -601,10 +772,12 @@ export interface FileRouteTypes {
     | '/app'
     | '/collection'
     | '/draw'
+    | '/explore'
     | '/faq'
     | '/fusion'
     | '/goddess'
     | '/leaderboards'
+    | '/local-test'
     | '/partner'
     | '/physical-collection'
     | '/rankings'
@@ -613,19 +786,35 @@ export interface FileRouteTypes {
     | '/wish-pools'
     | '/activities/$activityId'
     | '/admin/album-templates'
+    | '/admin/collection'
     | '/admin/content'
+    | '/admin/discovery'
     | '/admin/goddesses'
+    | '/admin/operations'
+    | '/admin/participation'
+    | '/admin/supply'
     | '/announcements/$announcementId'
     | '/app/achievements'
+    | '/app/collection'
+    | '/app/curations'
     | '/app/growth'
     | '/app/history'
+    | '/app/levels'
+    | '/app/participation-level'
+    | '/app/rankings'
+    | '/app/reading'
     | '/app/synthesis'
+    | '/app/tasks'
     | '/app/wallet'
     | '/cards/$cardId'
+    | '/collectors/$collectorId'
     | '/collectors/demo-player'
+    | '/goddess/cooperation'
     | '/goddess/dashboard'
     | '/goddess/profile'
+    | '/goddess/supply'
     | '/goddesses/$goddessId'
+    | '/journal/$articleId'
     | '/pools/$poolId'
     | '/seasons/next'
     | '/activities/'
@@ -634,6 +823,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/goddess/'
     | '/goddesses/'
+    | '/journal/'
     | '/partner/'
     | '/pools/'
     | '/admin/goddesses/$id'
@@ -665,9 +855,11 @@ export interface FileRouteTypes {
     | '/'
     | '/collection'
     | '/draw'
+    | '/explore'
     | '/faq'
     | '/fusion'
     | '/leaderboards'
+    | '/local-test'
     | '/physical-collection'
     | '/rankings'
     | '/recruitment'
@@ -675,18 +867,34 @@ export interface FileRouteTypes {
     | '/wish-pools'
     | '/activities/$activityId'
     | '/admin/album-templates'
+    | '/admin/collection'
     | '/admin/content'
+    | '/admin/discovery'
+    | '/admin/operations'
+    | '/admin/participation'
+    | '/admin/supply'
     | '/announcements/$announcementId'
     | '/app/achievements'
+    | '/app/collection'
+    | '/app/curations'
     | '/app/growth'
     | '/app/history'
+    | '/app/levels'
+    | '/app/participation-level'
+    | '/app/rankings'
+    | '/app/reading'
     | '/app/synthesis'
+    | '/app/tasks'
     | '/app/wallet'
     | '/cards/$cardId'
+    | '/collectors/$collectorId'
     | '/collectors/demo-player'
+    | '/goddess/cooperation'
     | '/goddess/dashboard'
     | '/goddess/profile'
+    | '/goddess/supply'
     | '/goddesses/$goddessId'
+    | '/journal/$articleId'
     | '/pools/$poolId'
     | '/seasons/next'
     | '/activities'
@@ -695,6 +903,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/goddess'
     | '/goddesses'
+    | '/journal'
     | '/partner'
     | '/pools'
     | '/admin/goddesses/$id'
@@ -727,10 +936,12 @@ export interface FileRouteTypes {
     | '/app'
     | '/collection'
     | '/draw'
+    | '/explore'
     | '/faq'
     | '/fusion'
     | '/goddess'
     | '/leaderboards'
+    | '/local-test'
     | '/partner'
     | '/physical-collection'
     | '/rankings'
@@ -739,19 +950,35 @@ export interface FileRouteTypes {
     | '/wish-pools'
     | '/activities/$activityId'
     | '/admin/album-templates'
+    | '/admin/collection'
     | '/admin/content'
+    | '/admin/discovery'
     | '/admin/goddesses'
+    | '/admin/operations'
+    | '/admin/participation'
+    | '/admin/supply'
     | '/announcements/$announcementId'
     | '/app/achievements'
+    | '/app/collection'
+    | '/app/curations'
     | '/app/growth'
     | '/app/history'
+    | '/app/levels'
+    | '/app/participation-level'
+    | '/app/rankings'
+    | '/app/reading'
     | '/app/synthesis'
+    | '/app/tasks'
     | '/app/wallet'
     | '/cards/$cardId'
+    | '/collectors/$collectorId'
     | '/collectors/demo-player'
+    | '/goddess/cooperation'
     | '/goddess/dashboard'
     | '/goddess/profile'
+    | '/goddess/supply'
     | '/goddesses/$goddessId'
+    | '/journal/$articleId'
     | '/pools/$poolId'
     | '/seasons/next'
     | '/activities/'
@@ -760,6 +987,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/goddess/'
     | '/goddesses/'
+    | '/journal/'
     | '/partner/'
     | '/pools/'
     | '/admin/goddesses/$id'
@@ -794,10 +1022,12 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   CollectionRoute: typeof CollectionRoute
   DrawRoute: typeof DrawRoute
+  ExploreRoute: typeof ExploreRoute
   FaqRoute: typeof FaqRoute
   FusionRoute: typeof FusionRoute
   GoddessRoute: typeof GoddessRouteWithChildren
   LeaderboardsRoute: typeof LeaderboardsRoute
+  LocalTestRoute: typeof LocalTestRoute
   PartnerRoute: typeof PartnerRouteWithChildren
   PhysicalCollectionRoute: typeof PhysicalCollectionRoute
   RankingsRoute: typeof RankingsRoute
@@ -807,13 +1037,16 @@ export interface RootRouteChildren {
   ActivitiesActivityIdRoute: typeof ActivitiesActivityIdRoute
   AnnouncementsAnnouncementIdRoute: typeof AnnouncementsAnnouncementIdRoute
   CardsCardIdRoute: typeof CardsCardIdRoute
+  CollectorsCollectorIdRoute: typeof CollectorsCollectorIdRoute
   CollectorsDemoPlayerRoute: typeof CollectorsDemoPlayerRoute
   GoddessesGoddessIdRoute: typeof GoddessesGoddessIdRoute
+  JournalArticleIdRoute: typeof JournalArticleIdRoute
   PoolsPoolIdRoute: typeof PoolsPoolIdRoute
   SeasonsNextRoute: typeof SeasonsNextRoute
   ActivitiesIndexRoute: typeof ActivitiesIndexRoute
   AnnouncementsIndexRoute: typeof AnnouncementsIndexRoute
   GoddessesIndexRoute: typeof GoddessesIndexRoute
+  JournalIndexRoute: typeof JournalIndexRoute
   PoolsIndexRoute: typeof PoolsIndexRoute
 }
 
@@ -854,6 +1087,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DrawRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/faq': {
       id: '/faq'
       path: '/faq'
@@ -880,6 +1120,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboards'
       fullPath: '/leaderboards'
       preLoaderRoute: typeof LeaderboardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/local-test': {
+      id: '/local-test'
+      path: '/local-test'
+      fullPath: '/local-test'
+      preLoaderRoute: typeof LocalTestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partner': {
@@ -952,6 +1199,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAlbumTemplatesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/collection': {
+      id: '/admin/collection'
+      path: '/collection'
+      fullPath: '/admin/collection'
+      preLoaderRoute: typeof AdminCollectionRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/content': {
       id: '/admin/content'
       path: '/content'
@@ -959,11 +1213,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContentRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/discovery': {
+      id: '/admin/discovery'
+      path: '/discovery'
+      fullPath: '/admin/discovery'
+      preLoaderRoute: typeof AdminDiscoveryRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/goddesses': {
       id: '/admin/goddesses'
       path: '/goddesses'
       fullPath: '/admin/goddesses'
       preLoaderRoute: typeof AdminGoddessesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/operations': {
+      id: '/admin/operations'
+      path: '/operations'
+      fullPath: '/admin/operations'
+      preLoaderRoute: typeof AdminOperationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/participation': {
+      id: '/admin/participation'
+      path: '/participation'
+      fullPath: '/admin/participation'
+      preLoaderRoute: typeof AdminParticipationRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/supply': {
+      id: '/admin/supply'
+      path: '/supply'
+      fullPath: '/admin/supply'
+      preLoaderRoute: typeof AdminSupplyRouteImport
       parentRoute: typeof AdminRoute
     }
     '/announcements/': {
@@ -994,6 +1276,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAchievementsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/collection': {
+      id: '/app/collection'
+      path: '/collection'
+      fullPath: '/app/collection'
+      preLoaderRoute: typeof AppCollectionRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/curations': {
+      id: '/app/curations'
+      path: '/curations'
+      fullPath: '/app/curations'
+      preLoaderRoute: typeof AppCurationsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/growth': {
       id: '/app/growth'
       path: '/growth'
@@ -1008,11 +1304,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHistoryRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/levels': {
+      id: '/app/levels'
+      path: '/levels'
+      fullPath: '/app/levels'
+      preLoaderRoute: typeof AppLevelsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/participation-level': {
+      id: '/app/participation-level'
+      path: '/participation-level'
+      fullPath: '/app/participation-level'
+      preLoaderRoute: typeof AppParticipationLevelRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/rankings': {
+      id: '/app/rankings'
+      path: '/rankings'
+      fullPath: '/app/rankings'
+      preLoaderRoute: typeof AppRankingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/reading': {
+      id: '/app/reading'
+      path: '/reading'
+      fullPath: '/app/reading'
+      preLoaderRoute: typeof AppReadingRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/synthesis': {
       id: '/app/synthesis'
       path: '/synthesis'
       fullPath: '/app/synthesis'
       preLoaderRoute: typeof AppSynthesisRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/tasks': {
+      id: '/app/tasks'
+      path: '/tasks'
+      fullPath: '/app/tasks'
+      preLoaderRoute: typeof AppTasksRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/wallet': {
@@ -1029,6 +1360,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CardsCardIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collectors/$collectorId': {
+      id: '/collectors/$collectorId'
+      path: '/collectors/$collectorId'
+      fullPath: '/collectors/$collectorId'
+      preLoaderRoute: typeof CollectorsCollectorIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collectors/demo-player': {
       id: '/collectors/demo-player'
       path: '/collectors/demo-player'
@@ -1041,6 +1379,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/goddess/'
       preLoaderRoute: typeof GoddessIndexRouteImport
+      parentRoute: typeof GoddessRoute
+    }
+    '/goddess/cooperation': {
+      id: '/goddess/cooperation'
+      path: '/cooperation'
+      fullPath: '/goddess/cooperation'
+      preLoaderRoute: typeof GoddessCooperationRouteImport
       parentRoute: typeof GoddessRoute
     }
     '/goddess/dashboard': {
@@ -1057,6 +1402,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GoddessProfileRouteImport
       parentRoute: typeof GoddessRoute
     }
+    '/goddess/supply': {
+      id: '/goddess/supply'
+      path: '/supply'
+      fullPath: '/goddess/supply'
+      preLoaderRoute: typeof GoddessSupplyRouteImport
+      parentRoute: typeof GoddessRoute
+    }
     '/goddesses/': {
       id: '/goddesses/'
       path: '/goddesses'
@@ -1069,6 +1421,20 @@ declare module '@tanstack/react-router' {
       path: '/goddesses/$goddessId'
       fullPath: '/goddesses/$goddessId'
       preLoaderRoute: typeof GoddessesGoddessIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journal/': {
+      id: '/journal/'
+      path: '/journal'
+      fullPath: '/journal/'
+      preLoaderRoute: typeof JournalIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journal/$articleId': {
+      id: '/journal/$articleId'
+      path: '/journal/$articleId'
+      fullPath: '/journal/$articleId'
+      preLoaderRoute: typeof JournalArticleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partner/': {
@@ -1306,8 +1672,13 @@ const AdminPoolsPoolIdRouteWithChildren =
 
 interface AdminRouteChildren {
   AdminAlbumTemplatesRoute: typeof AdminAlbumTemplatesRoute
+  AdminCollectionRoute: typeof AdminCollectionRoute
   AdminContentRoute: typeof AdminContentRoute
+  AdminDiscoveryRoute: typeof AdminDiscoveryRoute
   AdminGoddessesRoute: typeof AdminGoddessesRouteWithChildren
+  AdminOperationsRoute: typeof AdminOperationsRoute
+  AdminParticipationRoute: typeof AdminParticipationRoute
+  AdminSupplyRoute: typeof AdminSupplyRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminPoolsPoolIdRoute: typeof AdminPoolsPoolIdRouteWithChildren
   AdminPoolsNewRoute: typeof AdminPoolsNewRoute
@@ -1317,8 +1688,13 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAlbumTemplatesRoute: AdminAlbumTemplatesRoute,
+  AdminCollectionRoute: AdminCollectionRoute,
   AdminContentRoute: AdminContentRoute,
+  AdminDiscoveryRoute: AdminDiscoveryRoute,
   AdminGoddessesRoute: AdminGoddessesRouteWithChildren,
+  AdminOperationsRoute: AdminOperationsRoute,
+  AdminParticipationRoute: AdminParticipationRoute,
+  AdminSupplyRoute: AdminSupplyRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminPoolsPoolIdRoute: AdminPoolsPoolIdRouteWithChildren,
   AdminPoolsNewRoute: AdminPoolsNewRoute,
@@ -1330,9 +1706,16 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppRouteChildren {
   AppAchievementsRoute: typeof AppAchievementsRoute
+  AppCollectionRoute: typeof AppCollectionRoute
+  AppCurationsRoute: typeof AppCurationsRoute
   AppGrowthRoute: typeof AppGrowthRoute
   AppHistoryRoute: typeof AppHistoryRoute
+  AppLevelsRoute: typeof AppLevelsRoute
+  AppParticipationLevelRoute: typeof AppParticipationLevelRoute
+  AppRankingsRoute: typeof AppRankingsRoute
+  AppReadingRoute: typeof AppReadingRoute
   AppSynthesisRoute: typeof AppSynthesisRoute
+  AppTasksRoute: typeof AppTasksRoute
   AppWalletRoute: typeof AppWalletRoute
   AppIndexRoute: typeof AppIndexRoute
   AppAlbumPoolIdRoute: typeof AppAlbumPoolIdRoute
@@ -1346,9 +1729,16 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppAchievementsRoute: AppAchievementsRoute,
+  AppCollectionRoute: AppCollectionRoute,
+  AppCurationsRoute: AppCurationsRoute,
   AppGrowthRoute: AppGrowthRoute,
   AppHistoryRoute: AppHistoryRoute,
+  AppLevelsRoute: AppLevelsRoute,
+  AppParticipationLevelRoute: AppParticipationLevelRoute,
+  AppRankingsRoute: AppRankingsRoute,
+  AppReadingRoute: AppReadingRoute,
   AppSynthesisRoute: AppSynthesisRoute,
+  AppTasksRoute: AppTasksRoute,
   AppWalletRoute: AppWalletRoute,
   AppIndexRoute: AppIndexRoute,
   AppAlbumPoolIdRoute: AppAlbumPoolIdRoute,
@@ -1363,8 +1753,10 @@ const AppRouteChildren: AppRouteChildren = {
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface GoddessRouteChildren {
+  GoddessCooperationRoute: typeof GoddessCooperationRoute
   GoddessDashboardRoute: typeof GoddessDashboardRoute
   GoddessProfileRoute: typeof GoddessProfileRoute
+  GoddessSupplyRoute: typeof GoddessSupplyRoute
   GoddessIndexRoute: typeof GoddessIndexRoute
   GoddessContractsIdRoute: typeof GoddessContractsIdRoute
   GoddessRevenueIdRoute: typeof GoddessRevenueIdRoute
@@ -1373,8 +1765,10 @@ interface GoddessRouteChildren {
 }
 
 const GoddessRouteChildren: GoddessRouteChildren = {
+  GoddessCooperationRoute: GoddessCooperationRoute,
   GoddessDashboardRoute: GoddessDashboardRoute,
   GoddessProfileRoute: GoddessProfileRoute,
+  GoddessSupplyRoute: GoddessSupplyRoute,
   GoddessIndexRoute: GoddessIndexRoute,
   GoddessContractsIdRoute: GoddessContractsIdRoute,
   GoddessRevenueIdRoute: GoddessRevenueIdRoute,
@@ -1406,10 +1800,12 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   CollectionRoute: CollectionRoute,
   DrawRoute: DrawRoute,
+  ExploreRoute: ExploreRoute,
   FaqRoute: FaqRoute,
   FusionRoute: FusionRoute,
   GoddessRoute: GoddessRouteWithChildren,
   LeaderboardsRoute: LeaderboardsRoute,
+  LocalTestRoute: LocalTestRoute,
   PartnerRoute: PartnerRouteWithChildren,
   PhysicalCollectionRoute: PhysicalCollectionRoute,
   RankingsRoute: RankingsRoute,
@@ -1419,13 +1815,16 @@ const rootRouteChildren: RootRouteChildren = {
   ActivitiesActivityIdRoute: ActivitiesActivityIdRoute,
   AnnouncementsAnnouncementIdRoute: AnnouncementsAnnouncementIdRoute,
   CardsCardIdRoute: CardsCardIdRoute,
+  CollectorsCollectorIdRoute: CollectorsCollectorIdRoute,
   CollectorsDemoPlayerRoute: CollectorsDemoPlayerRoute,
   GoddessesGoddessIdRoute: GoddessesGoddessIdRoute,
+  JournalArticleIdRoute: JournalArticleIdRoute,
   PoolsPoolIdRoute: PoolsPoolIdRoute,
   SeasonsNextRoute: SeasonsNextRoute,
   ActivitiesIndexRoute: ActivitiesIndexRoute,
   AnnouncementsIndexRoute: AnnouncementsIndexRoute,
   GoddessesIndexRoute: GoddessesIndexRoute,
+  JournalIndexRoute: JournalIndexRoute,
   PoolsIndexRoute: PoolsIndexRoute,
 }
 export const routeTree = rootRouteImport

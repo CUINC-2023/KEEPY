@@ -1,40 +1,11 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { Ctx, PartnerCtx, ApplyDraft } from "./partner-store-shared";
+import { useCallback, useMemo, useState, type ReactNode } from "react";
 import {
   APPLICATIONS,
   MY_APPLICATION_ID,
   type Application,
   type ApplicationStatus,
-  type ReviewLogEntry,
 } from "@/data/partner";
-
-/**
- * 合作申請的本地 Mock 狀態：申請進度、審核操作與女神身分開通。
- * 僅存在於瀏覽器記憶體，重新整理即回到初始 Mock，不連接任何後端。
- */
-
-export interface ApplyDraft {
-  stageName: string;
-  displayName: string;
-  intro: string;
-  region: string;
-  languages: string[];
-  socials: Record<string, string>;
-  followers: Record<string, string>;
-  contentTypes: string[];
-  styleTags: string[];
-  shootWilling: string;
-  cardThemes: string[];
-  pastCoop: string;
-  materialsReady: string[];
-  ruleAcks: string[];
-}
 
 const EMPTY_DRAFT: ApplyDraft = {
   stageName: "",
@@ -53,40 +24,7 @@ const EMPTY_DRAFT: ApplyDraft = {
   ruleAcks: [],
 };
 
-interface PartnerCtx {
-  /** 申請案件（含審核操作後的 Mock 覆寫）*/
-  applications: Application[];
-  byId: (id: string) => Application | undefined;
-  /** 審核操作（Demo，只改本地狀態）*/
-  review: (
-    id: string,
-    status: ApplicationStatus,
-    log: Omit<ReviewLogEntry, "at"> & { at?: string },
-    extra?: Partial<Application>
-  ) => void;
-  /** 我的申請 */
-  myApplicationId: string;
-  myStatus: ApplicationStatus;
-  setMyStatus: (s: ApplicationStatus) => void;
-  contractConfirmed: boolean;
-  confirmContract: () => void;
-  /** 表單草稿（自動儲存 Demo）*/
-  draft: ApplyDraft;
-  updateDraft: (patch: Partial<ApplyDraft>) => void;
-  draftSavedAt: string | null;
-  resetDraft: () => void;
-}
-
-const Ctx = createContext<PartnerCtx | null>(null);
-
-export function usePartner() {
-  const v = useContext(Ctx);
-  if (!v) throw new Error("usePartner 必須在 PartnerProvider 內使用");
-  return v;
-}
-
-const nowLabel = () =>
-  new Date().toLocaleString("zh-TW", { hour12: false }).replace(/\//g, "-");
+const nowLabel = () => new Date().toLocaleString("zh-TW", { hour12: false }).replace(/\//g, "-");
 
 export function PartnerProvider({ children }: { children: ReactNode }) {
   const [overrides, setOverrides] = useState<Record<string, Partial<Application>>>({});
@@ -97,13 +35,10 @@ export function PartnerProvider({ children }: { children: ReactNode }) {
 
   const applications = useMemo(
     () => APPLICATIONS.map((a) => ({ ...a, ...(overrides[a.id] ?? {}) })),
-    [overrides]
+    [overrides],
   );
 
-  const byId = useCallback(
-    (id: string) => applications.find((a) => a.id === id),
-    [applications]
-  );
+  const byId = useCallback((id: string) => applications.find((a) => a.id === id), [applications]);
 
   const review = useCallback<PartnerCtx["review"]>((id, status, log, extra) => {
     setOverrides((prev) => {

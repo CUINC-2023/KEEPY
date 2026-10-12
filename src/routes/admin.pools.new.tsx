@@ -1,13 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  GRADES,
-  GODDESSES,
-  POOL_KIND_LABEL,
-  POOLS,
-  type PoolKind,
-  type Rarity,
-} from "@/data/mock";
+import { GRADES, GODDESSES, POOL_KIND_LABEL, POOLS, type PoolKind, type Rarity } from "@/data/mock";
 import { ADMIN_USER } from "@/data/admin";
 import {
   COPY_POOL_NOTE,
@@ -38,8 +31,9 @@ import {
 } from "@/data/pool-wizard";
 import { saveWizardDraft } from "@/lib/pool-draft-store";
 import { StatusTag } from "@/components/ui/status-tag";
-import { useToast } from "@/components/ui/toast";
-import { StatePlaceholder, StateSwitcher, useDemoState } from "@/components/ui/state-demo";
+import { useToast } from "@/components/ui/toast-shared";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StatePlaceholder, StateSwitcher } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/admin/pools/new")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -102,7 +96,6 @@ function PoolWizard() {
     setDirty(true);
   };
 
-
   const set = <K extends keyof WizardDraft>(key: K, value: WizardDraft[K]) => {
     updateDraft((current) => ({ ...current, [key]: value }));
   };
@@ -118,17 +111,14 @@ function PoolWizard() {
     return () => window.removeEventListener("beforeunload", handler);
   }, [dirty]);
 
-  const usedSlugs = useMemo(
-    () => [...POOLS.map((p) => p.id), ...draftSlugs],
-    [draftSlugs]
-  );
+  const usedSlugs = useMemo(() => [...POOLS.map((p) => p.id), ...draftSlugs], [draftSlugs]);
   const result = useMemo(() => validateDraft(draft, usedSlugs), [draft, usedSlugs]);
   const stepErrors = (n: number) => result.errors.filter((e) => e.step === n);
   const visibleStepErrors = (n: number) => (attemptedSteps.includes(n) ? stepErrors(n) : []);
-  const fieldError = (n: number, field: string) => visibleStepErrors(n).find((e) => e.field === field)?.message;
+  const fieldError = (n: number, field: string) =>
+    visibleStepErrors(n).find((e) => e.field === field)?.message;
   const total = totalPlannedCards(draft);
   const sum = ratesSum(draft);
-
 
   const autoSlug = (name: string) =>
     "p-" +
@@ -142,7 +132,9 @@ function PoolWizard() {
     const first = errors[0];
     if (!first) return;
     window.requestAnimationFrame(() => {
-      const target = document.querySelector<HTMLElement>(`[data-validation-field="${first.field}"]`);
+      const target = document.querySelector<HTMLElement>(
+        `[data-validation-field="${first.field}"]`,
+      );
       target?.scrollIntoView({ behavior: "smooth", block: "center" });
       target?.focus({ preventScroll: true });
     });
@@ -200,11 +192,8 @@ function PoolWizard() {
     setStep(target);
   };
 
-
   if (!ADMIN_USER.permissions.includes("抽卡設定草稿")) {
-    return (
-      <StatePlaceholder state="denied" />
-    );
+    return <StatePlaceholder state="denied" />;
   }
 
   return (
@@ -216,7 +205,9 @@ function PoolWizard() {
           <StatusTag tone="pending" label="草稿（不會正式發布）" />
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
-          七步流程，目前啟用 Step 1–5（合成條件）；Step 6–7 下一批完成，本批不提供建立草稿。所有內容僅為本地 Demo 草稿，不會正式發布，也不會影響既有六個卡池、玩家資料、收益或分潤。
+          七步流程，目前啟用 Step 1–5（合成條件）；Step 6–7
+          下一批完成，本批不提供建立草稿。所有內容僅為本地 Demo
+          草稿，不會正式發布，也不會影響既有六個卡池、玩家資料、收益或分潤。
         </p>
         {draft.templateKey !== "none" && (
           <p className="mt-1 text-[11px] text-muted-foreground">
@@ -230,11 +221,14 @@ function PoolWizard() {
         )}
       </header>
 
-
       <StateSwitcher state={state} onChange={setState} />
 
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="尚無草稿資料" emptyDescription="從範本或空白草稿開始建立。" />
+        <StatePlaceholder
+          state={state}
+          emptyTitle="尚無草稿資料"
+          emptyDescription="從範本或空白草稿開始建立。"
+        />
       ) : (
         <>
           {/* 七步進度列 */}
@@ -248,7 +242,9 @@ function PoolWizard() {
                   key={s.n}
                   disabled={locked}
                   onClick={() => navigateToStep(s.n)}
-                  title={locked ? "下一批完成" : s.n > maxUnlockedStep ? "請先完成前一個步驟" : undefined}
+                  title={
+                    locked ? "下一批完成" : s.n > maxUnlockedStep ? "請先完成前一個步驟" : undefined
+                  }
                   className={`flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-[11px] font-bold transition-colors ${
                     locked
                       ? "cursor-not-allowed text-muted-foreground opacity-50"
@@ -286,7 +282,9 @@ function PoolWizard() {
           {/* ── Step 1 基本資訊 ── */}
           {step === 1 && (
             <section className="panel space-y-4 p-4 sm:p-5">
-              <h2 className="text-sm font-black tracking-widest text-muted-foreground">Step 1 基本資訊</h2>
+              <h2 className="text-sm font-black tracking-widest text-muted-foreground">
+                Step 1 基本資訊
+              </h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block">
                   <span className={labelCls}>卡池中文名稱（必填）</span>
@@ -309,7 +307,11 @@ function PoolWizard() {
                 </label>
                 <label className="block">
                   <span className={labelCls}>英文副標</span>
-                  <input className={inputCls} value={draft.subtitle} onChange={(e) => set("subtitle", e.target.value)} />
+                  <input
+                    className={inputCls}
+                    value={draft.subtitle}
+                    onChange={(e) => set("subtitle", e.target.value)}
+                  />
                 </label>
                 <label className="block">
                   <span className={labelCls}>poolId／slug（自動產生，可修改）</span>
@@ -330,7 +332,11 @@ function PoolWizard() {
                 </label>
                 <label className="block">
                   <span className={labelCls}>卡池類型</span>
-                  <select className={inputCls} value={draft.kind} onChange={(e) => set("kind", e.target.value as PoolKind)}>
+                  <select
+                    className={inputCls}
+                    value={draft.kind}
+                    onChange={(e) => set("kind", e.target.value as PoolKind)}
+                  >
                     {KIND_OPTIONS.map((k) => (
                       <option key={k.key} value={k.key}>
                         {k.label}
@@ -354,7 +360,11 @@ function PoolWizard() {
                     <button
                       key={t.cls}
                       onClick={() => {
-                        updateDraft((current) => ({ ...current, themeName: t.name, themeClass: t.cls }));
+                        updateDraft((current) => ({
+                          ...current,
+                          themeName: t.name,
+                          themeClass: t.cls,
+                        }));
                       }}
                       className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold ${
                         draft.themeClass === t.cls
@@ -374,7 +384,8 @@ function PoolWizard() {
                   <div>
                     <p className="text-lg font-black">{draft.name || "（尚未命名）"}</p>
                     <p className="text-[11px] tracking-widest text-muted-foreground">
-                      {draft.subtitle || "SUBTITLE"}｜{POOL_KIND_LABEL[draft.kind]}｜{draft.themeName}
+                      {draft.subtitle || "SUBTITLE"}｜{POOL_KIND_LABEL[draft.kind]}｜
+                      {draft.themeName}
                     </p>
                   </div>
                 </div>
@@ -386,7 +397,9 @@ function PoolWizard() {
           {/* ── Step 2 期間與狀態 ── */}
           {step === 2 && (
             <section className="panel space-y-4 p-4 sm:p-5">
-              <h2 className="text-sm font-black tracking-widest text-muted-foreground">Step 2 期間與狀態</h2>
+              <h2 className="text-sm font-black tracking-widest text-muted-foreground">
+                Step 2 期間與狀態
+              </h2>
               <div className="grid gap-3 sm:grid-cols-3">
                 <label className="block">
                   <span className={labelCls}>開始日（必填）</span>
@@ -420,7 +433,8 @@ function PoolWizard() {
               <div className="rounded-xl bg-muted/40 p-3 text-xs">
                 <p className="font-bold">前台狀態預覽（依日期建議）</p>
                 <p className="mt-1 text-muted-foreground">
-                  建議狀態：<span className="font-black text-foreground">{suggestedStatus(draft)}</span>
+                  建議狀態：
+                  <span className="font-black text-foreground">{suggestedStatus(draft)}</span>
                   ；管理員可保留為草稿，本原型不提供正式發布。
                 </p>
               </div>
@@ -434,7 +448,9 @@ function PoolWizard() {
           {/* ── Step 3 女神與卡牌 ── */}
           {step === 3 && (
             <section className="panel space-y-4 p-4 sm:p-5">
-              <h2 className="text-sm font-black tracking-widest text-muted-foreground">Step 3 女神與卡牌</h2>
+              <h2 className="text-sm font-black tracking-widest text-muted-foreground">
+                Step 3 女神與卡牌
+              </h2>
               <div data-validation-field="goddessIds" tabIndex={-1}>
                 <span className={labelCls}>參與女神（至少 1 位）</span>
                 <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -443,14 +459,18 @@ function PoolWizard() {
                     return (
                       <button
                         key={g.id}
-                        onClick={() => updateDraft((current) => ({
-                          ...current,
-                          goddessIds: current.goddessIds.includes(g.id)
-                            ? current.goddessIds.filter((id) => id !== g.id)
-                            : [...current.goddessIds, g.id],
-                        }))}
+                        onClick={() =>
+                          updateDraft((current) => ({
+                            ...current,
+                            goddessIds: current.goddessIds.includes(g.id)
+                              ? current.goddessIds.filter((id) => id !== g.id)
+                              : [...current.goddessIds, g.id],
+                          }))
+                        }
                         className={`rounded-xl border p-3 text-left text-xs ${
-                          on ? "border-primary/60 bg-primary/10" : "border-border text-muted-foreground"
+                          on
+                            ? "border-primary/60 bg-primary/10"
+                            : "border-border text-muted-foreground"
                         }`}
                       >
                         <span className="font-black text-foreground">{g.name}</span>
@@ -485,7 +505,8 @@ function PoolWizard() {
                   ))}
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  卡牌總數：<span className="font-black tabular-nums text-foreground">{total}</span> 張
+                  卡牌總數：<span className="font-black tabular-nums text-foreground">{total}</span>{" "}
+                  張
                 </p>
                 <FieldError message={fieldError(3, "cardTotal")} />
               </div>
@@ -515,7 +536,9 @@ function PoolWizard() {
           {/* ── Step 4 抽卡範圍與機率 ── */}
           {step === 4 && (
             <section className="panel space-y-4 p-4 sm:p-5">
-              <h2 className="text-sm font-black tracking-widest text-muted-foreground">Step 4 抽卡範圍與機率</h2>
+              <h2 className="text-sm font-black tracking-widest text-muted-foreground">
+                Step 4 抽卡範圍與機率
+              </h2>
               <div className="flex flex-wrap gap-2">
                 <span className="rounded-xl border border-primary/60 bg-primary/10 px-3 py-2 text-xs font-bold">
                   單一卡池（single_pool・V1 固定）
@@ -545,7 +568,12 @@ function PoolWizard() {
                       const per = perCardPct(draft, g);
                       const bad = r.enabled && r.pct > 0 && (draft.cardPlan[g] || 0) < 1;
                       return (
-                        <tr key={g} data-validation-field={`range-${g}`} tabIndex={-1} className="border-t border-border/60">
+                        <tr
+                          key={g}
+                          data-validation-field={`range-${g}`}
+                          tabIndex={-1}
+                          className="border-t border-border/60"
+                        >
                           <td className="px-2 py-2 font-black">{g}</td>
                           <td className="px-2 py-2">
                             <input
@@ -583,7 +611,9 @@ function PoolWizard() {
                               }}
                             />
                           </td>
-                          <td className={`px-2 py-2 text-right tabular-nums ${bad ? "font-bold text-destructive" : ""}`}>
+                          <td
+                            className={`px-2 py-2 text-right tabular-nums ${bad ? "font-bold text-destructive" : ""}`}
+                          >
                             {draft.cardPlan[g] || 0}
                             {bad && <span className="ml-1">無可抽卡牌</span>}
                           </td>
@@ -597,15 +627,20 @@ function PoolWizard() {
                 </table>
               </div>
 
-              <p className={`text-sm font-black ${Math.abs(sum - 100) > 0.001 ? "text-destructive" : "text-foreground"}`}>
+              <p
+                className={`text-sm font-black ${Math.abs(sum - 100) > 0.001 ? "text-destructive" : "text-foreground"}`}
+              >
                 已啟用等級機率總和：{sum}%（必須等於 100%）
               </p>
               <FieldError message={fieldError(4, "ratesTotal")} />
               {visibleStepErrors(4)
                 .filter((error) => error.field.startsWith("range-"))
-                .map((error) => <FieldError key={error.field} message={error.message} />)}
+                .map((error) => (
+                  <FieldError key={error.field} message={error.message} />
+                ))}
               <p className="text-[11px] text-muted-foreground">
-                抽卡保底機制、門檻、適用等級與卡池結束後處理方式皆為 Demo 規則／待定，此處不填入任何未核定數字。
+                抽卡保底機制、門檻、適用等級與卡池結束後處理方式皆為 Demo
+                規則／待定，此處不填入任何未核定數字。
               </p>
               <StepErrors errors={visibleStepErrors(4)} />
             </section>
@@ -614,9 +649,12 @@ function PoolWizard() {
           {/* ── Step 5 合成條件 ── */}
           {step === 5 && (
             <section className="panel space-y-4 p-4 sm:p-5">
-              <h2 className="text-sm font-black tracking-widest text-muted-foreground">Step 5 合成條件</h2>
+              <h2 className="text-sm font-black tracking-widest text-muted-foreground">
+                Step 5 合成條件
+              </h2>
               <p className="text-xs text-muted-foreground">
-                合成範圍固定為本卡池（{draft.name || "（尚未命名）"}／{draft.slug || "p-…"}）；僅能使用同一卡池、同等級卡牌作為素材。
+                合成範圍固定為本卡池（{draft.name || "（尚未命名）"}／{draft.slug || "p-…"}
+                ）；僅能使用同一卡池、同等級卡牌作為素材。
               </p>
 
               <div data-validation-field="synthGrades" tabIndex={-1}>
@@ -679,7 +717,6 @@ function PoolWizard() {
                 </label>
               </div>
 
-
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead className="text-muted-foreground">
@@ -718,7 +755,9 @@ function PoolWizard() {
                                 min={1}
                                 step="1"
                                 className={`w-20 rounded-lg border bg-background px-2 py-1 text-right tabular-nums ${
-                                  fieldError(5, `synthCount-${g}`) ? "border-destructive" : "border-border"
+                                  fieldError(5, `synthCount-${g}`)
+                                    ? "border-destructive"
+                                    : "border-border"
                                 }`}
                                 value={count ?? ""}
                                 onInput={(e) => {
@@ -726,7 +765,10 @@ function PoolWizard() {
                                   const value = raw === "" ? null : Number(raw);
                                   updateDraft((current) => ({
                                     ...current,
-                                    synthMaterialCount: { ...current.synthMaterialCount, [g]: value },
+                                    synthMaterialCount: {
+                                      ...current.synthMaterialCount,
+                                      [g]: value,
+                                    },
                                   }));
                                 }}
                                 placeholder="待定"
@@ -741,7 +783,9 @@ function PoolWizard() {
                                 max={100}
                                 step="0.1"
                                 className={`w-24 rounded-lg border bg-background px-2 py-1 text-right tabular-nums ${
-                                  fieldError(5, `synth-${g}`) ? "border-destructive" : "border-border"
+                                  fieldError(5, `synth-${g}`)
+                                    ? "border-destructive"
+                                    : "border-border"
                                 }`}
                                 value={base ?? ""}
                                 onInput={(e) => {
@@ -780,7 +824,6 @@ function PoolWizard() {
 
           {/* Step 6–7：下一批完成 */}
 
-
           {/* 操作列（手機底部固定單欄） */}
           <div className="fixed inset-x-0 bottom-16 z-50 flex items-center gap-2 border-t border-border bg-background/95 p-3 backdrop-blur sm:static sm:border-0 sm:bg-transparent sm:p-0">
             <button
@@ -796,13 +839,15 @@ function PoolWizard() {
             >
               {step >= ENABLED_MAX_STEP ? "驗證全部步驟" : "下一步"}
             </button>
-            <Link to="/admin/pools" className="ml-auto text-[11px] font-bold text-muted-foreground hover:text-foreground">
+            <Link
+              to="/admin/pools"
+              className="ml-auto text-[11px] font-bold text-muted-foreground hover:text-foreground"
+            >
               回到卡池管理
             </Link>
           </div>
 
           <p className="text-[11px] leading-relaxed text-muted-foreground">{PERSIST_DEMO_NOTE}</p>
-
         </>
       )}
     </div>
@@ -817,12 +862,15 @@ function FieldError({ message }: { message: string | undefined }) {
 function StepErrors({ errors }: { errors: { step: number; field: string; message: string }[] }) {
   if (errors.length === 0) return null;
   return (
-    <div role="alert" className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-[11px] font-bold text-destructive">
+    <div
+      role="alert"
+      className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-[11px] font-bold text-destructive"
+    >
       <p className="mb-1">請修正以下問題後再繼續：</p>
       <ul className="space-y-1">
-      {errors.map((e, i) => (
-        <li key={i}>{e.message}</li>
-      ))}
+        {errors.map((e, i) => (
+          <li key={i}>{e.message}</li>
+        ))}
       </ul>
     </div>
   );

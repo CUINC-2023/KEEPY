@@ -1,3 +1,5 @@
+import { useLocalTest } from "@/lib/local-test-client";
+import { LocalCreatorContracts } from "@/components/operations/LocalCreatorContracts";
 import { QaHint } from "@/components/content/QaHint";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -6,15 +8,22 @@ import { DataTable } from "@/components/ui/data-table";
 import { StatusTag } from "@/components/ui/status-tag";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FilterBar } from "@/components/ui/filter-bar";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/goddess/contracts/")({
   head: () => ({
     meta: [
       { title: "數位合約 — KEEPY" },
-      { name: "description", content: "合作合約列表、版本、有效期間與簽署狀態。簽署與下載皆為 Demo。" },
+      {
+        name: "description",
+        content: "合作合約列表、版本、有效期間與簽署狀態。簽署與下載皆為 Demo。",
+      },
       { property: "og:title", content: "數位合約 — KEEPY" },
-      { property: "og:description", content: "合作合約列表、版本、有效期間與簽署狀態。簽署與下載皆為 Demo。" },
+      {
+        property: "og:description",
+        content: "合作合約列表、版本、有效期間與簽署狀態。簽署與下載皆為 Demo。",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -22,12 +31,13 @@ export const Route = createFileRoute("/goddess/contracts/")({
   component: ContractList,
 });
 
-
 function ContractList() {
+  const local = useLocalTest();
   const [state, setState] = useDemoState();
   const [filter, setFilter] = useState("all");
   const rows = CONTRACTS.filter((c) => filter === "all" || c.status === filter);
 
+  if (local.enabled) return <LocalCreatorContracts />;
   return (
     <div className="space-y-5">
       <header>
@@ -43,7 +53,11 @@ function ContractList() {
       <QaHint id="agreement" />
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="尚無合約" emptyDescription="通過合作審核後，這裡會顯示合約版本與簽署狀態。" />
+        <StatePlaceholder
+          state={state}
+          emptyTitle="尚無合約"
+          emptyDescription="通過合作審核後，這裡會顯示合約版本與簽署狀態。"
+        />
       ) : (
         <>
           <FilterBar
@@ -67,21 +81,33 @@ function ContractList() {
             ]}
             rows={rows.map((c) => ({
               title: (
-                <Link to="/goddess/contracts/$id" params={{ id: c.id }} className="font-bold text-primary hover:underline">
+                <Link
+                  to="/goddess/contracts/$id"
+                  params={{ id: c.id }}
+                  className="font-bold text-primary hover:underline"
+                >
                   {c.title}
                 </Link>
               ),
               version: <span className="font-mono text-xs">{c.version}</span>,
-              period: <span className="tabular-nums text-muted-foreground">{c.effectiveFrom} ～ {c.effectiveTo}</span>,
+              period: (
+                <span className="tabular-nums text-muted-foreground">
+                  {c.effectiveFrom} ～ {c.effectiveTo}
+                </span>
+              ),
               scope: <span className="text-muted-foreground">{c.scope.join("、")}</span>,
               status: (
                 <StatusTag
-                  tone={c.status === "已簽署" ? "live" : c.status === "待簽署" ? "pending" : "resting"}
+                  tone={
+                    c.status === "已簽署" ? "live" : c.status === "待簽署" ? "pending" : "resting"
+                  }
                   label={c.status}
                 />
               ),
             }))}
-            empty={<EmptyState icon="◇" title="此條件下沒有合約" description="切換篩選條件再試。" />}
+            empty={
+              <EmptyState icon="◇" title="此條件下沒有合約" description="切換篩選條件再試。" />
+            }
           />
 
           <section className="panel p-4 text-xs leading-relaxed text-muted-foreground">

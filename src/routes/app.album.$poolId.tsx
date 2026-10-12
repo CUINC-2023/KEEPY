@@ -2,14 +2,18 @@ import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { poolById } from "@/data/mock";
 import { AlbumDetailTemplate } from "@/components/album/AlbumDetailTemplate";
 import { EmptyState } from "@/components/ui/empty-state";
-import { StatePlaceholder, StateSwitcher, useDemoState } from "@/components/ui/state-demo";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StatePlaceholder, StateSwitcher } from "@/components/ui/state-demo";
 import { useMockLoading } from "@/hooks/use-mock-loading";
 
 export const Route = createFileRoute("/app/album/$poolId")({
   head: () => ({
     meta: [
       { title: "卡冊詳情 — KEEPY" },
-      { name: "description", content: "單一卡池的蒐集進度、十級完成度、女神完成度與卡牌格狀列表。" },
+      {
+        name: "description",
+        content: "單一卡池的蒐集進度、十級完成度、女神完成度與卡牌格狀列表。",
+      },
       { property: "og:title", content: "卡冊詳情 — KEEPY" },
       { property: "og:description", content: "卡池蒐集進度、等級與女神完成度、卡牌一覽。" },
       { property: "og:type", content: "website" },

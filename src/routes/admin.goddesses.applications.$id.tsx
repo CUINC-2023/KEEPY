@@ -3,12 +3,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ADMIN_USER } from "@/data/admin";
 import { REJECT_REASONS, RESUBMIT_ITEMS, isLikelyUrl, statusTone } from "@/data/partner";
 import { SPLIT_POLICY_NOTE } from "@/data/mock";
-import { usePartner } from "@/lib/partner-store";
+import { usePartner } from "@/lib/partner-store-shared";
 import { StatusTag } from "@/components/ui/status-tag";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { useToast } from "@/components/ui/toast";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useToast } from "@/components/ui/toast-shared";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/admin/goddesses/applications/$id")({
   head: () => ({
@@ -85,15 +86,37 @@ function ApplicationDetail() {
   const doAct = () => {
     if (!act) return;
     if (act === "start") {
-      review(app.id, "審核中", { by: ADMIN_USER.name, action: "開始審核", note: note || "指派負責人並檢視資料" });
+      review(app.id, "審核中", {
+        by: ADMIN_USER.name,
+        action: "開始審核",
+        note: note || "指派負責人並檢視資料",
+      });
     } else if (act === "resubmit") {
-      review(app.id, "待補件", { by: ADMIN_USER.name, action: "要求補件", note }, { resubmitNote: note, resubmitDue: "Demo／待定" });
+      review(
+        app.id,
+        "待補件",
+        { by: ADMIN_USER.name, action: "要求補件", note },
+        { resubmitNote: note, resubmitDue: "Demo／待定" },
+      );
     } else if (act === "approve") {
-      review(app.id, "待合約確認", { by: ADMIN_USER.name, action: "核准", note: note || "進入合約確認（Demo），尚未開通女神身分" });
+      review(app.id, "待合約確認", {
+        by: ADMIN_USER.name,
+        action: "核准",
+        note: note || "進入合約確認（Demo），尚未開通女神身分",
+      });
     } else if (act === "reject") {
-      review(app.id, "未通過", { by: ADMIN_USER.name, action: "未通過", note: `${reasonCat}${note ? `｜${note}` : ""}` }, { rejectReason: reasonCat });
+      review(
+        app.id,
+        "未通過",
+        { by: ADMIN_USER.name, action: "未通過", note: `${reasonCat}${note ? `｜${note}` : ""}` },
+        { rejectReason: reasonCat },
+      );
     } else if (act === "contract") {
-      review(app.id, "女神身分已開通", { by: ADMIN_USER.name, action: "合約確認（Demo）", note: "建立合作女神檔案並開通女神角色（Demo）" });
+      review(app.id, "女神身分已開通", {
+        by: ADMIN_USER.name,
+        action: "合約確認（Demo）",
+        note: "建立合作女神檔案並開通女神角色（Demo）",
+      });
     }
     setAct(null);
     setNote("");
@@ -103,7 +126,10 @@ function ApplicationDetail() {
   return (
     <div className="space-y-5">
       <header className="space-y-1">
-        <Link to="/admin/goddesses/applications" className="text-xs font-semibold text-primary hover:underline">
+        <Link
+          to="/admin/goddesses/applications"
+          className="text-xs font-semibold text-primary hover:underline"
+        >
           ← 申請管理
         </Link>
         <div className="flex flex-wrap items-center gap-2">
@@ -113,7 +139,8 @@ function ApplicationDetail() {
           <span className="demo-chip">Demo</span>
         </div>
         <p className="text-sm text-muted-foreground">
-          送出 {app.submittedAt}｜更新 {app.updatedAt}｜負責人 {app.owner}｜完整度 {app.completeness}%
+          送出 {app.submittedAt}｜更新 {app.updatedAt}｜負責人 {app.owner}｜完整度{" "}
+          {app.completeness}%
         </p>
       </header>
 
@@ -140,7 +167,8 @@ function ApplicationDetail() {
             )}
             {badLinks.length > 0 && (
               <div className="panel p-3 text-xs font-semibold text-gold">
-                社群連結格式檢查：{badLinks.map((b) => b.platform).join("、")} 的連結非 http(s) 格式。
+                社群連結格式檢查：{badLinks.map((b) => b.platform).join("、")} 的連結非 http(s)
+                格式。
               </div>
             )}
             {!app.ruleAckAll && (
@@ -155,7 +183,10 @@ function ApplicationDetail() {
             <Row label="公開名稱" value={app.displayName} />
             <Row label="所在地區" value={app.region} />
             <Row label="主要語言" value={app.languages.join("、")} />
-            <Row label="簡介" value={<span className="leading-relaxed text-muted-foreground">{app.intro}</span>} />
+            <Row
+              label="簡介"
+              value={<span className="leading-relaxed text-muted-foreground">{app.intro}</span>}
+            />
           </Section>
 
           <Section title="公開社群">
@@ -166,7 +197,10 @@ function ApplicationDetail() {
                 value={
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="break-all text-muted-foreground">{s.url}</span>
-                    <StatusTag tone={isLikelyUrl(s.url) ? "info" : "danger"} label={isLikelyUrl(s.url) ? "格式正常" : "格式待確認"} />
+                    <StatusTag
+                      tone={isLikelyUrl(s.url) ? "info" : "danger"}
+                      label={isLikelyUrl(s.url) ? "格式正常" : "格式待確認"}
+                    />
                     <span className="text-xs text-muted-foreground">粉絲 {s.followers}</span>
                   </span>
                 }
@@ -179,7 +213,10 @@ function ApplicationDetail() {
             <Row label="風格標籤" value={app.styleTags.join("、")} />
             <Row label="拍攝／活動" value={app.shootWilling} />
             <Row label="卡牌主題" value={app.cardThemes.join("、") || "—"} />
-            <Row label="過往合作" value={<span className="text-muted-foreground">{app.pastCoop}</span>} />
+            <Row
+              label="過往合作"
+              value={<span className="text-muted-foreground">{app.pastCoop}</span>}
+            />
           </Section>
 
           <Section title="素材狀態">
@@ -189,7 +226,9 @@ function ApplicationDetail() {
                 label={m.label}
                 value={
                   <StatusTag
-                    tone={m.status === "已備齊" ? "live" : m.status === "審核中" ? "info" : "pending"}
+                    tone={
+                      m.status === "已備齊" ? "live" : m.status === "審核中" ? "info" : "pending"
+                    }
                     label={m.status}
                   />
                 }
@@ -203,7 +242,12 @@ function ApplicationDetail() {
           <Section title="規則確認與分潤">
             <Row
               label="規則確認"
-              value={<StatusTag tone={app.ruleAckAll ? "live" : "pending"} label={app.ruleAckAll ? "全部已確認" : "尚未全部確認"} />}
+              value={
+                <StatusTag
+                  tone={app.ruleAckAll ? "live" : "pending"}
+                  label={app.ruleAckAll ? "全部已確認" : "尚未全部確認"}
+                />
+              }
             />
             <p className="pt-2 text-sm leading-relaxed text-muted-foreground">
               {SPLIT_POLICY_NOTE}；此介面不提供分潤比例設定。僅付費抽卡的實際消費產生分潤，
@@ -214,7 +258,10 @@ function ApplicationDetail() {
           <Section title="審核紀錄">
             <ul className="space-y-2 text-sm">
               {app.logs.map((l, i) => (
-                <li key={i} className="flex flex-wrap gap-2 border-b border-border/50 pb-2 last:border-0">
+                <li
+                  key={i}
+                  className="flex flex-wrap gap-2 border-b border-border/50 pb-2 last:border-0"
+                >
                   <span className="tabular-nums text-muted-foreground">{l.at}</span>
                   <span className="font-semibold">{l.by}</span>
                   <span className="text-primary">{l.action}</span>
@@ -275,7 +322,11 @@ function ApplicationDetail() {
                 {act === "reject" && (
                   <label className="block space-y-1.5">
                     <span className="text-xs font-bold">未通過原因分類（必填）</span>
-                    <select className={inputCls} value={reasonCat} onChange={(e) => setReasonCat(e.target.value)}>
+                    <select
+                      className={inputCls}
+                      value={reasonCat}
+                      onChange={(e) => setReasonCat(e.target.value)}
+                    >
                       {REJECT_REASONS.map((r) => (
                         <option key={r} value={r}>
                           {r}
@@ -296,15 +347,18 @@ function ApplicationDetail() {
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
                       placeholder={
-                        act === "resubmit" ? RESUBMIT_ITEMS.join("；") : "以中性描述說明，避免主觀評語。"
+                        act === "resubmit"
+                          ? RESUBMIT_ITEMS.join("；")
+                          : "以中性描述說明，避免主觀評語。"
                       }
                     />
                   </label>
                 )}
 
                 <p className="text-[11px] leading-relaxed text-muted-foreground">
-                  核准後會先進入「待合約確認」，完成 Demo 合約確認才會產生合作女神檔案並開通女神角色。
-                  所有操作只改本地 Mock，不寄出通知、不建立真實合作、不設定任何分潤比例。
+                  核准後會先進入「待合約確認」，完成 Demo
+                  合約確認才會產生合作女神檔案並開通女神角色。 所有操作只改本地
+                  Mock，不寄出通知、不建立真實合作、不設定任何分潤比例。
                 </p>
               </>
             )}

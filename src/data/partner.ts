@@ -3,6 +3,11 @@
 // 全部為虛構本地假資料：不連接任何後端、不做真實證件驗證、
 // 不上傳檔案、不電子簽署、不發送通知，也不產生真實金流。
 // ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// KEEPY — 合作女神申請／審核／身分開通 Mock 資料（Batch 4）
+// 全部為虛構本地假資料：不連接任何後端、不做真實證件驗證、
+// 不上傳檔案、不電子簽署、不發送通知，也不產生真實金流。
+// ─────────────────────────────────────────────────────────────
 import { SPLIT_POLICY_NOTE } from "@/data/mock";
 
 export const PARTNER_INCENTIVES = [
@@ -49,36 +54,87 @@ export const NO_SENSITIVE_DATA_NOTE =
 
 // ── 申請表單選項 ─────────────────────────────────────────────
 export const REGIONS = [
-  "臺北市", "新北市", "基隆市", "桃園市", "新竹市", "新竹縣", "苗栗縣",
-  "臺中市", "彰化縣", "南投縣", "雲林縣", "嘉義市", "嘉義縣",
-  "臺南市", "高雄市", "屏東縣", "宜蘭縣", "花蓮縣", "臺東縣",
-  "澎湖縣", "金門縣", "連江縣",
+  "臺北市",
+  "新北市",
+  "基隆市",
+  "桃園市",
+  "新竹市",
+  "新竹縣",
+  "苗栗縣",
+  "臺中市",
+  "彰化縣",
+  "南投縣",
+  "雲林縣",
+  "嘉義市",
+  "嘉義縣",
+  "臺南市",
+  "高雄市",
+  "屏東縣",
+  "宜蘭縣",
+  "花蓮縣",
+  "臺東縣",
+  "澎湖縣",
+  "金門縣",
+  "連江縣",
 ];
 
 export const LANGUAGES = ["繁體中文", "英文", "日文", "韓文", "粵語", "臺語"];
 
 export const SOCIAL_PLATFORMS = [
-  "Instagram", "Facebook", "Threads", "X", "YouTube", "TikTok",
+  "Instagram",
+  "Facebook",
+  "Threads",
+  "X",
+  "YouTube",
+  "TikTok",
 ] as const;
 export type SocialPlatform = (typeof SOCIAL_PLATFORMS)[number];
 
 /** 粉絲數僅做區間選擇，不要求登入社群帳號 */
 export const FOLLOWER_RANGES = [
-  "未公開", "1,000 以下", "1,000–5,000", "5,000–1 萬",
-  "1 萬–5 萬", "5 萬–10 萬", "10 萬以上",
+  "未公開",
+  "1,000 以下",
+  "1,000–5,000",
+  "5,000–1 萬",
+  "1 萬–5 萬",
+  "5 萬–10 萬",
+  "10 萬以上",
 ];
 
 export const CONTENT_TYPES = [
-  "直播", "短影音", "音樂／歌唱", "舞蹈", "Cosplay",
-  "時尚穿搭", "遊戲實況", "旅遊", "美妝", "聲音／電台",
+  "直播",
+  "短影音",
+  "音樂／歌唱",
+  "舞蹈",
+  "Cosplay",
+  "時尚穿搭",
+  "遊戲實況",
+  "旅遊",
+  "美妝",
+  "聲音／電台",
 ];
 
 export const STYLE_TAGS = [
-  "清新", "甜美", "酷帥", "神秘", "日系", "都會", "運動", "療癒", "古典", "未來感",
+  "清新",
+  "甜美",
+  "酷帥",
+  "神秘",
+  "日系",
+  "都會",
+  "運動",
+  "療癒",
+  "古典",
+  "未來感",
 ];
 
 export const CARD_THEMES = [
-  "制服", "星光舞台", "夜櫻", "都會日常", "節慶限定", "運動風", "神話幻想",
+  "制服",
+  "星光舞台",
+  "夜櫻",
+  "都會日常",
+  "節慶限定",
+  "運動風",
+  "神話幻想",
 ];
 
 export const COOP_WILLINGNESS = ["願意", "可討論", "暫不考慮"];
@@ -99,21 +155,21 @@ export const RULE_ACKS = [
 
 // ── 申請狀態 ─────────────────────────────────────────────────
 export type ApplicationStatus =
-  | "草稿"
-  | "已送出"
-  | "審核中"
-  | "待補件"
-  | "已核准"
-  | "未通過"
-  | "待合約確認"
-  | "女神身分已開通";
+  "草稿" | "已送出" | "審核中" | "待補件" | "已核准" | "未通過" | "待合約確認" | "女神身分已開通";
 
 export const APPLICATION_STATUSES: ApplicationStatus[] = [
-  "草稿", "已送出", "審核中", "待補件", "已核准", "未通過", "待合約確認", "女神身分已開通",
+  "草稿",
+  "已送出",
+  "審核中",
+  "待補件",
+  "已核准",
+  "未通過",
+  "待合約確認",
+  "女神身分已開通",
 ];
 
 export const statusTone = (
-  s: ApplicationStatus
+  s: ApplicationStatus,
 ): "live" | "pending" | "info" | "gold" | "danger" | "resting" => {
   switch (s) {
     case "女神身分已開通":
@@ -220,7 +276,12 @@ export const APPLICATIONS: Application[] = [
     updatedAt: "2026-09-18 14:30",
     logs: [
       { at: "2026-09-16 10:12", by: "申請人", action: "送出申請", note: "首次送出" },
-      { at: "2026-09-17 09:40", by: "營運・小星", action: "開始審核", note: "指派負責人並檢視社群連結" },
+      {
+        at: "2026-09-17 09:40",
+        by: "營運・小星",
+        action: "開始審核",
+        note: "指派負責人並檢視社群連結",
+      },
     ],
   },
   {
@@ -230,7 +291,9 @@ export const APPLICATIONS: Application[] = [
     intro: "深夜聲音電台主持，主打療癒朗讀與環境音。",
     region: "臺中市",
     languages: ["繁體中文"],
-    socials: [{ platform: "YouTube", url: "https://example.com/demo-aya-yt", followers: "5,000–1 萬" }],
+    socials: [
+      { platform: "YouTube", url: "https://example.com/demo-aya-yt", followers: "5,000–1 萬" },
+    ],
     contentTypes: ["聲音／電台"],
     styleTags: ["療癒", "神秘"],
     shootWilling: "可討論",
@@ -252,7 +315,12 @@ export const APPLICATIONS: Application[] = [
     logs: [
       { at: "2026-09-12 21:05", by: "申請人", action: "送出申請", note: "首次送出" },
       { at: "2026-09-15 10:00", by: "營運・夜班", action: "開始審核", note: "" },
-      { at: "2026-09-19 11:22", by: "營運・夜班", action: "要求補件", note: "社群連結與作品集不足" },
+      {
+        at: "2026-09-19 11:22",
+        by: "營運・夜班",
+        action: "要求補件",
+        note: "社群連結與作品集不足",
+      },
     ],
   },
   {
@@ -285,7 +353,12 @@ export const APPLICATIONS: Application[] = [
     logs: [
       { at: "2026-08-28 15:40", by: "申請人", action: "送出申請", note: "" },
       { at: "2026-08-30 09:12", by: "營運・Demo 管理員", action: "開始審核", note: "" },
-      { at: "2026-09-14 16:02", by: "營運・Demo 管理員", action: "核准", note: "進入合約確認（Demo），尚未開通女神身分" },
+      {
+        at: "2026-09-14 16:02",
+        by: "營運・Demo 管理員",
+        action: "核准",
+        note: "進入合約確認（Demo），尚未開通女神身分",
+      },
     ],
   },
   {
@@ -295,7 +368,9 @@ export const APPLICATIONS: Application[] = [
     intro: "運動與健身內容創作者，常見於戶外拍攝。",
     region: "新竹市",
     languages: ["繁體中文"],
-    socials: [{ platform: "Instagram", url: "https://example.com/demo-rin-ig", followers: "1,000–5,000" }],
+    socials: [
+      { platform: "Instagram", url: "https://example.com/demo-rin-ig", followers: "1,000–5,000" },
+    ],
     contentTypes: ["短影音"],
     styleTags: ["運動"],
     shootWilling: "願意",
@@ -316,7 +391,12 @@ export const APPLICATIONS: Application[] = [
     logs: [
       { at: "2026-08-20 08:31", by: "申請人", action: "送出申請", note: "" },
       { at: "2026-08-22 10:04", by: "營運・小星", action: "開始審核", note: "" },
-      { at: "2026-08-26 17:45", by: "營運・小星", action: "未通過", note: "公開社群資料不足，可補齊後再次申請" },
+      {
+        at: "2026-08-26 17:45",
+        by: "營運・小星",
+        action: "未通過",
+        note: "公開社群資料不足，可補齊後再次申請",
+      },
     ],
   },
   {
@@ -347,7 +427,14 @@ export const APPLICATIONS: Application[] = [
     submittedAt: "2026-09-19 22:58",
     updatedAt: "2026-09-19 22:58",
     duplicateOf: "AP-2607-003",
-    logs: [{ at: "2026-09-19 22:58", by: "申請人", action: "送出申請", note: "系統偵測到可能的重複申請" }],
+    logs: [
+      {
+        at: "2026-09-19 22:58",
+        by: "申請人",
+        action: "送出申請",
+        note: "系統偵測到可能的重複申請",
+      },
+    ],
   },
   {
     id: "AP-2607-021",
@@ -356,7 +443,9 @@ export const APPLICATIONS: Application[] = [
     intro: "遊戲實況與雜談，長時直播為主。",
     region: "桃園市",
     languages: ["繁體中文"],
-    socials: [{ platform: "YouTube", url: "https://example.com/demo-koharu-yt", followers: "10 萬以上" }],
+    socials: [
+      { platform: "YouTube", url: "https://example.com/demo-koharu-yt", followers: "10 萬以上" },
+    ],
     contentTypes: ["遊戲實況", "直播"],
     styleTags: ["甜美"],
     shootWilling: "暫不考慮",
@@ -376,8 +465,18 @@ export const APPLICATIONS: Application[] = [
     logs: [
       { at: "2026-07-18 13:20", by: "申請人", action: "送出申請", note: "" },
       { at: "2026-07-20 09:00", by: "營運・Demo 管理員", action: "開始審核", note: "" },
-      { at: "2026-07-30 15:30", by: "營運・Demo 管理員", action: "核准", note: "進入合約確認（Demo）" },
-      { at: "2026-08-02 10:15", by: "申請人", action: "合約確認（Demo）", note: "同帳號新增女神身分" },
+      {
+        at: "2026-07-30 15:30",
+        by: "營運・Demo 管理員",
+        action: "核准",
+        note: "進入合約確認（Demo）",
+      },
+      {
+        at: "2026-08-02 10:15",
+        by: "申請人",
+        action: "合約確認（Demo）",
+        note: "同帳號新增女神身分",
+      },
     ],
   },
   {
@@ -387,7 +486,9 @@ export const APPLICATIONS: Application[] = [
     intro: "美妝教學與節慶主題妝容。",
     region: "新北市",
     languages: ["繁體中文"],
-    socials: [{ platform: "Instagram", url: "https://example.com/demo-natsuki-ig", followers: "1 萬–5 萬" }],
+    socials: [
+      { platform: "Instagram", url: "https://example.com/demo-natsuki-ig", followers: "1 萬–5 萬" },
+    ],
     contentTypes: ["美妝", "短影音"],
     styleTags: ["甜美", "清新"],
     shootWilling: "願意",
@@ -502,8 +603,7 @@ export const PARTNER_GODDESSES: PartnerGoddess[] = [
   },
 ];
 
-export const partnerGoddessById = (id: string) =>
-  PARTNER_GODDESSES.find((g) => g.id === id);
+export const partnerGoddessById = (id: string) => PARTNER_GODDESSES.find((g) => g.id === id);
 
 export const SUSPEND_DEMO_NOTE =
   "暫停與結束合作僅為 Demo 狀態變更，不會刪除女神資料、卡牌或玩家既有卡冊。";

@@ -15,20 +15,14 @@ const GRADE_STYLE: Record<Rarity, string> = {
 };
 
 /** 卡牌等級徽章：C、U、R、RR、RRR、SR、SSR、HR、UR、O */
-export function RarityBadge({
-  rarity,
-  className,
-}: {
-  rarity: Rarity;
-  className?: string;
-}) {
+export function RarityBadge({ rarity, className }: { rarity: Rarity; className?: string }) {
   return (
     <span
       className={cn(
         "inline-flex items-center rounded-md border bg-ink/50 px-1.5 py-0.5 text-[11px] font-black tracking-[0.12em] backdrop-blur-sm",
         GRADE_STYLE[rarity],
         rarity === "O" && "text-gold-gradient",
-        className
+        className,
       )}
     >
       {rarity}

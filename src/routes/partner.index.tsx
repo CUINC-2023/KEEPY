@@ -1,11 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  PARTNER_FLOW,
-  PARTNER_INCENTIVES,
-  PARTNER_SPLIT_NOTES,
-  PARTNER_TBD,
-} from "@/data/partner";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { PARTNER_FLOW, PARTNER_INCENTIVES, PARTNER_SPLIT_NOTES, PARTNER_TBD } from "@/data/partner";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/partner/")({
   head: () => ({

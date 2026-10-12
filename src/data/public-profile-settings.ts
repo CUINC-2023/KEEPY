@@ -37,7 +37,8 @@ function bool(value: unknown, fallback: boolean) {
 export function displayNameError(value: string): string | null {
   const v = value.trim();
   if (v.length < 1) return "公開顯示名稱不可空白。";
-  if (v.length > DISPLAY_NAME_MAX) return `公開顯示名稱最多 ${DISPLAY_NAME_MAX} 字，目前 ${v.length} 字。`;
+  if (v.length > DISPLAY_NAME_MAX)
+    return `公開顯示名稱最多 ${DISPLAY_NAME_MAX} 字，目前 ${v.length} 字。`;
   return null;
 }
 
@@ -67,9 +68,18 @@ export function readPublicProfile(): PublicProfileSettings {
           : DEFAULT_PUBLIC_PROFILE.displayName,
       bio: rawBio !== null && rawBio.length <= BIO_MAX ? rawBio : DEFAULT_PUBLIC_PROFILE.bio,
       showRanking: bool(o["showRanking"], DEFAULT_PUBLIC_PROFILE.showRanking),
-      showCollectionStats: bool(o["showCollectionStats"], DEFAULT_PUBLIC_PROFILE.showCollectionStats),
-      showRecentAchievements: bool(o["showRecentAchievements"], DEFAULT_PUBLIC_PROFILE.showRecentAchievements),
-      showPhysicalCollection: bool(o["showPhysicalCollection"], DEFAULT_PUBLIC_PROFILE.showPhysicalCollection),
+      showCollectionStats: bool(
+        o["showCollectionStats"],
+        DEFAULT_PUBLIC_PROFILE.showCollectionStats,
+      ),
+      showRecentAchievements: bool(
+        o["showRecentAchievements"],
+        DEFAULT_PUBLIC_PROFILE.showRecentAchievements,
+      ),
+      showPhysicalCollection: bool(
+        o["showPhysicalCollection"],
+        DEFAULT_PUBLIC_PROFILE.showPhysicalCollection,
+      ),
     };
   } catch {
     return { ...DEFAULT_PUBLIC_PROFILE };
@@ -84,7 +94,7 @@ export function writePublicProfile(next: PublicProfileSettings) {
         ...next,
         displayName: next.displayName.trim(),
         bio: next.bio.trim(),
-      })
+      }),
     );
   } catch {
     /* 僅此瀏覽器偏好，寫入失敗時忽略 */

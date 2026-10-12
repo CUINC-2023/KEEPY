@@ -23,7 +23,7 @@ export function FilterBar({
               "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
               active === f.key
                 ? "border-primary/50 bg-primary/15 text-foreground"
-                : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+                : "border-border text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
             {f.label}

@@ -5,7 +5,8 @@ import { DataTable } from "@/components/ui/data-table";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { StatusTag } from "@/components/ui/status-tag";
 import { EmptyState } from "@/components/ui/empty-state";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/admin/goddesses/")({
   head: () => ({
@@ -46,7 +47,11 @@ function AdminGoddessList() {
 
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="沒有符合條件的女神" emptyDescription="切換篩選條件再試。" />
+        <StatePlaceholder
+          state={state}
+          emptyTitle="沒有符合條件的女神"
+          emptyDescription="切換篩選條件再試。"
+        />
       ) : (
         <>
           <FilterBar
@@ -88,9 +93,13 @@ function AdminGoddessList() {
                 </span>
               ),
               cards: <span className="tabular-nums text-muted-foreground">{g.cardCount}</span>,
-              contract: <span className="font-mono text-xs text-muted-foreground">{g.contractVersion}</span>,
+              contract: (
+                <span className="font-mono text-xs text-muted-foreground">{g.contractVersion}</span>
+              ),
             }))}
-            empty={<EmptyState icon="◇" title="沒有符合條件的女神" description="切換篩選條件再試。" />}
+            empty={
+              <EmptyState icon="◇" title="沒有符合條件的女神" description="切換篩選條件再試。" />
+            }
           />
         </>
       )}

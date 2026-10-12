@@ -1,25 +1,28 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GRADE_GRADIENT } from "@/data/mock";
-import {
-  GODDESS_PROFILE_DRAFT,
-  PROFILE_MATERIALS,
-  goddessSelf,
-} from "@/data/goddess-backstage";
+import { GODDESS_PROFILE_DRAFT, PROFILE_MATERIALS, goddessSelf } from "@/data/goddess-backstage";
 import { StatusTag } from "@/components/ui/status-tag";
 import { DataTable } from "@/components/ui/data-table";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { useToast } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/toast-shared";
 import { RarityBadge } from "@/components/ui/rarity-badge";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/goddess/profile")({
   head: () => ({
     meta: [
       { title: "公開資料與素材 — KEEPY" },
-      { name: "description", content: "女神公開資料、社群連結、形象圖與卡牌素材狀態，全部為 Mock。" },
+      {
+        name: "description",
+        content: "女神公開資料、社群連結、形象圖與卡牌素材狀態，全部為 Mock。",
+      },
       { property: "og:title", content: "公開資料與素材 — KEEPY" },
-      { property: "og:description", content: "女神公開資料、社群連結、形象圖與卡牌素材狀態，全部為 Mock。" },
+      {
+        property: "og:description",
+        content: "女神公開資料、社群連結、形象圖與卡牌素材狀態，全部為 Mock。",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -67,7 +70,11 @@ function GoddessProfilePage() {
 
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="尚無公開資料" emptyDescription="完成合作審核後即可編輯公開資料與素材。" />
+        <StatePlaceholder
+          state={state}
+          emptyTitle="尚無公開資料"
+          emptyDescription="完成合作審核後即可編輯公開資料與素材。"
+        />
       ) : (
         <>
           <section className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)]">
@@ -83,7 +90,9 @@ function GoddessProfilePage() {
                 主視覺形象圖（漸層暫用圖）。上傳與裁切為 Demo。
               </p>
               <button
-                onClick={() => push({ title: "已開啟上傳視窗（Demo）", description: "原型不會真的上傳檔案。" })}
+                onClick={() =>
+                  push({ title: "已開啟上傳視窗（Demo）", description: "原型不會真的上傳檔案。" })
+                }
                 className="mt-2 w-full rounded-xl border border-border px-3 py-2 text-xs font-bold text-muted-foreground hover:bg-muted hover:text-foreground"
               >
                 更換形象圖（Demo）
@@ -93,20 +102,36 @@ function GoddessProfilePage() {
             <div className="panel space-y-3 p-5">
               <label className="block text-xs text-muted-foreground">
                 公開名稱
-                <input value={name} onChange={(e) => setName(e.target.value)} className="mt-1 w-full rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm text-foreground" />
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="mt-1 w-full rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm text-foreground"
+                />
               </label>
               <label className="block text-xs text-muted-foreground">
                 稱號
-                <input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 w-full rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm text-foreground" />
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="mt-1 w-full rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm text-foreground"
+                />
               </label>
               <label className="block text-xs text-muted-foreground">
                 自我介紹
-                <textarea value={intro} onChange={(e) => setIntro(e.target.value)} rows={4} className="mt-1 w-full rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm leading-relaxed text-foreground" />
+                <textarea
+                  value={intro}
+                  onChange={(e) => setIntro(e.target.value)}
+                  rows={4}
+                  className="mt-1 w-full rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm leading-relaxed text-foreground"
+                />
               </label>
               <div className="space-y-2">
                 <p className="text-xs text-muted-foreground">社群連結（Mock）</p>
                 {GODDESS_PROFILE_DRAFT.links.map((l, i) => (
-                  <div key={l.label} className="grid grid-cols-[92px_minmax(0,1fr)] items-center gap-2">
+                  <div
+                    key={l.label}
+                    className="grid grid-cols-[92px_minmax(0,1fr)] items-center gap-2"
+                  >
                     <span className="text-xs text-muted-foreground">{l.label}</span>
                     <input
                       value={links[i]}
@@ -155,7 +180,9 @@ function GoddessProfilePage() {
                 updated: <span className="tabular-nums text-muted-foreground">{m.updatedAt}</span>,
                 status: (
                   <StatusTag
-                    tone={m.status === "已通過" ? "live" : m.status === "審核中" ? "pending" : "danger"}
+                    tone={
+                      m.status === "已通過" ? "live" : m.status === "審核中" ? "pending" : "danger"
+                    }
                     label={m.status}
                   />
                 ),

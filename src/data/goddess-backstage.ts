@@ -3,6 +3,11 @@
 // 全部為本地假資料：無後端、無真實結算、無真實電子簽署。
 // 分潤金額一律以新台幣顯示，且不設定任何固定分潤比例。
 // ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// KEEPY — 合作女神後台 Mock 資料（Batch 3）
+// 全部為本地假資料：無後端、無真實結算、無真實電子簽署。
+// 分潤金額一律以新台幣顯示，且不設定任何固定分潤比例。
+// ─────────────────────────────────────────────────────────────
 import { goddessById, SPLIT_POLICY_NOTE } from "@/data/mock";
 
 /** 此 Demo 帳號同時具備的女神身分 */
@@ -21,8 +26,7 @@ export const COOP = {
 };
 
 /** 收益統一以新台幣顯示；女神不取得平台點數 */
-export const REVENUE_CURRENCY_NOTE =
-  "收益一律以新台幣（TWD）顯示，合作女神不會獲得平台點數。";
+export const REVENUE_CURRENCY_NOTE = "收益一律以新台幣（TWD）顯示，合作女神不會獲得平台點數。";
 export const REVENUE_CALC_NOTE = `${SPLIT_POLICY_NOTE}；本頁不顯示任何比例數字，金額為 Mock 示意。`;
 export const SETTLE_DEMO_NOTE =
   "結算、下載與簽署皆為 Demo，不執行真實提領、真實付款或真實電子簽署。";
@@ -105,8 +109,7 @@ export const REVENUE_PERIODS: RevenuePeriod[] = [
   },
 ];
 
-export const periodById = (id: string) =>
-  REVENUE_PERIODS.find((p) => p.id === id);
+export const periodById = (id: string) => REVENUE_PERIODS.find((p) => p.id === id);
 
 // ── 分潤明細（以訂單為單位）────────────────────────────────
 export interface RevenueOrder {
@@ -127,28 +130,169 @@ export interface RevenueOrder {
 }
 
 export const REVENUE_ORDERS: RevenueOrder[] = [
-  { id: "ro-01", periodId: "rp-2609b", orderNo: "ORD-26092801", drawAt: "2026-09-28 21:14", poolId: "p-uniform", poolName: "制服序章", drawType: "十連抽", payMethod: "付費點數", eligibleSpendTwd: 900, shareTwd: 62, status: "待結算" },
-  { id: "ro-02", periodId: "rp-2609b", orderNo: "ORD-26092704", drawAt: "2026-09-27 12:03", poolId: "p-uniform", poolName: "制服序章", drawType: "單抽", payMethod: "現金", eligibleSpendTwd: 100, shareTwd: 7, status: "待結算" },
-  { id: "ro-03", periodId: "rp-2609b", orderNo: "ORD-26092201", drawAt: "2026-09-22 09:41", poolId: "p-uniform", poolName: "制服序章", drawType: "十連抽", payMethod: "付費點數", eligibleSpendTwd: 900, shareTwd: 58, status: "待結算" },
-  { id: "ro-04", periodId: "rp-2609b", orderNo: "ORD-26091803", drawAt: "2026-09-18 23:50", poolId: "p-uniform", poolName: "制服序章", drawType: "單抽", payMethod: "付費點數", eligibleSpendTwd: 100, shareTwd: 6, status: "待結算" },
-  { id: "ro-05", periodId: "rp-2609a", orderNo: "ORD-26091502", drawAt: "2026-09-15 18:22", poolId: "p-uniform", poolName: "制服序章", drawType: "十連抽", payMethod: "現金", eligibleSpendTwd: 900, shareTwd: 61, status: "可結算" },
-  { id: "ro-06", periodId: "rp-2609a", orderNo: "ORD-26091401", drawAt: "2026-09-14 20:07", poolId: "p-uniform", poolName: "制服序章", drawType: "十連抽", payMethod: "付費點數", eligibleSpendTwd: 900, shareTwd: 59, status: "可結算" },
-  { id: "ro-07", periodId: "rp-2609a", orderNo: "ORD-26091305", drawAt: "2026-09-13 11:36", poolId: "p-uniform", poolName: "制服序章", drawType: "單抽", payMethod: "付費點數", eligibleSpendTwd: 100, shareTwd: 7, status: "可結算" },
-  { id: "ro-08", periodId: "rp-2609a", orderNo: "ORD-26091202", drawAt: "2026-09-12 00:18", poolId: "p-uniform", poolName: "制服序章", drawType: "十連抽", payMethod: "現金", eligibleSpendTwd: 900, shareTwd: 63, status: "可結算" },
-  { id: "ro-09", periodId: "rp-2608b", orderNo: "ORD-26083101", drawAt: "2026-08-31 19:45", poolId: "p-starlight", poolName: "星光舞台", drawType: "十連抽", payMethod: "付費點數", eligibleSpendTwd: 1080, shareTwd: 71, status: "已結算" },
-  { id: "ro-10", periodId: "rp-2608b", orderNo: "ORD-26082503", drawAt: "2026-08-25 14:02", poolId: "p-uniform", poolName: "制服序章", drawType: "單抽", payMethod: "現金", eligibleSpendTwd: 100, shareTwd: 6, status: "已結算" },
-  { id: "ro-11", periodId: "rp-2608a", orderNo: "ORD-26081402", drawAt: "2026-08-14 22:31", poolId: "p-starlight", poolName: "星光舞台", drawType: "十連抽", payMethod: "付費點數", eligibleSpendTwd: 1080, shareTwd: 69, status: "已結算" },
-  { id: "ro-12", periodId: "rp-2608a", orderNo: "ORD-26080601", drawAt: "2026-08-06 08:57", poolId: "p-starlight", poolName: "星光舞台", drawType: "單抽", payMethod: "現金", eligibleSpendTwd: 120, shareTwd: 8, status: "已結算" },
+  {
+    id: "ro-01",
+    periodId: "rp-2609b",
+    orderNo: "ORD-26092801",
+    drawAt: "2026-09-28 21:14",
+    poolId: "p-uniform",
+    poolName: "制服序章",
+    drawType: "十連抽",
+    payMethod: "付費點數",
+    eligibleSpendTwd: 900,
+    shareTwd: 62,
+    status: "待結算",
+  },
+  {
+    id: "ro-02",
+    periodId: "rp-2609b",
+    orderNo: "ORD-26092704",
+    drawAt: "2026-09-27 12:03",
+    poolId: "p-uniform",
+    poolName: "制服序章",
+    drawType: "單抽",
+    payMethod: "現金",
+    eligibleSpendTwd: 100,
+    shareTwd: 7,
+    status: "待結算",
+  },
+  {
+    id: "ro-03",
+    periodId: "rp-2609b",
+    orderNo: "ORD-26092201",
+    drawAt: "2026-09-22 09:41",
+    poolId: "p-uniform",
+    poolName: "制服序章",
+    drawType: "十連抽",
+    payMethod: "付費點數",
+    eligibleSpendTwd: 900,
+    shareTwd: 58,
+    status: "待結算",
+  },
+  {
+    id: "ro-04",
+    periodId: "rp-2609b",
+    orderNo: "ORD-26091803",
+    drawAt: "2026-09-18 23:50",
+    poolId: "p-uniform",
+    poolName: "制服序章",
+    drawType: "單抽",
+    payMethod: "付費點數",
+    eligibleSpendTwd: 100,
+    shareTwd: 6,
+    status: "待結算",
+  },
+  {
+    id: "ro-05",
+    periodId: "rp-2609a",
+    orderNo: "ORD-26091502",
+    drawAt: "2026-09-15 18:22",
+    poolId: "p-uniform",
+    poolName: "制服序章",
+    drawType: "十連抽",
+    payMethod: "現金",
+    eligibleSpendTwd: 900,
+    shareTwd: 61,
+    status: "可結算",
+  },
+  {
+    id: "ro-06",
+    periodId: "rp-2609a",
+    orderNo: "ORD-26091401",
+    drawAt: "2026-09-14 20:07",
+    poolId: "p-uniform",
+    poolName: "制服序章",
+    drawType: "十連抽",
+    payMethod: "付費點數",
+    eligibleSpendTwd: 900,
+    shareTwd: 59,
+    status: "可結算",
+  },
+  {
+    id: "ro-07",
+    periodId: "rp-2609a",
+    orderNo: "ORD-26091305",
+    drawAt: "2026-09-13 11:36",
+    poolId: "p-uniform",
+    poolName: "制服序章",
+    drawType: "單抽",
+    payMethod: "付費點數",
+    eligibleSpendTwd: 100,
+    shareTwd: 7,
+    status: "可結算",
+  },
+  {
+    id: "ro-08",
+    periodId: "rp-2609a",
+    orderNo: "ORD-26091202",
+    drawAt: "2026-09-12 00:18",
+    poolId: "p-uniform",
+    poolName: "制服序章",
+    drawType: "十連抽",
+    payMethod: "現金",
+    eligibleSpendTwd: 900,
+    shareTwd: 63,
+    status: "可結算",
+  },
+  {
+    id: "ro-09",
+    periodId: "rp-2608b",
+    orderNo: "ORD-26083101",
+    drawAt: "2026-08-31 19:45",
+    poolId: "p-starlight",
+    poolName: "星光舞台",
+    drawType: "十連抽",
+    payMethod: "付費點數",
+    eligibleSpendTwd: 1080,
+    shareTwd: 71,
+    status: "已結算",
+  },
+  {
+    id: "ro-10",
+    periodId: "rp-2608b",
+    orderNo: "ORD-26082503",
+    drawAt: "2026-08-25 14:02",
+    poolId: "p-uniform",
+    poolName: "制服序章",
+    drawType: "單抽",
+    payMethod: "現金",
+    eligibleSpendTwd: 100,
+    shareTwd: 6,
+    status: "已結算",
+  },
+  {
+    id: "ro-11",
+    periodId: "rp-2608a",
+    orderNo: "ORD-26081402",
+    drawAt: "2026-08-14 22:31",
+    poolId: "p-starlight",
+    poolName: "星光舞台",
+    drawType: "十連抽",
+    payMethod: "付費點數",
+    eligibleSpendTwd: 1080,
+    shareTwd: 69,
+    status: "已結算",
+  },
+  {
+    id: "ro-12",
+    periodId: "rp-2608a",
+    orderNo: "ORD-26080601",
+    drawAt: "2026-08-06 08:57",
+    poolId: "p-starlight",
+    poolName: "星光舞台",
+    drawType: "單抽",
+    payMethod: "現金",
+    eligibleSpendTwd: 120,
+    shareTwd: 8,
+    status: "已結算",
+  },
 ];
 
 export const ordersByPeriod = (periodId: string) =>
   REVENUE_ORDERS.filter((o) => o.periodId === periodId);
 
 export const sumShare = (status?: RevenueStatus) =>
-  REVENUE_PERIODS.filter((p) => !status || p.status === status).reduce(
-    (s, p) => s + p.shareTwd,
-    0
-  );
+  REVENUE_PERIODS.filter((p) => !status || p.status === status).reduce((s, p) => s + p.shareTwd, 0);
 
 // ── 數位合約 ──────────────────────────────────────────────
 export interface Contract {
@@ -174,11 +318,26 @@ export const CONTRACTS: Contract[] = [
     signedAt: "2026-08-20",
     scope: ["制服序章", "星光舞台"],
     sections: [
-      { heading: "合作範圍", body: "合作女神授權平台於指定卡池內發行其形象卡牌，卡池與卡牌數量以後台上架紀錄為準。" },
-      { heading: "分潤來源", body: "僅玩家以現金或付費點數完成抽卡的實際消費，才會計入分潤基礎。贈送點數抽卡、免費抽卡、合成、卡牌成長與商城道具皆不計入。" },
-      { heading: "分潤計算", body: "實際分潤比例依合作合約約定，介面不顯示未核定比例。分潤一律以新台幣計算，不以平台點數發放。" },
-      { heading: "結算週期", body: "以半月為一結算期；結算流程、付款方式與時程於原型階段皆為 Demo。" },
-      { heading: "素材與肖像", body: "形象圖與卡牌素材之授權範圍、修改權限與下架流程依合約附件（Mock）。" },
+      {
+        heading: "合作範圍",
+        body: "合作女神授權平台於指定卡池內發行其形象卡牌，卡池與卡牌數量以後台上架紀錄為準。",
+      },
+      {
+        heading: "分潤來源",
+        body: "僅玩家以現金或付費點數完成抽卡的實際消費，才會計入分潤基礎。贈送點數抽卡、免費抽卡、合成、卡牌成長與商城道具皆不計入。",
+      },
+      {
+        heading: "分潤計算",
+        body: "實際分潤比例依合作合約約定，介面不顯示未核定比例。分潤一律以新台幣計算，不以平台點數發放。",
+      },
+      {
+        heading: "結算週期",
+        body: "以半月為一結算期；結算流程、付款方式與時程於原型階段皆為 Demo。",
+      },
+      {
+        heading: "素材與肖像",
+        body: "形象圖與卡牌素材之授權範圍、修改權限與下架流程依合約附件（Mock）。",
+      },
     ],
   },
   {
@@ -190,9 +349,15 @@ export const CONTRACTS: Contract[] = [
     status: "待簽署",
     scope: ["星光舞台"],
     sections: [
-      { heading: "附約目的", body: "追加「星光舞台」卡池之限定卡面授權，卡牌張數與上架時間依後台設定。" },
+      {
+        heading: "附約目的",
+        body: "追加「星光舞台」卡池之限定卡面授權，卡牌張數與上架時間依後台設定。",
+      },
       { heading: "分潤來源", body: "與主約一致：僅付費抽卡的實際消費產生分潤。" },
-      { heading: "簽署方式", body: "原型階段不提供真實電子簽署；按下簽署僅顯示 Demo 流程與狀態變化示意。" },
+      {
+        heading: "簽署方式",
+        body: "原型階段不提供真實電子簽署；按下簽署僅顯示 Demo 流程與狀態變化示意。",
+      },
     ],
   },
   {
@@ -217,8 +382,7 @@ export const contractById = (id: string) => CONTRACTS.find((c) => c.id === id);
 export const GODDESS_PROFILE_DRAFT = {
   displayName: "夜澄",
   title: "星夜的低語者",
-  intro:
-    "以星空與夜色為主題的創作者女神，擅長療癒系語音與深夜直播。卡面以深藍與銀河粒子構成。",
+  intro: "以星空與夜色為主題的創作者女神，擅長療癒系語音與深夜直播。卡面以深藍與銀河粒子構成。",
   tags: ["療癒", "深夜電台", "星空"],
   links: [
     { label: "官方社群 A", url: "https://example.com/demo-a" },
@@ -228,10 +392,34 @@ export const GODDESS_PROFILE_DRAFT = {
 };
 
 export const PROFILE_MATERIALS = [
-  { id: "m-1", name: "主視覺形象圖", spec: "2048×2732（3:4）", status: "已通過" as const, updatedAt: "2026-09-02" },
-  { id: "m-2", name: "卡牌素材・制服序章", spec: "2:3 卡面 ×6", status: "已通過" as const, updatedAt: "2026-09-10" },
-  { id: "m-3", name: "卡牌素材・星光舞台", spec: "2:3 卡面 ×4", status: "審核中" as const, updatedAt: "2026-09-19" },
-  { id: "m-4", name: "動態光效素材", spec: "MP4／透明序列", status: "待補件" as const, updatedAt: "2026-09-16" },
+  {
+    id: "m-1",
+    name: "主視覺形象圖",
+    spec: "2048×2732（3:4）",
+    status: "已通過" as const,
+    updatedAt: "2026-09-02",
+  },
+  {
+    id: "m-2",
+    name: "卡牌素材・制服序章",
+    spec: "2:3 卡面 ×6",
+    status: "已通過" as const,
+    updatedAt: "2026-09-10",
+  },
+  {
+    id: "m-3",
+    name: "卡牌素材・星光舞台",
+    spec: "2:3 卡面 ×4",
+    status: "審核中" as const,
+    updatedAt: "2026-09-19",
+  },
+  {
+    id: "m-4",
+    name: "動態光效素材",
+    spec: "MP4／透明序列",
+    status: "待補件" as const,
+    updatedAt: "2026-09-16",
+  },
 ];
 
 export const GODDESS_TBD = [

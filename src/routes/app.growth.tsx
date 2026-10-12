@@ -1,28 +1,40 @@
+import { CollectionPreview } from "@/components/collection/CollectionViews";
+import { useLocalTest } from "@/lib/local-test-client";
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { dupeCards, goddessOf, NO_SPLIT_ON_GROWTH_NOTE, OFFLINE_RESUME_NOTE, type AlbumCard } from "@/data/player";
+import {
+  dupeCards,
+  goddessOf,
+  NO_SPLIT_ON_GROWTH_NOTE,
+  OFFLINE_RESUME_NOTE,
+  type AlbumCard,
+} from "@/data/player";
 import { nextGrade } from "@/data/mock";
 import { CardFrame } from "@/components/ui/card-frame";
 import { Progress } from "@/components/ui/progress";
 import { RarityBadge } from "@/components/ui/rarity-badge";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
-import { StatePlaceholder, StateSwitcher, useDemoState } from "@/components/ui/state-demo";
-import { usePlayerSettings } from "@/lib/player-store";
-import { useToast } from "@/components/ui/toast";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StatePlaceholder, StateSwitcher } from "@/components/ui/state-demo";
+import { usePlayerSettings } from "@/lib/player-store-shared";
+import { useToast } from "@/components/ui/toast-shared";
 
 export const Route = createFileRoute("/app/growth")({
   head: () => ({
     meta: [
       { title: "指定卡成長 — KEEPY" },
-      { name: "description", content: "同女神、同等級、同卡牌的每張重複卡 +10% 成長值，累積 10 張可升一級。" },
+      {
+        name: "description",
+        content: "同女神、同等級、同卡牌的每張重複卡 +10% 成長值，累積 10 張可升一級。",
+      },
       { property: "og:title", content: "指定卡成長 — KEEPY" },
       { property: "og:description", content: "使用重複卡累積成長值並升級指定卡牌（Demo）。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: GrowthPage,
+  component: CurrentPage,
 });
 
 function GrowthPage() {
@@ -36,7 +48,12 @@ function GrowthPage() {
   const [submitting, setSubmitting] = useState(false);
   const [offline, setOffline] = useState(false);
   const [stashed, setStashed] = useState(false);
-  const [result, setResult] = useState<{ card: AlbumCard; before: number; after: number; upgraded: boolean } | null>(null);
+  const [result, setResult] = useState<{
+    card: AlbumCard;
+    before: number;
+    after: number;
+    upgraded: boolean;
+  } | null>(null);
 
   const selected = candidates.find((c) => c.id === selectedId);
   const after = selected ? Math.min(100, selected.growthPct + useCount * 10) : 0;
@@ -49,7 +66,11 @@ function GrowthPage() {
       setSubmitting(false);
       if (offline) {
         setStashed(true);
-        push({ title: OFFLINE_RESUME_NOTE, description: "成長結果已保留，恢復查看不會重複消耗素材。", tone: "gold" });
+        push({
+          title: OFFLINE_RESUME_NOTE,
+          description: "成長結果已保留，恢復查看不會重複消耗素材。",
+          tone: "gold",
+        });
         return;
       }
       setResult({ card: selected, before: selected.growthPct, after, upgraded: after >= 100 });
@@ -123,15 +144,27 @@ function GrowthPage() {
                     className="mt-2 w-full accent-[var(--primary)]"
                   />
                 </label>
-                <p className="text-sm font-bold">投入 {useCount} 張 → +{useCount * 10}%</p>
-                <Progress value={after} className="mt-3" showLabel label={`成長值 ${selected.growthPct}% → ${after}%`} tone={after >= 100 ? "gold" : "violet"} />
+                <p className="text-sm font-bold">
+                  投入 {useCount} 張 → +{useCount * 10}%
+                </p>
+                <Progress
+                  value={after}
+                  className="mt-3"
+                  showLabel
+                  label={`成長值 ${selected.growthPct}% → ${after}%`}
+                  tone={after >= 100 ? "gold" : "violet"}
+                />
                 {after >= 100 && (
                   <p className="mt-2 text-xs font-bold text-gold">
                     達 100%，可升級為 {nextGrade(selected.grade)}（Demo）
                   </p>
                 )}
                 <label className="mt-4 flex items-center gap-2 text-[11px] text-muted-foreground">
-                  <input type="checkbox" checked={offline} onChange={(e) => setOffline(e.target.checked)} />
+                  <input
+                    type="checkbox"
+                    checked={offline}
+                    onChange={(e) => setOffline(e.target.checked)}
+                  />
                   模擬網路中斷
                 </label>
                 <button
@@ -153,7 +186,12 @@ function GrowthPage() {
                     <button
                       onClick={() => {
                         setStashed(false);
-                        setResult({ card: selected, before: selected.growthPct, after, upgraded: after >= 100 });
+                        setResult({
+                          card: selected,
+                          before: selected.growthPct,
+                          after,
+                          upgraded: after >= 100,
+                        });
                       }}
                       className="mt-2 rounded-lg border border-gold/50 px-3 py-1.5 text-[11px] font-bold text-gold"
                     >
@@ -183,10 +221,17 @@ function GrowthPage() {
           <div className="w-full max-w-sm text-center">
             <p className="text-xs font-black tracking-[0.4em] text-gold">GROWTH</p>
             <h2 className="mt-1 text-2xl font-black">
-              {result.upgraded ? "升級成功" : "成長完成"} <span className="demo-chip align-middle">Demo</span>
+              {result.upgraded ? "升級成功" : "成長完成"}{" "}
+              <span className="demo-chip align-middle">Demo</span>
             </h2>
-            <div className={`mx-auto mt-5 w-40 ${settings.reduceMotion ? "" : "animate-in fade-in zoom-in-95"}`}>
-              <CardFrame goddess={goddessOf(result.card)} grade={result.upgraded ? nextGrade(result.card.grade) : result.card.grade} cardName={result.card.name} />
+            <div
+              className={`mx-auto mt-5 w-40 ${settings.reduceMotion ? "" : "animate-in fade-in zoom-in-95"}`}
+            >
+              <CardFrame
+                goddess={goddessOf(result.card)}
+                grade={result.upgraded ? nextGrade(result.card.grade) : result.card.grade}
+                cardName={result.card.name}
+              />
             </div>
             <p className="mt-4 text-sm">
               成長值 {result.before}% → {result.after}%
@@ -198,10 +243,16 @@ function GrowthPage() {
             )}
             <p className="mt-3 text-[11px] text-muted-foreground">{NO_SPLIT_ON_GROWTH_NOTE}</p>
             <div className="mt-6 flex justify-center gap-2">
-              <button onClick={() => setResult(null)} className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground">
+              <button
+                onClick={() => setResult(null)}
+                className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground"
+              >
                 關閉
               </button>
-              <Link to="/app/album" className="rounded-xl border border-border px-5 py-2.5 text-sm font-bold text-muted-foreground">
+              <Link
+                to="/app/album"
+                className="rounded-xl border border-border px-5 py-2.5 text-sm font-bold text-muted-foreground"
+              >
                 前往卡冊
               </Link>
             </div>
@@ -210,4 +261,9 @@ function GrowthPage() {
       )}
     </div>
   );
+}
+
+function CurrentPage() {
+  const local = useLocalTest();
+  return local.enabled ? <CollectionPreview /> : <GrowthPage />;
 }

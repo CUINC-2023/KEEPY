@@ -3,6 +3,11 @@
  * /app/settings/privacy 寫入，/collectors/demo-player 唯讀。
  * 只保存在瀏覽器 localStorage，不代表帳號同步或正式公開頁。
  */
+/**
+ * 展示卡共用 Local Mock 設定（Phase 6D-4B）。
+ * /app/settings/privacy 寫入，/collectors/demo-player 唯讀。
+ * 只保存在瀏覽器 localStorage，不代表帳號同步或正式公開頁。
+ */
 import { ALBUM, goddessOf, type AlbumCard } from "@/data/player";
 
 export const CARD_SHOWCASE_KEY = "pf-card-showcase-v1";
@@ -15,7 +20,9 @@ export const SHOWCASE_POOL: AlbumCard[] = ALBUM.filter((card) => card.owned);
 const OWNED_IDS = new Set(SHOWCASE_POOL.map((c) => c.id));
 
 /** Demo 預設：沿用目前公開頁的六張（卡冊已持有、固定順序） */
-export const DEFAULT_CARD_SHOWCASE_IDS: string[] = SHOWCASE_POOL.slice(0, CARD_SHOWCASE_MAX).map((c) => c.id);
+export const DEFAULT_CARD_SHOWCASE_IDS: string[] = SHOWCASE_POOL.slice(0, CARD_SHOWCASE_MAX).map(
+  (c) => c.id,
+);
 
 export const showcaseCardById = (id: string) => SHOWCASE_POOL.find((c) => c.id === id);
 

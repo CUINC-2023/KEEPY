@@ -1,14 +1,18 @@
+import { AlbumParticipationTracker } from "@/components/participation/AlbumParticipationTracker";
+import { usePlayerUiText } from "@/lib/player-ui-text";
+import { useDemoPlayer } from "@/lib/demo-player-store";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ALL_POOL_PROGRESS, albumCompletionState } from "@/data/player";
-import { POOLS, POOL_KIND_LABEL, poolById, poolPermanence } from "@/data/mock";
+import { albumCompletionState } from "@/data/player";
+import { POOL_KIND_LABEL, poolById, poolPermanence } from "@/data/mock";
 import { PoolCover, PoolStatusTag } from "@/components/ui/pool-cover";
 import { Progress } from "@/components/ui/progress";
 import { StatusTag } from "@/components/ui/status-tag";
 import { RarityBadge } from "@/components/ui/rarity-badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SkeletonBlock } from "@/components/ui/skeleton-block";
-import { StatePlaceholder, StateSwitcher, useDemoState } from "@/components/ui/state-demo";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StatePlaceholder, StateSwitcher } from "@/components/ui/state-demo";
 import { useMockLoading } from "@/hooks/use-mock-loading";
 import { KEEPY_SAMPLE_POOL_ID } from "@/data/keepy-sample";
 
@@ -61,6 +65,9 @@ function Chip({
 }
 
 function AlbumOverview() {
+  const participationTracker = <AlbumParticipationTracker />;
+  const tx = usePlayerUiText();
+  const { progress: ALL_POOL_PROGRESS } = useDemoPlayer();
   const [state, setState] = useDemoState();
   const loading = useMockLoading(420);
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -74,7 +81,10 @@ function AlbumOverview() {
       if (status !== "all" && pool.status !== status) return false;
       if (kind !== "all" && poolPermanence(pool.kind) !== kind) return false;
       if (done !== "all" && albumCompletionState(progress) !== done) return false;
-      if (q.trim() && !`${pool.name}${pool.subtitle}`.toLowerCase().includes(q.trim().toLowerCase()))
+      if (
+        q.trim() &&
+        !`${pool.name}${pool.subtitle}`.toLowerCase().includes(q.trim().toLowerCase())
+      )
         return false;
       return true;
     })
@@ -90,13 +100,16 @@ function AlbumOverview() {
 
   return (
     <div className="space-y-5">
+      {participationTracker}
       <StateSwitcher state={state} onChange={setState} />
 
       <div className="flex flex-wrap items-center gap-2">
-        <h1 className="text-xl font-black sm:text-2xl">卡冊總覽</h1>
-        <span className="demo-chip">Mock 資料</span>
+        <h1 className="text-xl font-black sm:text-2xl">{tx("卡冊總覽")}</h1>
+        <span className="demo-chip">{tx("Mock 資料")}</span>
         <span className="ml-auto text-xs font-bold tabular-nums text-muted-foreground">
-          Demo 蒐集 {totalOwned} / {totalCards} 張（六本卡冊＋一組示意卡）
+          {tx("Demo 蒐集")}
+          {totalOwned} / {totalCards}
+          {tx("張（六本卡冊＋一組示意卡）")}
         </span>
       </div>
 
@@ -104,43 +117,51 @@ function AlbumOverview() {
         <div className="flex flex-wrap gap-1.5">
           {(["all", "live", "upcoming", "ended"] as StatusFilter[]).map((k) => (
             <Chip key={k} active={status === k} onClick={() => setStatus(k)}>
-              {k === "all" ? "全部狀態" : k === "live" ? "進行中" : k === "upcoming" ? "即將開始" : "已結束"}
+              {k === "all"
+                ? tx("全部狀態")
+                : k === "live"
+                  ? tx("進行中")
+                  : k === "upcoming"
+                    ? tx("即將開始")
+                    : tx("已結束")}
             </Chip>
           ))}
         </div>
         <div className="flex flex-wrap gap-1.5">
           {(["all", "none", "collecting", "done"] as DoneFilter[]).map((k) => (
             <Chip key={k} active={done === k} onClick={() => setDone(k)}>
-              {k === "all" ? "全部完成度" : DONE_LABEL[k]}
+              {k === "all" ? tx("全部完成度") : DONE_LABEL[k]}
             </Chip>
           ))}
           {(["all", "permanent", "limited"] as KindFilter[]).map((k) => (
             <Chip key={k} active={kind === k} onClick={() => setKind(k)}>
-              {k === "all" ? "常駐＋限定" : k === "permanent" ? "常駐" : "限定"}
+              {k === "all" ? tx("常駐＋限定") : k === "permanent" ? tx("常駐") : tx("限定")}
             </Chip>
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <input
+            aria-label={tx("搜尋卡池名稱")}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="搜尋卡池名稱"
+            placeholder={tx("搜尋卡池名稱")}
             className="min-w-0 flex-1 rounded-xl border border-border bg-muted/50 px-3 py-2 text-xs font-semibold text-foreground placeholder:text-muted-foreground"
           />
           <select
+            aria-label={tx("名稱排序")}
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
             className="rounded-xl border border-border bg-muted/50 px-3 py-2 text-xs font-semibold text-foreground"
           >
-            <option value="pct-desc">完成率：高 → 低</option>
-            <option value="pct-asc">完成率：低 → 高</option>
-            <option value="name">名稱排序</option>
+            <option value="pct-desc">{tx("完成率：高 → 低")}</option>
+            <option value="pct-asc">{tx("完成率：低 → 高")}</option>
+            <option value="name">{tx("名稱排序")}</option>
           </select>
         </div>
       </div>
 
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="沒有符合條件的卡冊" />
+        <StatePlaceholder state={state} emptyTitle={tx("沒有符合條件的卡冊")} />
       ) : loading ? (
         <div className="grid gap-4 md:grid-cols-2">
           {[0, 1, 2, 3].map((i) => (
@@ -149,11 +170,19 @@ function AlbumOverview() {
         </div>
       ) : rows.length === 0 ? (
         <EmptyState
-          title="沒有符合條件的卡冊"
-          description="試著放寬篩選條件或清除關鍵字。"
+          title={tx("沒有符合條件的卡冊")}
+          description={tx("試著放寬篩選條件或清除關鍵字。")}
           action={
-            <button onClick={() => { setStatus("all"); setDone("all"); setKind("all"); setQ(""); }} className="text-xs font-bold text-primary hover:underline">
-              清除篩選
+            <button
+              onClick={() => {
+                setStatus("all");
+                setDone("all");
+                setKind("all");
+                setQ("");
+              }}
+              className="text-xs font-bold text-primary hover:underline"
+            >
+              {tx("清除篩選")}
             </button>
           }
         />
@@ -171,10 +200,16 @@ function AlbumOverview() {
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="text-sm font-black">{pool.name}</p>
                   <PoolStatusTag status={pool.status} />
-                  <StatusTag tone="info" label={POOL_KIND_LABEL[pool.kind]} />
+                  <StatusTag tone="info" label={tx(POOL_KIND_LABEL[pool.kind])} />
                   <StatusTag
-                    tone={progress.owned >= progress.total ? "gold" : progress.owned === 0 ? "resting" : "live"}
-                    label={DONE_LABEL[albumCompletionState(progress)]!}
+                    tone={
+                      progress.owned >= progress.total
+                        ? "gold"
+                        : progress.owned === 0
+                          ? "resting"
+                          : "live"
+                    }
+                    label={tx(DONE_LABEL[albumCompletionState(progress)]!)}
                   />
                 </div>
                 <p className="mt-2 text-xl font-black text-violet-gradient tabular-nums">
@@ -185,18 +220,34 @@ function AlbumOverview() {
                   max={Math.max(1, progress.total)}
                   className="mt-2"
                   showLabel
-                  label={`完成率 ${progress.pct}%`}
+                  label={tx(`完成率 ${progress.pct}%`)}
                   tone={progress.owned >= progress.total ? "gold" : "violet"}
                 />
                 <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-muted-foreground">
                   <span className="flex items-center gap-1">
-                    最高等級
-                    {progress.topGrade ? <RarityBadge rarity={progress.topGrade} /> : <span>—</span>}
+                    {tx("最高等級")}
+                    {progress.topGrade ? (
+                      <RarityBadge rarity={progress.topGrade} />
+                    ) : (
+                      <span>—</span>
+                    )}
                   </span>
-                  <span>新卡 {progress.newCount}</span>
-                  <span>可升級 {progress.upgradableCount}</span>
-                  <span>重複卡 {progress.dupeCount}</span>
-                  <span>最後取得 {progress.lastObtainedAt ?? "—"}</span>
+                  <span>
+                    {tx("新卡")}
+                    {progress.newCount}
+                  </span>
+                  <span>
+                    {tx("可升級")}
+                    {progress.upgradableCount}
+                  </span>
+                  <span>
+                    {tx("重複卡")}
+                    {progress.dupeCount}
+                  </span>
+                  <span>
+                    {tx("最後取得")}
+                    {progress.lastObtainedAt ?? "—"}
+                  </span>
                 </div>
               </div>
             </Link>

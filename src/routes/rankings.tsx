@@ -1,3 +1,4 @@
+import { CollectionRankings } from "@/components/collection/CollectionViews";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { LEVEL_RANKING, POOL_RANKING, poolById } from "@/data/mock";
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/rankings")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: RankingsPage,
+  component: CollectionRankings,
 });
 
 const TABS = [

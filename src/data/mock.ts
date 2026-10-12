@@ -4,18 +4,7 @@
 // ─────────────────────────────────────────────────────────────
 
 /** 卡牌等級（由低到高） */
-export const GRADES = [
-  "C",
-  "U",
-  "R",
-  "RR",
-  "RRR",
-  "SR",
-  "SSR",
-  "HR",
-  "UR",
-  "O",
-] as const;
+export const GRADES = ["C", "U", "R", "RR", "RRR", "SR", "SSR", "HR", "UR", "O"] as const;
 
 export type Rarity = (typeof GRADES)[number];
 
@@ -79,8 +68,7 @@ export const GODDESSES: Goddess[] = [
     level: 42,
     affinity: 86,
     status: "live",
-    intro:
-      "以星空與夜色為主題的創作者女神，擅長療癒系語音與深夜直播。卡面以深藍與銀河粒子構成。",
+    intro: "以星空與夜色為主題的創作者女神，擅長療癒系語音與深夜直播。卡面以深藍與銀河粒子構成。",
     tags: ["療癒", "深夜電台", "星空"],
     supporters: 12840,
     debutAt: "2025-11-02",
@@ -194,13 +182,7 @@ export interface GradeRate {
 }
 
 /** 卡池類型（Batch 5：多卡池範本） */
-export type PoolKind =
-  | "permanent"
-  | "limited"
-  | "seasonal"
-  | "collab"
-  | "period"
-  | "anniversary";
+export type PoolKind = "permanent" | "limited" | "seasonal" | "collab" | "period" | "anniversary";
 
 export const POOL_KIND_LABEL: Record<PoolKind, string> = {
   permanent: "常駐型",
@@ -272,8 +254,7 @@ export const POOLS: Pool[] = [
     pityNote: [DRAW_PITY_TBD],
     featuredCardIds: ["c-u-01", "c-u-02", "c-u-03", "c-u-04"],
     synthesisVersion: "v2",
-    description:
-      "常駐型首波卡池，以校園制服為主題，收錄 5 位合作女神的全等級卡面。",
+    description: "常駐型首波卡池，以校園制服為主題，收錄 5 位合作女神的全等級卡面。",
   },
   {
     id: "p-starlight",
@@ -306,8 +287,7 @@ export const POOLS: Pool[] = [
     pityNote: [DRAW_PITY_TBD, "開池前可先預覽卡牌與機率，開池後才可抽卡。"],
     featuredCardIds: ["c-s-01", "c-s-02", "c-s-03"],
     synthesisVersion: "v1",
-    description:
-      "限定型卡池，以演唱會舞台燈光為題，包含舞台限定 UR 卡面與動態光效示意。",
+    description: "限定型卡池，以演唱會舞台燈光為題，包含舞台限定 UR 卡面與動態光效示意。",
   },
   {
     id: "p-summer",
@@ -340,8 +320,7 @@ export const POOLS: Pool[] = [
     pityNote: [DRAW_PITY_TBD],
     featuredCardIds: [],
     synthesisVersion: "v1",
-    description:
-      "季節限定型卡池，以夏日海邊與祭典為主題，卡面以海藍與陽光粒子構成。",
+    description: "季節限定型卡池，以夏日海邊與祭典為主題，卡面以海藍與陽光粒子構成。",
   },
   {
     id: "p-kimono",
@@ -374,8 +353,7 @@ export const POOLS: Pool[] = [
     pityNote: [DRAW_PITY_TBD, "合作企劃卡池的授權範圍與素材規格為 Demo／待定。"],
     featuredCardIds: [],
     synthesisVersion: "v1",
-    description:
-      "合作企劃型卡池，以和服與夜市綺想為主題，卡面留白帶有日系插畫感。",
+    description: "合作企劃型卡池，以和服與夜市綺想為主題，卡面留白帶有日系插畫感。",
   },
   {
     id: "p-night-cherry",
@@ -408,8 +386,7 @@ export const POOLS: Pool[] = [
     pityNote: ["本卡池已結束，卡牌不再發行。", DRAW_PITY_TBD],
     featuredCardIds: [],
     synthesisVersion: "v3",
-    description:
-      "期間限定型卡池，已於 2026-08-20 結束，卡牌保留於玩家收藏與卡冊中。",
+    description: "期間限定型卡池，已於 2026-08-20 結束，卡牌保留於玩家收藏與卡冊中。",
   },
   {
     id: "p-anniversary",
@@ -442,26 +419,35 @@ export const POOLS: Pool[] = [
     pityNote: ["本卡池已結束，卡牌不再發行。", DRAW_PITY_TBD],
     featuredCardIds: [],
     synthesisVersion: "v2",
-    description:
-      "紀念型卡池，收錄一週年紀念卡面，已結束並完整保留於玩家卡冊。",
+    description: "紀念型卡池，收錄一週年紀念卡面，已結束並完整保留於玩家卡冊。",
   },
   {
-    id: "p-keepy-sample", name: "星光收藏", subtitle: "KEEPY · Starlight Collection · 範例／非正式上架",
-    kind: "limited", status: "upcoming", startAt: "未開放", endAt: "未定",
-    coverGrade: "SSR", themeClass: "from-indigo-900 via-violet-900 to-ink", themeName: "星光・示意",
-    goddessIds: [], cardCount: 3, singlePricePoints: 0, tenPricePoints: 0,
-    pointsPriceNote: "範例／非正式上架：無定價，不可交易", rates: [],
+    id: "p-keepy-sample",
+    name: "星光收藏",
+    subtitle: "KEEPY · Starlight Collection · 範例／非正式上架",
+    kind: "limited",
+    status: "upcoming",
+    startAt: "未開放",
+    endAt: "未定",
+    coverGrade: "SSR",
+    themeClass: "from-indigo-900 via-violet-900 to-ink",
+    themeName: "星光・示意",
+    goddessIds: [],
+    cardCount: 3,
+    singlePricePoints: 0,
+    tenPricePoints: 0,
+    pointsPriceNote: "範例／非正式上架：無定價，不可交易",
+    rates: [],
     pityNote: ["純卡面示意，無抽卡機率或保底承諾。"],
     featuredCardIds: ["c-keepy-01", "c-keepy-02", "c-keepy-03"],
-    synthesisVersion: "範例", description: "三張虛構人物卡面，僅供 KEEPY 介面展示；未正式上架、不可抽卡或兌換。",
+    synthesisVersion: "範例",
+    description: "三張虛構人物卡面，僅供 KEEPY 介面展示；未正式上架、不可抽卡或兌換。",
   },
 ];
 
-export const poolById = (id: string): Pool | undefined =>
-  POOLS.find((p) => p.id === id);
+export const poolById = (id: string): Pool | undefined => POOLS.find((p) => p.id === id);
 
-export const poolsByStatus = (status: Pool["status"]) =>
-  POOLS.filter((p) => p.status === status);
+export const poolsByStatus = (status: Pool["status"]) => POOLS.filter((p) => p.status === status);
 
 // ── 卡牌 ───────────────────────────────────────────────────
 export interface CardDef {
@@ -478,27 +464,149 @@ export interface CardDef {
 import { KEEPY_SAMPLE_CARDS, KEEPY_SAMPLE_POOL_ID } from "@/data/keepy-sample";
 
 const MANUAL_CARDS: CardDef[] = [
-  { id: "c-u-01", poolId: "p-uniform", goddessId: "g-yoru", grade: "UR", name: "夜澄・放學後的星圖", releasedAt: "2026-09-12" },
-  { id: "c-u-02", poolId: "p-uniform", goddessId: "g-akane", grade: "SSR", name: "茜音・晨讀教室", releasedAt: "2026-09-12" },
-  { id: "c-u-03", poolId: "p-uniform", goddessId: "g-hinari", grade: "SR", name: "陽里・操場的風", releasedAt: "2026-09-12" },
-  { id: "c-u-04", poolId: "p-uniform", goddessId: "g-kohaku", grade: "RRR", name: "琥珀・社辦的午後", releasedAt: "2026-09-14" },
-  { id: "c-u-05", poolId: "p-uniform", goddessId: "g-yuki", grade: "RR", name: "雪乃・初次值日", releasedAt: "2026-09-16" },
-  { id: "c-u-06", poolId: "p-uniform", goddessId: "g-yuki", grade: "C", name: "雪乃・制服日常", releasedAt: "2026-09-16" },
-  { id: "c-s-01", poolId: "p-starlight", goddessId: "g-yoru", grade: "O", name: "夜澄・銀河安可", releasedAt: "2026-10-15" },
-  { id: "c-s-02", poolId: "p-starlight", goddessId: "g-akane", grade: "HR", name: "茜音・開場第一束光", releasedAt: "2026-10-15" },
-  { id: "c-s-03", poolId: "p-starlight", goddessId: "g-mizuki", grade: "SSR", name: "水月・詩與聚光燈", releasedAt: "2026-10-15" },
-  { id: "c-s-04", poolId: "p-starlight", goddessId: "g-shion", grade: "SR", name: "紫苑・後台觀測", releasedAt: "2026-10-15" },
-  ...KEEPY_SAMPLE_CARDS.map((c) => ({ id: c.id, poolId: KEEPY_SAMPLE_POOL_ID, goddessId: "g-yoru", grade: "SSR" as Rarity, name: c.name, releasedAt: "未上架", art: c.art })),
+  {
+    id: "c-u-01",
+    poolId: "p-uniform",
+    goddessId: "g-yoru",
+    grade: "UR",
+    name: "夜澄・放學後的星圖",
+    releasedAt: "2026-09-12",
+  },
+  {
+    id: "c-u-02",
+    poolId: "p-uniform",
+    goddessId: "g-akane",
+    grade: "SSR",
+    name: "茜音・晨讀教室",
+    releasedAt: "2026-09-12",
+  },
+  {
+    id: "c-u-03",
+    poolId: "p-uniform",
+    goddessId: "g-hinari",
+    grade: "SR",
+    name: "陽里・操場的風",
+    releasedAt: "2026-09-12",
+  },
+  {
+    id: "c-u-04",
+    poolId: "p-uniform",
+    goddessId: "g-kohaku",
+    grade: "RRR",
+    name: "琥珀・社辦的午後",
+    releasedAt: "2026-09-14",
+  },
+  {
+    id: "c-u-05",
+    poolId: "p-uniform",
+    goddessId: "g-yuki",
+    grade: "RR",
+    name: "雪乃・初次值日",
+    releasedAt: "2026-09-16",
+  },
+  {
+    id: "c-u-06",
+    poolId: "p-uniform",
+    goddessId: "g-yuki",
+    grade: "C",
+    name: "雪乃・制服日常",
+    releasedAt: "2026-09-16",
+  },
+  {
+    id: "c-s-01",
+    poolId: "p-starlight",
+    goddessId: "g-yoru",
+    grade: "O",
+    name: "夜澄・銀河安可",
+    releasedAt: "2026-10-15",
+  },
+  {
+    id: "c-s-02",
+    poolId: "p-starlight",
+    goddessId: "g-akane",
+    grade: "HR",
+    name: "茜音・開場第一束光",
+    releasedAt: "2026-10-15",
+  },
+  {
+    id: "c-s-03",
+    poolId: "p-starlight",
+    goddessId: "g-mizuki",
+    grade: "SSR",
+    name: "水月・詩與聚光燈",
+    releasedAt: "2026-10-15",
+  },
+  {
+    id: "c-s-04",
+    poolId: "p-starlight",
+    goddessId: "g-shion",
+    grade: "SR",
+    name: "紫苑・後台觀測",
+    releasedAt: "2026-10-15",
+  },
+  ...KEEPY_SAMPLE_CARDS.map((c) => ({
+    id: c.id,
+    poolId: KEEPY_SAMPLE_POOL_ID,
+    goddessId: "g-yoru",
+    grade: "SSR" as Rarity,
+    name: c.name,
+    releasedAt: "未上架",
+    art: c.art,
+  })),
 ];
 
 /** 每個卡池的可視化範例卡牌名稱（虛構內容） */
 const POOL_CARD_TITLES: Record<string, string[]> = {
   "p-uniform": ["頂樓的風鈴", "走廊光斑", "午休的耳機", "雨天的傘", "值日生日誌", "圖書室低語"],
   "p-starlight": ["舞台前排", "聚光燈下", "後台鏡前", "安可的手勢", "第一束光", "星屑之詩"],
-  "p-summer": ["海風的裙擺", "午後汽水", "沙灘腳印", "祭典金魚", "煙火倒數", "夏夜縁側", "防波堤黃昏", "泳池折光", "冰棒對半", "日落公車"],
-  "p-kimono": ["緣日浴衣", "紙傘微光", "神社石階", "風鈴小徑", "夜市面具", "和室午茶", "簪花側臉", "楓葉迴廊", "御守之約", "初詣清晨"],
-  "p-night-cherry": ["夜櫻並木", "花瓣風信", "石燈籠下", "河岸倒影", "夜行電車", "櫻雨告白", "月映水面", "終幕的手", "落花枕", "春宵獨白"],
-  "p-anniversary": ["一週年蛋糕", "感謝的花束", "紀念徽章", "回顧相簿", "香檳金幕", "初心的頁", "祝賀煙火", "紀念寫真", "來自玩家的信", "第一年的光"],
+  "p-summer": [
+    "海風的裙擺",
+    "午後汽水",
+    "沙灘腳印",
+    "祭典金魚",
+    "煙火倒數",
+    "夏夜縁側",
+    "防波堤黃昏",
+    "泳池折光",
+    "冰棒對半",
+    "日落公車",
+  ],
+  "p-kimono": [
+    "緣日浴衣",
+    "紙傘微光",
+    "神社石階",
+    "風鈴小徑",
+    "夜市面具",
+    "和室午茶",
+    "簪花側臉",
+    "楓葉迴廊",
+    "御守之約",
+    "初詣清晨",
+  ],
+  "p-night-cherry": [
+    "夜櫻並木",
+    "花瓣風信",
+    "石燈籠下",
+    "河岸倒影",
+    "夜行電車",
+    "櫻雨告白",
+    "月映水面",
+    "終幕的手",
+    "落花枕",
+    "春宵獨白",
+  ],
+  "p-anniversary": [
+    "一週年蛋糕",
+    "感謝的花束",
+    "紀念徽章",
+    "回顧相簿",
+    "香檳金幕",
+    "初心的頁",
+    "祝賀煙火",
+    "紀念寫真",
+    "來自玩家的信",
+    "第一年的光",
+  ],
 };
 
 /** 每個卡池補齊至 10 張可視化範例卡牌（固定資料，非亂數） */
@@ -529,8 +637,7 @@ function buildFeaturedCards(): CardDef[] {
 export const CARDS: CardDef[] = buildFeaturedCards();
 
 export const cardById = (id: string) => CARDS.find((c) => c.id === id);
-export const cardsByPool = (poolId: string) =>
-  CARDS.filter((c) => c.poolId === poolId);
+export const cardsByPool = (poolId: string) => CARDS.filter((c) => c.poolId === poolId);
 export const LATEST_CARDS = [...CARDS]
   .sort((a, b) => (a.releasedAt < b.releasedAt ? 1 : -1))
   .slice(0, 6);
@@ -549,16 +656,70 @@ export interface OwnedCard {
 }
 
 export const OWNED_CARDS: OwnedCard[] = [
-  { id: "o-001", cardId: "c-u-01", goddessId: "g-yoru", grade: "UR", level: 4, dupes: 6, growthPct: 60, obtainedAt: "2026-09-13" },
-  { id: "o-002", cardId: "c-u-02", goddessId: "g-akane", grade: "SSR", level: 3, dupes: 2, growthPct: 20, obtainedAt: "2026-09-14" },
-  { id: "o-003", cardId: "c-u-03", goddessId: "g-hinari", grade: "SR", level: 2, dupes: 9, growthPct: 90, obtainedAt: "2026-09-15" },
-  { id: "o-004", cardId: "c-u-04", goddessId: "g-kohaku", grade: "RRR", level: 2, dupes: 3, growthPct: 30, obtainedAt: "2026-09-16" },
-  { id: "o-005", cardId: "c-u-05", goddessId: "g-yuki", grade: "RR", level: 1, dupes: 0, growthPct: 0, obtainedAt: "2026-09-17" },
-  { id: "o-006", cardId: "c-u-06", goddessId: "g-yuki", grade: "C", level: 1, dupes: 1, growthPct: 10, obtainedAt: "2026-09-18" },
+  {
+    id: "o-001",
+    cardId: "c-u-01",
+    goddessId: "g-yoru",
+    grade: "UR",
+    level: 4,
+    dupes: 6,
+    growthPct: 60,
+    obtainedAt: "2026-09-13",
+  },
+  {
+    id: "o-002",
+    cardId: "c-u-02",
+    goddessId: "g-akane",
+    grade: "SSR",
+    level: 3,
+    dupes: 2,
+    growthPct: 20,
+    obtainedAt: "2026-09-14",
+  },
+  {
+    id: "o-003",
+    cardId: "c-u-03",
+    goddessId: "g-hinari",
+    grade: "SR",
+    level: 2,
+    dupes: 9,
+    growthPct: 90,
+    obtainedAt: "2026-09-15",
+  },
+  {
+    id: "o-004",
+    cardId: "c-u-04",
+    goddessId: "g-kohaku",
+    grade: "RRR",
+    level: 2,
+    dupes: 3,
+    growthPct: 30,
+    obtainedAt: "2026-09-16",
+  },
+  {
+    id: "o-005",
+    cardId: "c-u-05",
+    goddessId: "g-yuki",
+    grade: "RR",
+    level: 1,
+    dupes: 0,
+    growthPct: 0,
+    obtainedAt: "2026-09-17",
+  },
+  {
+    id: "o-006",
+    cardId: "c-u-06",
+    goddessId: "g-yuki",
+    grade: "C",
+    level: 1,
+    dupes: 1,
+    growthPct: 10,
+    obtainedAt: "2026-09-18",
+  },
 ];
 
 export const LOCKED_GODDESS_IDS = GODDESSES.filter(
-  (g) => !OWNED_CARDS.some((c) => c.goddessId === g.id)
+  (g) => !OWNED_CARDS.some((c) => c.goddessId === g.id),
 ).map((g) => g.id);
 
 /** 目前進行中卡池的蒐集進度 */
@@ -598,11 +759,51 @@ export interface EarningsRecord {
 }
 
 export const EARNINGS: EarningsRecord[] = [
-  { id: "e-101", period: "2026-09 上半月", poolName: "制服序章", goddessId: "g-yoru", paidDrawCount: 1840, amountTwd: 12400, status: "可結算" },
-  { id: "e-102", period: "2026-09 上半月", poolName: "制服序章", goddessId: "g-akane", paidDrawCount: 1260, amountTwd: 8600, status: "可結算" },
-  { id: "e-103", period: "2026-09 下半月", poolName: "制服序章", goddessId: "g-yoru", paidDrawCount: 780, amountTwd: 5300, status: "待結算" },
-  { id: "e-104", period: "2026-08", poolName: "夜櫻回憶", goddessId: "g-mizuki", paidDrawCount: 2110, amountTwd: 14200, status: "已結算" },
-  { id: "e-105", period: "2026-07", poolName: "夜櫻回憶", goddessId: "g-kohaku", paidDrawCount: 640, amountTwd: 4300, status: "已結算" },
+  {
+    id: "e-101",
+    period: "2026-09 上半月",
+    poolName: "制服序章",
+    goddessId: "g-yoru",
+    paidDrawCount: 1840,
+    amountTwd: 12400,
+    status: "可結算",
+  },
+  {
+    id: "e-102",
+    period: "2026-09 上半月",
+    poolName: "制服序章",
+    goddessId: "g-akane",
+    paidDrawCount: 1260,
+    amountTwd: 8600,
+    status: "可結算",
+  },
+  {
+    id: "e-103",
+    period: "2026-09 下半月",
+    poolName: "制服序章",
+    goddessId: "g-yoru",
+    paidDrawCount: 780,
+    amountTwd: 5300,
+    status: "待結算",
+  },
+  {
+    id: "e-104",
+    period: "2026-08",
+    poolName: "夜櫻回憶",
+    goddessId: "g-mizuki",
+    paidDrawCount: 2110,
+    amountTwd: 14200,
+    status: "已結算",
+  },
+  {
+    id: "e-105",
+    period: "2026-07",
+    poolName: "夜櫻回憶",
+    goddessId: "g-kohaku",
+    paidDrawCount: 640,
+    amountTwd: 4300,
+    status: "已結算",
+  },
 ];
 
 // ── 合成 ───────────────────────────────────────────────────

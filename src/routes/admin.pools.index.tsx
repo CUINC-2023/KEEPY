@@ -7,15 +7,22 @@ import { StatusTag } from "@/components/ui/status-tag";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PoolStatusTag } from "@/components/ui/pool-cover";
-import { StateSwitcher, StatePlaceholder, useDemoState } from "@/components/ui/state-demo";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/admin/pools/")({
   head: () => ({
     meta: [
       { title: "卡池管理 — KEEPY管理後台" },
-      { name: "description", content: "卡池列表與抽卡、合成設定入口，草稿與發布狀態一覽。（Demo）" },
+      {
+        name: "description",
+        content: "卡池列表與抽卡、合成設定入口，草稿與發布狀態一覽。（Demo）",
+      },
       { property: "og:title", content: "卡池管理 — KEEPY管理後台" },
-      { property: "og:description", content: "卡池列表與抽卡、合成設定入口，草稿與發布狀態一覽。（Demo）" },
+      {
+        property: "og:description",
+        content: "卡池列表與抽卡、合成設定入口，草稿與發布狀態一覽。（Demo）",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -31,7 +38,7 @@ function AdminPools() {
       ? true
       : filter === "permanent" || filter === "limited"
         ? poolPermanence(r.pool.kind) === filter
-        : r.pool.status === filter
+        : r.pool.status === filter,
   );
 
   return (
@@ -57,7 +64,11 @@ function AdminPools() {
 
       <StateSwitcher state={state} onChange={setState} />
       {state !== "ok" ? (
-        <StatePlaceholder state={state} emptyTitle="沒有符合條件的卡池" emptyDescription="切換篩選條件再試。" />
+        <StatePlaceholder
+          state={state}
+          emptyTitle="沒有符合條件的卡池"
+          emptyDescription="切換篩選條件再試。"
+        />
       ) : (
         <>
           <FilterBar
@@ -87,18 +98,26 @@ function AdminPools() {
             ]}
             rows={rows.map(({ pool, meta }) => ({
               pool: (
-                <Link to="/admin/pools/$poolId" params={{ poolId: pool.id }} className="font-bold text-primary hover:underline">
+                <Link
+                  to="/admin/pools/$poolId"
+                  params={{ poolId: pool.id }}
+                  className="font-bold text-primary hover:underline"
+                >
                   {pool.name}
                 </Link>
               ),
               kind: <StatusTag tone="info" label={POOL_KIND_LABEL[pool.kind]} />,
               status: <PoolStatusTag status={pool.status} />,
               goddesses: (
-                <span className="tabular-nums text-muted-foreground">{pool.goddessIds.length} 位</span>
+                <span className="tabular-nums text-muted-foreground">
+                  {pool.goddessIds.length} 位
+                </span>
               ),
               drawSettings: (
                 <span className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-                  <span className="font-bold tabular-nums text-foreground">{meta.drawSettingsVersion}</span>
+                  <span className="font-bold tabular-nums text-foreground">
+                    {meta.drawSettingsVersion}
+                  </span>
                   <StatusTag
                     tone={meta.drawSettingsState === "已發布" ? "live" : "pending"}
                     label={meta.drawSettingsState}
@@ -107,7 +126,9 @@ function AdminPools() {
               ),
               synthesisSettings: (
                 <span className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-                  <span className="font-bold tabular-nums text-foreground">{meta.synthesisSettingsVersion}</span>
+                  <span className="font-bold tabular-nums text-foreground">
+                    {meta.synthesisSettingsVersion}
+                  </span>
                   <StatusTag
                     tone={meta.synthesisSettingsState === "已發布" ? "live" : "pending"}
                     label={meta.synthesisSettingsState}
@@ -116,7 +137,13 @@ function AdminPools() {
               ),
               publish: (
                 <StatusTag
-                  tone={meta.publishState === "已發布" ? "live" : meta.publishState === "草稿" ? "pending" : "gold"}
+                  tone={
+                    meta.publishState === "已發布"
+                      ? "live"
+                      : meta.publishState === "草稿"
+                        ? "pending"
+                        : "gold"
+                  }
                   label={meta.publishState}
                 />
               ),
@@ -140,7 +167,9 @@ function AdminPools() {
                 </span>
               ),
             }))}
-            empty={<EmptyState icon="◇" title="沒有符合條件的卡池" description="切換篩選條件再試。" />}
+            empty={
+              <EmptyState icon="◇" title="沒有符合條件的卡池" description="切換篩選條件再試。" />
+            }
           />
         </>
       )}

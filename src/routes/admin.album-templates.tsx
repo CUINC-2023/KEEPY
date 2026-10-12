@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CollectionTemplateGallery } from "@/components/collection/CollectionTemplateGallery";
 import { createFileRoute } from "@tanstack/react-router";
 import { ALBUM_TEMPLATES, ALBUM_TEMPLATE_NOTE, type AlbumTemplate } from "@/data/admin";
 import { POOLS } from "@/data/mock";
@@ -6,7 +7,8 @@ import { PoolCover } from "@/components/ui/pool-cover";
 import { StatusTag } from "@/components/ui/status-tag";
 import { Progress } from "@/components/ui/progress";
 import { ALL_POOL_PROGRESS } from "@/data/player";
-import { StatePlaceholder, StateSwitcher, useDemoState } from "@/components/ui/state-demo";
+import { useDemoState } from "@/components/ui/state-demo-shared";
+import { StatePlaceholder, StateSwitcher } from "@/components/ui/state-demo";
 
 export const Route = createFileRoute("/admin/album-templates")({
   head: () => ({
@@ -14,7 +16,10 @@ export const Route = createFileRoute("/admin/album-templates")({
       { title: "卡冊 UI 範本 — KEEPY管理後台" },
       { name: "description", content: "標準卡冊、限定卡冊與紀念完成卡冊三種 UI 範本預覽。" },
       { property: "og:title", content: "卡冊 UI 範本 — KEEPY管理後台" },
-      { property: "og:description", content: "三種卡冊 UI 範本的封面、進度欄、卡格狀態與鎖定規則（Demo）。" },
+      {
+        property: "og:description",
+        content: "三種卡冊 UI 範本的封面、進度欄、卡格狀態與鎖定規則（Demo）。",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -46,6 +51,7 @@ function AlbumTemplatesPage() {
       </header>
 
       <StateSwitcher state={state} onChange={setState} />
+      <CollectionTemplateGallery />
 
       {state !== "ok" ? (
         <StatePlaceholder state={state} emptyTitle="尚無卡冊範本" />

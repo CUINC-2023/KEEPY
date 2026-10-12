@@ -27,7 +27,7 @@ export function CardDetailLink({
       aria-label={`查看${name}詳情`}
       className={cn(
         "mt-1 inline-block text-[11px] font-bold text-primary hover:underline focus-visible:underline",
-        className
+        className,
       )}
     >
       {label}

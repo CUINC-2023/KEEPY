@@ -1,4 +1,5 @@
 // 本地 Mock 草稿儲存（Demo）：僅使用瀏覽器 localStorage，沒有任何伺服器儲存。
+// 本地 Mock 草稿儲存（Demo）：僅使用瀏覽器 localStorage，沒有任何伺服器儲存。
 import { useCallback, useEffect, useState } from "react";
 import type { WizardDraft } from "@/data/pool-wizard";
 import { POOLS } from "@/data/mock";

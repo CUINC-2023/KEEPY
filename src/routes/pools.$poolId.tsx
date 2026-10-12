@@ -1,29 +1,30 @@
+import { useLocale } from "@/lib/keepy-i18n-shared";
+import { useDiscovery } from "@/lib/content-store";
+import { DiscoverySeries, DiscoveryStatus } from "@/components/content/DiscoveryContent";
+import { useDemoPlayer } from "@/lib/demo-player-store";
+import { usePlayerUiText } from "@/lib/player-ui-text";
 import { PoolDescription } from "@/components/public/EditableText";
 import { useState } from "react";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import {
-  GRADES,
-  SPLIT_SOURCE_NOTE,
-  cardsByPool,
-  goddessById,
-  poolById,
-  poolCollectProgress,
-} from "@/data/mock";
+import { GRADES, SPLIT_SOURCE_NOTE, cardsByPool, goddessById, poolById } from "@/data/mock";
 import { CardFrame } from "@/components/ui/card-frame";
 import { CardDetailLink } from "@/components/card/CardDetailLink";
-import { PoolCover, POOL_STATUS_LABEL } from "@/components/ui/pool-cover";
+import { POOL_STATUS_LABEL } from "@/components/ui/pool-cover-shared";
+import { PoolCover } from "@/components/ui/pool-cover";
 import { RarityBadge } from "@/components/ui/rarity-badge";
 import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SkeletonCardGrid } from "@/components/ui/skeleton-block";
 import { useMockLoading } from "@/hooks/use-mock-loading";
-import { useToast } from "@/components/ui/toast";
-import { useAuth } from "@/components/layout/AppShell";
+import { useToast } from "@/components/ui/toast-shared";
+import { useAuth } from "@/components/layout/AppShell-shared";
 import { KEEPY_SAMPLE_NOTE, KEEPY_SAMPLE_POOL_ID } from "@/data/keepy-sample";
 import { missingCardDisplay, useAlbumVisibility } from "@/lib/album-visibility";
 import { resolveCardDetail } from "@/data/card-detail";
 
+import { normalizeExploreSearch } from "@/lib/explore-search.mjs";
 export const Route = createFileRoute("/pools/$poolId")({
+  validateSearch: normalizeExploreSearch,
   loader: ({ params }) => {
     const pool = poolById(params.poolId);
     if (!pool) throw notFound();
@@ -52,14 +53,18 @@ export const Route = createFileRoute("/pools/$poolId")({
 });
 
 function PoolNotFound() {
+  const tx = usePlayerUiText();
   return (
     <EmptyState
       icon="✦"
-      title="找不到這個卡池"
-      description="卡池可能已下架或連結有誤。"
+      title={tx("找不到這個卡池")}
+      description={tx("卡池可能已下架或連結有誤。")}
       action={
-        <Link to="/pools" className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground">
-          回到卡池一覽
+        <Link
+          to="/pools"
+          className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground"
+        >
+          {tx("回到卡池一覽")}
         </Link>
       }
     />
@@ -67,6 +72,9 @@ function PoolNotFound() {
 }
 
 function PoolDetailPage() {
+  const { progress: collectionProgress, album: albumCards } = useDemoPlayer();
+  const poolCollectProgress = (id: string) => collectionProgress.find((p) => p.poolId === id)!;
+  const tx = usePlayerUiText();
   const { poolId } = Route.useParams();
   const pool = poolById(poolId)!;
   const cards = cardsByPool(poolId);
@@ -77,21 +85,36 @@ function PoolDetailPage() {
   const navigate = useNavigate();
   const visibility = useAlbumVisibility();
 
+  const discovery = useDiscovery();
+  const { locale } = useLocale();
   const [reminded, setReminded] = useState(false);
   const drawable = pool.status === "live";
   const specimen = pool.id === KEEPY_SAMPLE_POOL_ID;
   const onDraw = () =>
     requireLogin(() => navigate({ to: "/app/draw/$poolId", params: { poolId: pool.id } }));
 
+  if (!discovery.items.some((i) => i.kind === "series" && i.referenceId === poolId))
+    return (
+      <div className="mx-auto max-w-6xl space-y-4">
+        <DiscoveryStatus />
+        <DiscoverySeries poolId={poolId} />
+        <Link to="/app/album/$poolId" params={{ poolId }} className="text-primary underline">
+          {tx("查看卡冊")}
+        </Link>
+      </div>
+    );
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <Link to="/pools" className="hover:text-foreground">卡池</Link>
+        <Link to="/pools" className="hover:text-foreground">
+          {tx("卡池")}
+        </Link>
         <span>/</span>
         <span className="text-foreground">{pool.name}</span>
       </div>
 
       <PoolCover pool={pool} tall />
+      <DiscoverySeries poolId={poolId} />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-4">
@@ -103,66 +126,105 @@ function PoolDetailPage() {
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               <PoolDescription poolId={pool.id} />
             </p>
-            {specimen && <p className="mt-3 rounded-xl border border-gold/40 bg-gold/10 p-3 text-sm font-bold text-gold">{KEEPY_SAMPLE_NOTE} <Link to="/faq" className="underline">查看 FAQ</Link></p>}
+            {specimen && (
+              <p className="mt-3 rounded-xl border border-gold/40 bg-gold/10 p-3 text-sm font-bold text-gold">
+                {tx(KEEPY_SAMPLE_NOTE)}{" "}
+                <Link to="/faq" className="underline">
+                  {tx("查看 FAQ")}
+                </Link>
+              </p>
+            )}
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-              <Meta label="狀態" value={specimen ? "範例／非正式上架" : POOL_STATUS_LABEL[pool.status]} />
-              <Meta label="期間" value={`${pool.startAt} — ${pool.endAt}`} />
-              <Meta label="卡牌數" value={`${pool.cardCount} 張`} />
+              <Meta
+                label={tx("狀態")}
+                value={specimen ? tx("範例／非正式上架") : POOL_STATUS_LABEL[pool.status]}
+              />
+              <Meta label={tx("期間")} value={`${pool.startAt} — ${pool.endAt}`} />
+              <Meta label={tx("卡牌數")} value={`${pool.cardCount} 張`} />
 
-              <Meta label={specimen ? "卡面人物" : "參與女神"} value={specimen ? "虛構示意，非合作創作者" : `${pool.goddessIds.length} 位`} />
+              <Meta
+                label={specimen ? tx("卡面人物") : tx("參與女神")}
+                value={specimen ? tx("虛構示意，非合作創作者") : `${pool.goddessIds.length} 位`}
+              />
             </div>
           </section>
 
           {/* 參與女神 */}
-          {!specimen && <section className="panel p-5">
-            <h2 className="text-sm font-black tracking-widest text-muted-foreground">參與女神</h2>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {pool.goddessIds.map((id) => {
-                const g = goddessById(id);
-                 return (
-                  <Link
-                    key={id}
-                    to="/goddesses/$goddessId"
-                    params={{ goddessId: id }}
-                    className="flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-muted"
-                  >
-                    <RarityBadge rarity={g.grade} />
-                    {g.name}
-                  </Link>
-                );
-              })}
-            </div>
-          </section>}
+          {!specimen && (
+            <section className="panel p-5">
+              <h2 className="text-sm font-black tracking-widest text-muted-foreground">
+                {tx("參與女神")}
+              </h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {pool.goddessIds
+                  .filter((id) =>
+                    discovery.items.some((i) => i.kind === "creator" && i.referenceId === id),
+                  )
+                  .map((id) => {
+                    const g = goddessById(id);
+                    return (
+                      <Link
+                        key={id}
+                        to="/goddesses/$goddessId"
+                        params={{ goddessId: id }}
+                        className="flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-muted"
+                      >
+                        <RarityBadge rarity={g.grade} />
+                        {
+                          discovery.items.find((i) => i.kind === "creator" && i.referenceId === id)
+                            ?.copy.title[locale]
+                        }
+                      </Link>
+                    );
+                  })}
+              </div>
+            </section>
+          )}
 
           {/* 卡牌一覽 */}
           <section>
             <div className="mb-3">
-              <h2 className="text-sm font-black tracking-widest text-muted-foreground">卡牌一覽</h2>
+              <h2 className="text-sm font-black tracking-widest text-muted-foreground">
+                {tx("卡牌一覽")}
+              </h2>
               <p className="mt-1 text-[11px] text-muted-foreground">
-                 {specimen ? `以下 ${cards.length} 張皆為虛構卡面示例，並非已上架商品。` : `以下為 ${cards.length} 張範例卡面，其餘為卡位範本；此區不計入卡冊完成率分母。`}
+                {specimen
+                  ? `以下 ${cards.length} 張皆為虛構卡面示例，並非已上架商品。`
+                  : `以下為 ${cards.length} 張範例卡面，其餘為卡位範本；此區不計入卡冊完成率分母。`}
               </p>
             </div>
             {loading ? (
               <SkeletonCardGrid count={5} />
             ) : cards.length === 0 ? (
-              <EmptyState title="此卡池尚未公開卡牌" description="卡牌將於開池前公布。" />
+              <EmptyState
+                title={tx("此卡池尚未公開卡牌")}
+                description={tx("卡牌將於開池前公布。")}
+              />
             ) : (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 {cards.map((c) => {
-                  const owned = resolveCardDetail(c.id)?.owned ?? false;
+                  const owned = resolveCardDetail(c.id, albumCards)?.owned ?? false;
                   const display = missingCardDisplay(visibility, c.poolId, c.grade);
                   const hidden = !owned && display === "silhouette";
-                  return <div key={c.id} className="min-w-0">
-                    <CardFrame
-                      goddess={goddessById(c.goddessId)}
-                      grade={c.grade}
-                      cardName={hidden ? "未公開卡面" : c.name}
-                      art={hidden ? undefined : c.art}
-                      locked={!owned}
-                      missingDisplay={display}
-                    />
-                    {hidden ? <p className="mt-2 text-xs text-muted-foreground">卡面已隱藏 · Local Mock</p> : <CardDetailLink name={c.name} grade={c.grade} />}
-                  </div>;
+                  return (
+                    <div key={c.id} className="min-w-0">
+                      <CardFrame
+                        goddess={goddessById(c.goddessId)}
+                        grade={c.grade}
+                        cardName={hidden ? tx("未公開卡面") : c.name}
+                        art={hidden ? undefined : c.art}
+                        locked={!owned}
+                        missingDisplay={display}
+                      />
+                      {hidden ? (
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          {tx("卡面已隱藏 · Local Mock")}
+                        </p>
+                      ) : (
+                        <CardDetailLink name={c.name} grade={c.grade} />
+                      )}
+                    </div>
+                  );
                 })}
               </div>
             )}
@@ -171,140 +233,158 @@ function PoolDetailPage() {
 
         {/* 側欄：價格、機率、保底、進度、CTA */}
         <div className="space-y-4">
-          {!specimen && <section className="panel hairline-gold p-5">
-            <h2 className="text-sm font-black tracking-widest text-gold">抽卡價格</h2>
-            <div className="mt-3 space-y-2 text-sm">
-              <div className="flex items-center justify-between rounded-xl bg-muted/40 px-3 py-2.5">
-                <span className="font-semibold">單抽</span>
-                <span className="font-black tabular-nums">
-                  {pool.singlePricePoints.toLocaleString()} 點
-                </span>
+          {!specimen && (
+            <section className="panel hairline-gold p-5">
+              <h2 className="text-sm font-black tracking-widest text-gold">{tx("抽卡價格")}</h2>
+              <div className="mt-3 space-y-2 text-sm">
+                <div className="flex items-center justify-between rounded-xl bg-muted/40 px-3 py-2.5">
+                  <span className="font-semibold">{tx("單抽")}</span>
+                  <span className="font-black tabular-nums">
+                    {pool.singlePricePoints.toLocaleString()}
+                    {tx("點")}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between rounded-xl bg-muted/40 px-3 py-2.5">
+                  <span className="font-semibold">{tx("十抽送一抽（Demo）")}</span>
+                  <span className="font-black tabular-nums">
+                    {pool.tenPricePoints.toLocaleString()}
+                    {tx("點")}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center justify-between rounded-xl bg-muted/40 px-3 py-2.5">
-                <span className="font-semibold">十抽送一抽（Demo）</span>
-                <span className="font-black tabular-nums">
-                  {pool.tenPricePoints.toLocaleString()} 點
-                </span>
+              <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                {pool.pointsPriceNote}
+                {tx("。原型不進行真實付款。")}
+              </p>
+
+              <div className="my-4 shimmer-line" />
+
+              <h2 className="text-sm font-black tracking-widest text-gold">{tx("等級機率")}</h2>
+              <div className="mt-3 space-y-1.5">
+                {[...pool.rates]
+                  .sort((a, b) => GRADES.indexOf(b.grade) - GRADES.indexOf(a.grade))
+                  .map((r) => (
+                    <div key={r.grade} className="flex items-center gap-2 text-xs">
+                      <RarityBadge rarity={r.grade} className="w-12 justify-center" />
+                      <Progress className="min-w-0 flex-1" value={r.pct} max={25} tone="gold" />
+                      <span className="w-14 text-right font-bold tabular-nums">{r.pct}%</span>
+                    </div>
+                  ))}
               </div>
-            </div>
-            <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-              {pool.pointsPriceNote}。原型不進行真實付款。
-            </p>
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                {tx("機率總和 100%，數值為 Mock 示意。")}
+              </p>
+            </section>
+          )}
 
-            <div className="my-4 shimmer-line" />
-
-            <h2 className="text-sm font-black tracking-widest text-gold">等級機率</h2>
-            <div className="mt-3 space-y-1.5">
-              {[...pool.rates]
-                .sort((a, b) => GRADES.indexOf(b.grade) - GRADES.indexOf(a.grade))
-                .map((r) => (
-                  <div key={r.grade} className="flex items-center gap-2 text-xs">
-                    <RarityBadge rarity={r.grade} className="w-12 justify-center" />
-                    <Progress
-                      className="min-w-0 flex-1"
-                      value={r.pct}
-                      max={25}
-                      tone="gold"
-                    />
-                    <span className="w-14 text-right font-bold tabular-nums">{r.pct}%</span>
-                  </div>
+          {!specimen && (
+            <section className="panel p-5">
+              <h2 className="text-sm font-black tracking-widest text-muted-foreground">
+                {tx("保底說明")}
+              </h2>
+              <p className="mt-2 text-xs font-bold text-gold">{tx("正式規則待核定")}</p>
+              <ul className="mt-3 space-y-2 text-xs leading-relaxed text-muted-foreground">
+                {pool.pityNote.map((n, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span className="text-gold">◆</span>
+                    {n}
+                  </li>
                 ))}
-            </div>
-            <p className="mt-2 text-[11px] text-muted-foreground">
-              機率總和 100%，數值為 Mock 示意。
-            </p>
-          </section>}
+              </ul>
+              <Link
+                to="/rules"
+                className="mt-3 inline-block text-xs font-semibold text-primary hover:underline"
+              >
+                {tx("查看完整規則 →")}
+              </Link>
+              <Link
+                to="/leaderboards"
+                search={{ view: "pool", pool: pool.id }}
+                className="mt-3 ml-4 inline-block text-xs font-semibold text-primary hover:underline"
+              >
+                {tx("查看此卡池排行榜 →")}
+              </Link>
+            </section>
+          )}
 
-          {!specimen && <section className="panel p-5">
-            <h2 className="text-sm font-black tracking-widest text-muted-foreground">保底說明</h2>
-            <p className="mt-2 text-xs font-bold text-gold">正式規則待核定</p>
-            <ul className="mt-3 space-y-2 text-xs leading-relaxed text-muted-foreground">
-              {pool.pityNote.map((n, i) => (
-                <li key={i} className="flex gap-2">
-                  <span className="text-gold">◆</span>
-                  {n}
-                </li>
-              ))}
-            </ul>
-            <Link
-              to="/rules"
-              className="mt-3 inline-block text-xs font-semibold text-primary hover:underline"
-            >
-              查看完整規則 →
-            </Link>
-            <Link
-              to="/leaderboards"
-              search={{ view: "pool", pool: pool.id }}
-              className="mt-3 ml-4 inline-block text-xs font-semibold text-primary hover:underline"
-            >
-              查看此卡池排行榜 →
-            </Link>
-          </section>}
-
-          {!specimen && <section className="panel p-5">
-            <h2 className="text-sm font-black tracking-widest text-muted-foreground">
-              我的蒐集進度
-            </h2>
-            <Progress
-              className="mt-3"
-              value={progress.owned}
-              max={Math.max(1, progress.total)}
-              tone="gold"
-              showLabel
-              label={`${progress.owned} / ${progress.total} 張（卡冊完整總數，完成率 ${progress.pct}%）`}
-            />
-            <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-              完成率以卡冊完整總數 {pool.cardCount} 張計算，與上方範例卡面數量無關。
-            </p>
-          </section>}
+          {!specimen && (
+            <section className="panel p-5">
+              <h2 className="text-sm font-black tracking-widest text-muted-foreground">
+                {tx("我的蒐集進度")}
+              </h2>
+              <Progress
+                className="mt-3"
+                value={progress.owned}
+                max={Math.max(1, progress.total)}
+                tone="gold"
+                showLabel
+                label={`${progress.owned} / ${progress.total} 張（卡冊完整總數，完成率 ${progress.pct}%）`}
+              />
+              <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                {tx("完成率以卡冊完整總數")}
+                {pool.cardCount}
+                {tx("張計算，與上方範例卡面數量無關。")}
+              </p>
+            </section>
+          )}
 
           <div className="space-y-2">
-            {specimen ? <p className="rounded-xl border border-gold/40 p-4 text-sm font-bold text-gold">{KEEPY_SAMPLE_NOTE}</p> : <button
-              onClick={onDraw}
-              disabled={!drawable}
-              className="w-full rounded-xl bg-gradient-to-r from-primary to-primary/70 py-3.5 text-sm font-black text-primary-foreground shadow-[0_10px_30px_-10px_var(--primary)] transition-transform hover:scale-[1.01] disabled:opacity-40 disabled:hover:scale-100"
-            >
-              {pool.status === "live"
-                ? "前往抽卡（Demo）"
-                : pool.status === "upcoming"
-                  ? `${pool.startAt} 開池（尚不可抽卡）`
-                  : "卡池已結束（不可抽卡）"}
-            </button>}
+            {specimen ? (
+              <p className="rounded-xl border border-gold/40 p-4 text-sm font-bold text-gold">
+                {tx(KEEPY_SAMPLE_NOTE)}
+              </p>
+            ) : (
+              <button
+                onClick={onDraw}
+                disabled={!drawable}
+                className="w-full rounded-xl bg-gradient-to-r from-primary to-primary/70 py-3.5 text-sm font-black text-primary-foreground shadow-[0_10px_30px_-10px_var(--primary)] transition-transform hover:scale-[1.01] disabled:opacity-40 disabled:hover:scale-100"
+              >
+                {pool.status === "live"
+                  ? tx("前往抽卡（Demo）")
+                  : pool.status === "upcoming"
+                    ? `${pool.startAt} 開池（尚不可抽卡）`
+                    : tx("卡池已結束（不可抽卡）")}
+              </button>
+            )}
             {!specimen && pool.status === "upcoming" && (
               <>
                 <p className="text-center text-xs font-bold text-gold tabular-nums">
-                  距開池約 {daysUntil(pool.startAt)} 天
+                  {tx("距開池約")}
+                  {daysUntil(pool.startAt)}
+                  {tx("天")}
                 </p>
                 <button
                   onClick={() => {
                     setReminded(true);
                     push({
-                      title: "已加入開池提醒（Demo）",
-                      description: "原型不會真的訂閱，也不會寄送任何通知或推播。",
+                      title: tx("已加入開池提醒（Demo）"),
+                      description: tx("原型不會真的訂閱，也不會寄送任何通知或推播。"),
                       tone: "gold",
                     });
                   }}
                   className="w-full rounded-xl border border-gold/40 py-2.5 text-xs font-bold text-gold hover:bg-gold/10"
                 >
-                  {reminded ? "已加入提醒（Demo，不寄送通知）" : "提醒我（Demo）"}
+                  {reminded ? tx("已加入提醒（Demo，不寄送通知）") : tx("提醒我（Demo）")}
                 </button>
               </>
             )}
             {pool.status === "ended" && (
               <>
                 <p className="text-center text-xs text-muted-foreground">
-                  此卡池已結束，卡牌不再發行，僅保留於玩家收藏。
+                  {tx("此卡池已結束，卡牌不再發行，僅保留於玩家收藏。")}
                 </p>
                 <Link
                   to="/app/album/$poolId"
                   params={{ poolId: pool.id }}
                   className="block rounded-xl border border-border py-2.5 text-center text-xs font-bold text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
-                  查看此卡池卡冊 →
+                  {tx("查看此卡池卡冊 →")}
                 </Link>
               </>
             )}
-            <p className="text-[11px] leading-relaxed text-muted-foreground">{specimen ? KEEPY_SAMPLE_NOTE : SPLIT_SOURCE_NOTE}</p>
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              {specimen ? KEEPY_SAMPLE_NOTE : SPLIT_SOURCE_NOTE}
+            </p>
           </div>
         </div>
       </div>
@@ -313,10 +393,11 @@ function PoolDetailPage() {
 }
 
 function Meta({ label, value }: { label: string; value: string }) {
+  const tx = usePlayerUiText();
   return (
     <div className="rounded-xl bg-muted/40 p-3">
-      <p className="text-[11px] text-muted-foreground">{label}</p>
-      <p className="mt-0.5 text-sm font-bold tabular-nums">{value}</p>
+      <p className="text-[11px] text-muted-foreground">{tx(label)}</p>
+      <p className="mt-0.5 text-sm font-bold tabular-nums">{tx(value)}</p>
     </div>
   );
 }

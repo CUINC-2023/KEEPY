@@ -3,6 +3,11 @@
 // 全部為本地假資料：無後端、無真實金流、無真實亂數。
 // 抽卡與合成結果皆為「預先定義」的固定結果。
 // ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// KEEPY — 玩家模式 Mock 資料（Batch 2；Batch 5 擴充為 6 本卡冊）
+// 全部為本地假資料：無後端、無真實金流、無真實亂數。
+// 抽卡與合成結果皆為「預先定義」的固定結果。
+// ─────────────────────────────────────────────────────────────
 import {
   GRADES,
   POOLS,
@@ -17,7 +22,8 @@ import {
 import { KEEPY_SAMPLE_CARDS, KEEPY_SAMPLE_POOL_ID } from "@/data/keepy-sample";
 
 /** 點數扣抵順序尚未定案 */
-export const POINT_DEDUCT_NOTE = "KP 規劃扣抵：贈點先扣、付費點最後；僅為規格說明，不執行真實扣點。";
+export const POINT_DEDUCT_NOTE =
+  "KP 規劃扣抵：贈點先扣、付費點最後；僅為規格說明，不執行真實扣點。";
 export const NO_SPLIT_ON_FUSION_NOTE = "合成不產生女神分潤";
 export const NO_SPLIT_ON_GROWTH_NOTE = "卡牌成長不產生女神分潤";
 export const OFFLINE_RESUME_NOTE = "已取得結果，可恢復查看";
@@ -43,34 +49,82 @@ export interface AlbumCard {
 
 /** 重複卡分佈（固定資料，非亂數） */
 const DUPE_PATTERN = [
-  10, 0, 0, 1, 1, 0, 0, 2, 0, 5,
-  0, 1, 0, 0, 4, 0, 2, 0, 0, 1,
-  0, 7, 0, 0, 1, 0, 1, 0, 0, 1,
-  0, 0, 1, 0, 10, 0, 1,
+  10, 0, 0, 1, 1, 0, 0, 2, 0, 5, 0, 1, 0, 0, 4, 0, 2, 0, 0, 1, 0, 7, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0,
+  1, 0, 10, 0, 1,
 ];
 
 const CARD_TITLES = [
-  "放學後的星圖", "晨讀教室", "操場的風", "社辦的午後", "初次值日",
-  "制服日常", "頂樓的風鈴", "走廊光斑", "午休的耳機", "雨天的傘",
-  "夏季制服", "冬季外套", "圖書室低語", "轉角的目光", "值日生日誌",
-  "課後練習", "體育館回音", "自習室夜燈", "校門的黃昏", "櫻並木",
-  "舞台前排", "聚光燈下", "後台鏡前", "安可的手勢", "第一束光",
-  "銀河安可", "詩與聚光燈", "觀測筆記", "夜行電車", "月映水面",
-  "初雪清晨", "手作雜貨", "琥珀色午茶", "祭典金魚", "煙火倒數",
-  "夏夜縁側", "深夜電台", "星屑之詩", "薄霧地平線", "終幕告白",
+  "放學後的星圖",
+  "晨讀教室",
+  "操場的風",
+  "社辦的午後",
+  "初次值日",
+  "制服日常",
+  "頂樓的風鈴",
+  "走廊光斑",
+  "午休的耳機",
+  "雨天的傘",
+  "夏季制服",
+  "冬季外套",
+  "圖書室低語",
+  "轉角的目光",
+  "值日生日誌",
+  "課後練習",
+  "體育館回音",
+  "自習室夜燈",
+  "校門的黃昏",
+  "櫻並木",
+  "舞台前排",
+  "聚光燈下",
+  "後台鏡前",
+  "安可的手勢",
+  "第一束光",
+  "銀河安可",
+  "詩與聚光燈",
+  "觀測筆記",
+  "夜行電車",
+  "月映水面",
+  "初雪清晨",
+  "手作雜貨",
+  "琥珀色午茶",
+  "祭典金魚",
+  "煙火倒數",
+  "夏夜縁側",
+  "深夜電台",
+  "星屑之詩",
+  "薄霧地平線",
+  "終幕告白",
 ];
 
 /** 各卡池卡牌總數與已持有數（單一來源：卡池 cardCount + POOL_ALBUM_OWNED） */
 const POOL_ALBUM_CONFIG: Record<string, { total: number; owned: number }> = Object.fromEntries(
-  POOLS.map((p) => [p.id, { total: p.cardCount, owned: POOL_ALBUM_OWNED[p.id] ?? 0 }])
+  POOLS.map((p) => [p.id, { total: p.cardCount, owned: POOL_ALBUM_OWNED[p.id] ?? 0 }]),
 );
 
 /** 等級配置：保證每個等級至少 1 張，其餘偏向低等級（固定演算，非亂數） */
 function gradeLayout(total: number): Rarity[] {
   const out: Rarity[] = [...GRADES];
   const fill: Rarity[] = [
-    "C", "U", "C", "R", "U", "RR", "C", "R", "RRR", "U",
-    "RR", "C", "SR", "R", "U", "RRR", "C", "RR", "SSR", "R",
+    "C",
+    "U",
+    "C",
+    "R",
+    "U",
+    "RR",
+    "C",
+    "R",
+    "RRR",
+    "U",
+    "RR",
+    "C",
+    "SR",
+    "R",
+    "U",
+    "RRR",
+    "C",
+    "RR",
+    "SSR",
+    "R",
   ];
   for (let i = out.length; i < total; i++) out.push(fill[i % fill.length]!);
   return out.sort((a, b) => gradeIndex(a) - gradeIndex(b));
@@ -81,7 +135,21 @@ function buildAlbum(): AlbumCard[] {
   let dupeCursor = 0;
   for (const pool of POOLS) {
     if (pool.id === KEEPY_SAMPLE_POOL_ID) {
-      out.push(...KEEPY_SAMPLE_CARDS.map((c) => ({ id: c.id, poolId: pool.id, poolName: pool.name, goddessId: "g-yoru", grade: "SSR" as Rarity, name: c.name, owned: false, dupes: 0, growthPct: 0, isNew: false, releasedAt: "未上架" })));
+      out.push(
+        ...KEEPY_SAMPLE_CARDS.map((c) => ({
+          id: c.id,
+          poolId: pool.id,
+          poolName: pool.name,
+          goddessId: "g-yoru",
+          grade: "SSR" as Rarity,
+          name: c.name,
+          owned: false,
+          dupes: 0,
+          growthPct: 0,
+          isNew: false,
+          releasedAt: "未上架",
+        })),
+      );
       continue;
     }
     const cfg = POOL_ALBUM_CONFIG[pool.id] ?? { total: 12, owned: 4 };
@@ -90,7 +158,7 @@ function buildAlbum(): AlbumCard[] {
     const ownedSet = new Set(
       Array.from({ length: cfg.total }, (_, i) => i)
         .sort((a, b) => ((a * 37) % 101) - ((b * 37) % 101))
-        .slice(0, cfg.owned)
+        .slice(0, cfg.owned),
     );
     const rows: AlbumCard[] = [];
     for (let i = 0; i < cfg.total; i++) {
@@ -135,27 +203,19 @@ function buildAlbum(): AlbumCard[] {
 export const ALBUM: AlbumCard[] = buildAlbum();
 
 export const albumCardById = (id: string) => ALBUM.find((c) => c.id === id);
-export const albumByPool = (poolId: string) =>
-  ALBUM.filter((c) => c.poolId === poolId);
+export const albumByPool = (poolId: string) => ALBUM.filter((c) => c.poolId === poolId);
 
 export const ownedAlbumCards = () => ALBUM.filter((c) => c.owned);
 
 /** 可升級：成長值已達 100% */
-export const upgradableCards = () =>
-  ALBUM.filter((c) => c.owned && c.growthPct >= 100);
+export const upgradableCards = () => ALBUM.filter((c) => c.owned && c.growthPct >= 100);
 
 /** 有重複卡 */
 export const dupeCards = () => ALBUM.filter((c) => c.owned && c.dupes > 0);
 
 /** 卡牌格狀態範本（卡冊 UI 用） */
 export type AlbumTileState =
-  | "new"
-  | "upgradable"
-  | "dupe"
-  | "owned"
-  | "missing"
-  | "missed-ended"
-  | "upcoming-locked";
+  "new" | "upgradable" | "dupe" | "owned" | "missing" | "missed-ended" | "upcoming-locked";
 
 export function albumTileState(card: AlbumCard, poolStatus: Pool["status"]): AlbumTileState {
   if (card.owned) {
@@ -195,8 +255,8 @@ export interface PoolAlbumProgress {
   lastObtainedAt?: string;
 }
 
-export function poolAlbumProgress(poolId: string): PoolAlbumProgress {
-  const list = albumByPool(poolId);
+export function poolAlbumProgress(poolId: string, cards: AlbumCard[] = ALBUM): PoolAlbumProgress {
+  const list = cards.filter((c) => c.poolId === poolId);
   const pool = poolById(poolId);
   const ownedList = list.filter((c) => c.owned);
   const byGrade = GRADES.map((grade) => {
@@ -213,9 +273,7 @@ export function poolAlbumProgress(poolId: string): PoolAlbumProgress {
       total: g.length,
     };
   });
-  const topGrade = ownedList
-    .map((c) => c.grade)
-    .sort((a, b) => gradeIndex(b) - gradeIndex(a))[0];
+  const topGrade = ownedList.map((c) => c.grade).sort((a, b) => gradeIndex(b) - gradeIndex(a))[0];
   const lastObtainedAt = ownedList
     .map((c) => c.obtainedAt!)
     .sort()
@@ -244,8 +302,7 @@ export const albumCompletionState = (p: PoolAlbumProgress) =>
 
 // ── 玩家基本資料（統計值由卡冊資料推導，保持一致）──────────────
 const TOTAL_UNIQUE = ownedAlbumCards().length;
-const TOTAL_CARDS =
-  TOTAL_UNIQUE + ownedAlbumCards().reduce((s, c) => s + c.dupes, 0);
+const TOTAL_CARDS = TOTAL_UNIQUE + ownedAlbumCards().reduce((s, c) => s + c.dupes, 0);
 const ALBUM_TOTAL = ALBUM.length;
 
 export const PLAYER = {
@@ -301,7 +358,12 @@ export interface DrawResultItem {
   growthAfter: number;
 }
 
-function makeResult(cardId: string, isNew: boolean, kind: DrawEventSource["kind"] = "paid", paidKp = 0): DrawResultItem {
+function makeResult(
+  cardId: string,
+  isNew: boolean,
+  kind: DrawEventSource["kind"] = "paid",
+  paidKp = 0,
+): DrawResultItem {
   const card = albumCardById(cardId) ?? ALBUM[0]!;
   const ownedBefore = isNew ? 0 : card.dupes + 1;
   const growthBefore = isNew ? 0 : card.growthPct;
@@ -335,8 +397,16 @@ export const PRESET_SINGLE: DrawResultItem[] = [makeResult(U(27), true, "paid", 
 /** 十抽送一抽：10 次付費＋第 11 次 bonus（內部來源）；結果固定，不更新任何持有、點數或分潤資料。 */
 export const PRESET_TEN: DrawResultItem[] = [
   ...[
-    [1, false], [4, false], [9, true], [12, false], [16, true],
-    [21, false], [25, true], [30, false], [33, true], [39, true],
+    [1, false],
+    [4, false],
+    [9, true],
+    [12, false],
+    [16, true],
+    [21, false],
+    [25, true],
+    [30, false],
+    [33, true],
+    [39, true],
   ].map(([n, isNew]) => makeResult(U(n as number), isNew as boolean, "paid", DEMO_KP_PER_PAID)),
   makeResult(U(27), true, "bonus"),
 ];
@@ -377,7 +447,14 @@ export const TOPUP_PLANS: TopUpPlan[] = [
   { id: "t-1", name: "入門包", paidPoints: 300, bonusPoints: 0, priceTwd: 100 },
   { id: "t-2", name: "標準包", paidPoints: 900, bonusPoints: 30, priceTwd: 300, tag: "熱門" },
   { id: "t-3", name: "收藏包", paidPoints: 3000, bonusPoints: 200, priceTwd: 1000 },
-  { id: "t-4", name: "典藏包", paidPoints: 9000, bonusPoints: 900, priceTwd: 3000, tag: "最高加贈" },
+  {
+    id: "t-4",
+    name: "典藏包",
+    paidPoints: 9000,
+    bonusPoints: 900,
+    priceTwd: 3000,
+    tag: "最高加贈",
+  },
 ];
 
 export interface OrderRow {
@@ -390,10 +467,38 @@ export interface OrderRow {
 }
 
 export const ORDERS: OrderRow[] = [
-  { id: "D-20260918-014", createdAt: "2026-09-18 21:04", plan: "標準包 900+30", amountTwd: 300, method: "信用卡（Demo）", status: "已完成" },
-  { id: "D-20260914-208", createdAt: "2026-09-14 12:31", plan: "收藏包 3000+200", amountTwd: 1000, method: "信用卡（Demo）", status: "已完成" },
-  { id: "D-20260910-077", createdAt: "2026-09-10 09:22", plan: "入門包 300", amountTwd: 100, method: "超商代碼（Demo）", status: "處理中" },
-  { id: "D-20260902-031", createdAt: "2026-09-02 18:45", plan: "入門包 300", amountTwd: 100, method: "信用卡（Demo）", status: "已退款" },
+  {
+    id: "D-20260918-014",
+    createdAt: "2026-09-18 21:04",
+    plan: "標準包 900+30",
+    amountTwd: 300,
+    method: "信用卡（Demo）",
+    status: "已完成",
+  },
+  {
+    id: "D-20260914-208",
+    createdAt: "2026-09-14 12:31",
+    plan: "收藏包 3000+200",
+    amountTwd: 1000,
+    method: "信用卡（Demo）",
+    status: "已完成",
+  },
+  {
+    id: "D-20260910-077",
+    createdAt: "2026-09-10 09:22",
+    plan: "入門包 300",
+    amountTwd: 100,
+    method: "超商代碼（Demo）",
+    status: "處理中",
+  },
+  {
+    id: "D-20260902-031",
+    createdAt: "2026-09-02 18:45",
+    plan: "入門包 300",
+    amountTwd: 100,
+    method: "信用卡（Demo）",
+    status: "已退款",
+  },
 ];
 
 export interface PointLedgerRow {
@@ -406,13 +511,62 @@ export interface PointLedgerRow {
 }
 
 export const POINT_LEDGER: PointLedgerRow[] = [
-  { id: "l-1", createdAt: "2026-09-19 22:10", type: "抽卡", detail: "制服序章 十抽送一抽（歷史 Demo 示例；第 11 張不扣點）", paidDelta: -900, freeDelta: 0 },
-  { id: "l-2", createdAt: "2026-09-19 21:58", type: "抽卡", detail: "制服序章 單抽", paidDelta: -100, freeDelta: 0 },
-  { id: "l-3", createdAt: "2026-09-18 21:04", type: "儲值", detail: "標準包 900+30（Demo）", paidDelta: 900, freeDelta: 30 },
-  { id: "l-4", createdAt: "2026-09-17 10:00", type: "活動贈送", detail: "登入活動贈送點數", paidDelta: 0, freeDelta: 100 },
-  { id: "l-5", createdAt: "2026-09-16 20:12", type: "道具", detail: "合成穩定劑 II", paidDelta: -300, freeDelta: 0 },
-  { id: "l-6", createdAt: "2026-09-14 12:31", type: "儲值", detail: "收藏包 3000+200（Demo）", paidDelta: 3000, freeDelta: 200 },
-  { id: "l-7", createdAt: "2026-09-02 18:45", type: "退款", detail: "訂單 D-20260902-031 退款（Demo）", paidDelta: -300, freeDelta: 0 },
+  {
+    id: "l-1",
+    createdAt: "2026-09-19 22:10",
+    type: "抽卡",
+    detail: "制服序章 十抽送一抽（歷史 Demo 示例；第 11 張不扣點）",
+    paidDelta: -900,
+    freeDelta: 0,
+  },
+  {
+    id: "l-2",
+    createdAt: "2026-09-19 21:58",
+    type: "抽卡",
+    detail: "制服序章 單抽",
+    paidDelta: -100,
+    freeDelta: 0,
+  },
+  {
+    id: "l-3",
+    createdAt: "2026-09-18 21:04",
+    type: "儲值",
+    detail: "標準包 900+30（Demo）",
+    paidDelta: 900,
+    freeDelta: 30,
+  },
+  {
+    id: "l-4",
+    createdAt: "2026-09-17 10:00",
+    type: "活動贈送",
+    detail: "登入活動贈送點數",
+    paidDelta: 0,
+    freeDelta: 100,
+  },
+  {
+    id: "l-5",
+    createdAt: "2026-09-16 20:12",
+    type: "道具",
+    detail: "合成穩定劑 II",
+    paidDelta: -300,
+    freeDelta: 0,
+  },
+  {
+    id: "l-6",
+    createdAt: "2026-09-14 12:31",
+    type: "儲值",
+    detail: "收藏包 3000+200（Demo）",
+    paidDelta: 3000,
+    freeDelta: 200,
+  },
+  {
+    id: "l-7",
+    createdAt: "2026-09-02 18:45",
+    type: "退款",
+    detail: "訂單 D-20260902-031 退款（Demo）",
+    paidDelta: -300,
+    freeDelta: 0,
+  },
 ];
 
 export interface DrawHistoryRow {
@@ -426,11 +580,51 @@ export interface DrawHistoryRow {
 }
 
 export const DRAW_HISTORY: DrawHistoryRow[] = [
-  { id: "h-1", createdAt: "2026-09-19 22:10", poolName: "制服序章", mode: "十抽送一抽", costPoints: 900, topGrade: "SSR", newCards: 5 },
-  { id: "h-2", createdAt: "2026-09-19 21:58", poolName: "制服序章", mode: "單抽", costPoints: 100, topGrade: "RR", newCards: 1 },
-  { id: "h-3", createdAt: "2026-09-18 23:40", poolName: "盛夏海風", mode: "十抽送一抽", costPoints: 990, topGrade: "SR", newCards: 3 },
-  { id: "h-4", createdAt: "2026-09-17 20:05", poolName: "盛夏海風", mode: "單抽", costPoints: 110, topGrade: "R", newCards: 0 },
-  { id: "h-5", createdAt: "2026-08-15 19:22", poolName: "夜櫻回憶", mode: "十抽送一抽", costPoints: 900, topGrade: "HR", newCards: 4 },
+  {
+    id: "h-1",
+    createdAt: "2026-09-19 22:10",
+    poolName: "制服序章",
+    mode: "十抽送一抽",
+    costPoints: 900,
+    topGrade: "SSR",
+    newCards: 5,
+  },
+  {
+    id: "h-2",
+    createdAt: "2026-09-19 21:58",
+    poolName: "制服序章",
+    mode: "單抽",
+    costPoints: 100,
+    topGrade: "RR",
+    newCards: 1,
+  },
+  {
+    id: "h-3",
+    createdAt: "2026-09-18 23:40",
+    poolName: "盛夏海風",
+    mode: "十抽送一抽",
+    costPoints: 990,
+    topGrade: "SR",
+    newCards: 3,
+  },
+  {
+    id: "h-4",
+    createdAt: "2026-09-17 20:05",
+    poolName: "盛夏海風",
+    mode: "單抽",
+    costPoints: 110,
+    topGrade: "R",
+    newCards: 0,
+  },
+  {
+    id: "h-5",
+    createdAt: "2026-08-15 19:22",
+    poolName: "夜櫻回憶",
+    mode: "十抽送一抽",
+    costPoints: 900,
+    topGrade: "HR",
+    newCards: 4,
+  },
 ];
 
 // ── 尚待決策清單（畫面標示待定用）──────────────────────────────

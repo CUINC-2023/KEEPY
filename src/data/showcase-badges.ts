@@ -4,6 +4,11 @@
  * 只保存在瀏覽器 localStorage，不代表帳號同步或正式公開頁。
  */
 
+/**
+ * 展示徽章共用 Local Mock 設定。
+ * 成就頁 /app/achievements 寫入，公開收藏頁 /collectors/demo-player 唯讀。
+ * 只保存在瀏覽器 localStorage，不代表帳號同步或正式公開頁。
+ */
 import { COMPLETED_ACHIEVEMENTS } from "@/data/player-profile";
 
 export const SHOWCASE_KEY = "pf-achievement-showcase";

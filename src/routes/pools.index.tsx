@@ -1,7 +1,12 @@
+import { useLocale } from "@/lib/keepy-i18n-shared";
+import { useDiscovery } from "@/lib/content-store";
+import { DiscoveryStatus } from "@/components/content/DiscoveryContent";
+import { useDemoPlayer } from "@/lib/demo-player-store";
+import { usePlayerUiText } from "@/lib/player-ui-text";
 import { PoolDescription } from "@/components/public/EditableText";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { POOLS, POOL_KIND_LABEL, poolCollectProgress, poolPermanence, type Pool } from "@/data/mock";
+import { POOLS, POOL_KIND_LABEL, poolPermanence, type Pool } from "@/data/mock";
 import { PoolCover } from "@/components/ui/pool-cover";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -31,36 +36,51 @@ export const Route = createFileRoute("/pools/")({
 
 const FILTERS = [
   { key: "all", label: "全部" },
-  { key: "live", label: "進行中" },
-  { key: "upcoming", label: "即將開始" },
-  { key: "ended", label: "已結束" },
+  { key: "seasonal", label: "當季" },
+  { key: "upcoming", label: "即將推出" },
+  { key: "historical", label: "歷史系列" },
   { key: "permanent", label: "常駐" },
   { key: "limited", label: "限定" },
 ];
 
 function PoolsPage() {
+  const tx = usePlayerUiText();
   const [tab, setTab] = useState("all");
   const loading = useMockLoading();
-  const pools =
-    tab === "all"
-      ? POOLS
-      : tab === "permanent" || tab === "limited"
-        ? POOLS.filter((p) => poolPermanence(p.kind) === tab)
-        : POOLS.filter((p) => p.status === tab);
+  const discovery = useDiscovery();
+  const { locale } = useLocale();
+  const pools = discovery.items
+    .filter(
+      (i) =>
+        i.kind === "series" &&
+        (tab === "all" ||
+          i.category === tab ||
+          (tab === "limited" &&
+            POOLS.some((p) => p.id === i.referenceId && poolPermanence(p.kind) === "limited"))),
+    )
+    .flatMap((i) => {
+      const pool = POOLS.find((p) => p.id === i.referenceId);
+      return pool ? [{ ...pool, name: i.copy.title[locale] }] : [];
+    });
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <header className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl font-black tracking-wide">卡池一覽</h1>
+          <h1 className="text-2xl font-black tracking-wide">{tx("卡池一覽")}</h1>
           <span className="demo-chip">Demo</span>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
-          既有 Demo 卡池展示期間與 Mock 規則；星光收藏僅為虛構卡面範例，無定價與機率。
+          {tx("既有 Demo 卡池展示期間與 Mock 規則；星光收藏僅為虛構卡面範例，無定價與機率。")}
         </p>
       </header>
 
-      <FilterBar filters={FILTERS} active={tab} onChange={setTab} />
+      <DiscoveryStatus />
+      <FilterBar
+        filters={FILTERS.map((item) => ({ ...item, label: tx(item.label) }))}
+        active={tab}
+        onChange={setTab}
+      />
 
       {loading ? (
         <div className="grid gap-4 md:grid-cols-2">
@@ -71,14 +91,14 @@ function PoolsPage() {
       ) : pools.length === 0 ? (
         <EmptyState
           icon="✦"
-          title="目前沒有這個狀態的卡池"
-          description="換個分類看看，或先閱讀遊戲規則了解抽卡與合成機制。"
+          title={tx("目前沒有這個狀態的卡池")}
+          description={tx("換個分類看看，或先閱讀遊戲規則了解抽卡與合成機制。")}
           action={
             <Link
               to="/rules"
               className="rounded-xl border border-gold/40 px-4 py-2 text-xs font-bold text-gold hover:bg-gold/10"
             >
-              查看完整規則
+              {tx("查看完整規則")}
             </Link>
           }
         />
@@ -94,7 +114,9 @@ function PoolsPage() {
 }
 
 function PoolListCard({ pool }: { pool: Pool }) {
-  const progress = poolCollectProgress(pool.id);
+  const tx = usePlayerUiText();
+  const { progress: collectionProgress } = useDemoPlayer();
+  const progress = collectionProgress.find((p) => p.poolId === pool.id)!;
   const top = pool.rates.filter((r) => ["O", "UR", "SSR"].includes(r.grade));
   return (
     <Link
@@ -104,13 +126,30 @@ function PoolListCard({ pool }: { pool: Pool }) {
     >
       <PoolCover pool={pool} />
       <div className="p-3">
-        <p className="text-sm leading-relaxed text-muted-foreground"><PoolDescription poolId={pool.id} /></p>
-        {pool.id === KEEPY_SAMPLE_POOL_ID && <p className="mt-2 text-xs font-bold text-gold">{KEEPY_SAMPLE_NOTE}</p>}
-        <p className="mt-2 text-[11px] font-bold text-gold">{POOL_KIND_LABEL[pool.kind]}</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          <PoolDescription poolId={pool.id} />
+        </p>
+        {pool.id === KEEPY_SAMPLE_POOL_ID && (
+          <p className="mt-2 text-xs font-bold text-gold">{tx(KEEPY_SAMPLE_NOTE)}</p>
+        )}
+        <p className="mt-2 text-[11px] font-bold text-gold">{tx(POOL_KIND_LABEL[pool.kind])}</p>
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs">
-          <span className="font-semibold">卡牌 {pool.cardCount} 張</span>
-          <span className="text-muted-foreground">{pool.id === KEEPY_SAMPLE_POOL_ID ? "虛構示意人物" : `參與女神 ${pool.goddessIds.length} 位`}</span>
-          {pool.id !== KEEPY_SAMPLE_POOL_ID && <span className="text-muted-foreground">蒐集 {progress.owned}/{progress.total}（{progress.pct}%）</span>}
+          <span className="font-semibold">
+            {tx("卡牌")}
+            {pool.cardCount}
+            {tx("張")}
+          </span>
+          <span className="text-muted-foreground">
+            {pool.id === KEEPY_SAMPLE_POOL_ID
+              ? tx("虛構示意人物")
+              : `參與女神 ${pool.goddessIds.length} 位`}
+          </span>
+          {pool.id !== KEEPY_SAMPLE_POOL_ID && (
+            <span className="text-muted-foreground">
+              {tx("蒐集")}
+              {progress.owned}/{progress.total}（{progress.pct}%）
+            </span>
+          )}
         </div>
         <div className="mt-3 flex flex-wrap gap-1.5 text-[11px]">
           {top.map((r) => (
