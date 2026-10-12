@@ -1,6 +1,7 @@
 import { PublicRankings } from "./PublicRankings";
 import { CollectionShare } from "./CollectionShare";
 import { CollectionJourney } from "./CollectionJourney";
+import { JourneyTemplates } from "./JourneyTemplates";
 import { GrowthIntegration } from "./GrowthIntegration";
 import { CatalogueIntegrity } from "./CatalogueIntegrity";
 import { ThemeJourney } from "./ThemeJourney";
@@ -190,6 +191,13 @@ export function CollectionPage() {
             }
           />
           <CollectionJourney me={d.me} />
+          {d.catalogue && (
+            <JourneyTemplates
+              key={"journey-template:" + d.me.actorId + ":" + d.me.profile.version}
+              me={d.me}
+              catalogue={d.catalogue}
+            />
+          )}
           <CollectionGoals key={"goals-" + d.me.actorId + ":" + d.me.profile.version} me={d.me} />
           {d.catalogue && <ThemeJourney me={d.me} catalogue={d.catalogue} />}
           {d.catalogue && (
