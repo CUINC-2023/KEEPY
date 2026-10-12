@@ -53,6 +53,30 @@ export function CollectionPlay() {
           {t("本人期間回顧", "Your period recap")}
         </Link>
       </nav>
+      <nav
+        className="panel flex flex-wrap gap-3 p-4"
+        data-play-next-steps
+        aria-label={t("探索到展示的下一步", "Next steps from discovery to display")}
+      >
+        <Link className="text-primary underline" to="/explore">
+          {t("探索公開內容", "Explore public content")}
+        </Link>
+        <Link className="text-primary underline" to="/app/collection" hash="collection-albums">
+          {t("核對本人卡冊", "Check your albums")}
+        </Link>
+        <Link className="text-primary underline" to="/app/achievements">
+          {t("回顧已取得成就", "Review earned achievements")}
+        </Link>
+        <Link className="text-primary underline" to="/app/settings/privacy">
+          {t("明確選擇公開展示", "Choose your public display")}
+        </Link>
+        <p className="basis-full text-sm text-muted-foreground">
+          {t(
+            "先探索並查看本人合法收藏；持卡不足時如實提示。玩法紀錄預設私人，完成不發獎，策展與展示需另行明確選擇。",
+            "Explore and check your eligible collection first; insufficient holdings are shown honestly. Play records stay private and completion issues no reward. Curation and public display require separate explicit choices.",
+          )}
+        </p>
+      </nav>
       {d.error || d.meError ? (
         <div role="alert">
           <p>
@@ -153,6 +177,7 @@ export function CollectionPlay() {
             )}
           </section>
           <PlayRecords
+            continuePlay
             key={
               "records:" +
               legal.actorId +

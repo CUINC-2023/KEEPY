@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useDiscoveryText } from "@/lib/discovery-copy";
@@ -119,7 +120,15 @@ export function SavePlayResult({ proof, actor }: { proof: PlayProof; actor: stri
     </div>
   );
 }
-export function PlayRecords({ actor, visibilityKey }: { actor: string; visibilityKey: string }) {
+export function PlayRecords({
+  actor,
+  visibilityKey,
+  continuePlay = false,
+}: {
+  actor: string;
+  visibilityKey: string;
+  continuePlay?: boolean;
+}) {
   const t = useDiscoveryText(),
     [snapshot, setSnapshot] = useState<PlayPrivate | null>(null),
     [error, setError] = useState(false),
@@ -259,6 +268,29 @@ export function PlayRecords({ actor, visibilityKey }: { actor: string; visibilit
               ))}
             </select>
           </label>
+          {continuePlay ? (
+            <Button
+              variant="outline"
+              disabled={busy || pending}
+              data-continue-saved-play
+              onClick={() => {
+                const target = document.getElementById("play-" + snapshot.settings.data.lastMode);
+                target?.scrollIntoView({ block: "start", behavior: "auto" });
+                target
+                  ?.querySelector<HTMLButtonElement>("button:not([disabled])")
+                  ?.focus({ preventScroll: true });
+              }}
+            >
+              {t(
+                "定位本人已保存玩法偏好（不開始新局）",
+                "Find my saved play preference (does not start a round)",
+              )}
+            </Button>
+          ) : (
+            <Link className="text-primary underline" to="/app/play">
+              {t("前往本人遊玩中心", "Go to your play centre")}
+            </Link>
+          )}
           <p>
             v{snapshot.settings.version} ·{" "}
             {t(
