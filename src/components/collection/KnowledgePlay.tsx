@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { cardsByPool } from "@/data/mock";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useDiscoveryText } from "@/lib/discovery-copy";
@@ -18,12 +19,25 @@ export function KnowledgePlay({
     { locale } = useLocale(),
     [difficulty, setDifficulty] = useState("easy"),
     [round, setRound] = useState<QuizRound | null>(null),
-    [error, setError] = useState("");
-  const questions = playQuestions(me, catalogue, mode),
+    [error, setError] = useState(""),
+    [hint, setHint] = useState(false);
+  const questions = playQuestions(me, catalogue, mode).filter(
+      (q) =>
+        mode === "knowledge" || Boolean(cardsByPool(q.poolId).find((c) => c.id === q.cardId)?.art),
+    ),
     q = round?.questions[round.answers.length];
   return (
-    <section id={"play-" + mode} data-knowledge-play className="panel space-y-4 p-4">
-      <h2 className="text-xl font-bold">{t("卡冊知識玩法", "Album knowledge play")}</h2>
+    <section
+      id={"play-" + mode}
+      data-knowledge-play={mode === "knowledge" ? true : undefined}
+      data-observation-play={mode === "observation" ? true : undefined}
+      className="panel space-y-4 p-4 motion-reduce:transition-none"
+    >
+      <h2 className="text-xl font-bold">
+        {mode === "knowledge"
+          ? t("卡冊知識玩法", "Album knowledge play")
+          : t("收藏觀察玩法", "Collection observation play")}
+      </h2>
       <p>
         {t(
           "題目只依本人合法持卡與目前公開定義的系列關聯、稀有度；不編造訪談答案。每題保留來源與版本。",
@@ -33,7 +47,7 @@ export function KnowledgePlay({
       <label>
         {t("難度", "Difficulty")}{" "}
         <select
-          aria-label="Knowledge difficulty"
+          aria-label={mode === "knowledge" ? "Knowledge difficulty" : "Observation difficulty"}
           value={difficulty}
           className="rounded border bg-background p-2"
           disabled={!!round && !round.complete}
@@ -62,6 +76,7 @@ export function KnowledgePlay({
                 ),
               );
               setError("");
+              setHint(false);
             } catch {
               setRound(null);
               setError(
@@ -73,7 +88,9 @@ export function KnowledgePlay({
             }
           }}
         >
-          {t("開始／重新洗題", "Start / reshuffle questions")}
+          {mode === "knowledge"
+            ? t("開始／重新洗題", "Start / reshuffle questions")
+            : t("開始／重新觀察", "Start / reshuffle observations")}
         </Button>
         {round && !round.complete && (
           <Button variant="outline" onClick={() => setRound({ ...round, paused: !round.paused })}>
@@ -87,6 +104,48 @@ export function KnowledgePlay({
       ) : (
         q && (
           <article className="space-y-3" data-play-question>
+            {mode === "observation" && (
+              <figure
+                className="max-w-xs rounded-xl border border-primary p-3"
+                data-observation-material
+              >
+                <img
+                  src={cardsByPool(q.poolId).find((c) => c.id === q.cardId)?.art}
+                  alt={t(
+                    "目前合法已持卡的觀察素材",
+                    "Observation material from a currently eligible held card",
+                  )}
+                  className="aspect-[3/4] w-full rounded object-cover"
+                  loading="lazy"
+                  onError={() => {
+                    setRound(null);
+                    setError(
+                      t(
+                        "素材讀取失敗，觀察局已中止；重讀合法來源後再開始。",
+                        "Material failed to load; observation round ended. Reload eligible sources before starting again.",
+                      ),
+                    );
+                  }}
+                />
+                <figcaption>
+                  {t(
+                    "只使用目前合法卡面，不預載未知或隱藏卡。",
+                    "Only the currently eligible face; unknown or hidden cards are not preloaded.",
+                  )}
+                </figcaption>
+                <Button variant="outline" onClick={() => setHint(!hint)}>
+                  {t("查看／收起觀察提示", "Show / hide observation hint")}
+                </Button>
+                {hint && (
+                  <p>
+                    {t(
+                      "核對卡冊資料中的稀有度框架；成長等級與卡牌版本是不同欄位。",
+                      "Check the rarity frame in album data; growth level and card version are different fields.",
+                    )}
+                  </p>
+                )}
+              </figure>
+            )}
             <h3 className="font-bold">{q.prompt[locale]}</h3>
             <p>
               {t("來源", "Source")}: {q.source} · v{q.sourceVersion} /{" "}
@@ -101,7 +160,10 @@ export function KnowledgePlay({
                   key={o.id}
                   data-answer={o.id}
                   variant="outline"
-                  onClick={() => setRound(quizAnswer(round!, o.id))}
+                  onClick={() => {
+                    setRound(quizAnswer(round!, o.id));
+                    setHint(false);
+                  }}
                 >
                   {o.label[locale]}
                 </Button>

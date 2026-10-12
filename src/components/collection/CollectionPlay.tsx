@@ -128,17 +128,19 @@ export function CollectionPlay() {
               }
               cards={legal.cards}
             />
-            {[["observation", "收藏觀察", "Collection observation"]].map(([id, zh, en]) => (
-              <article key={id} id={"play-" + id} className="panel space-y-2 p-4">
-                <h2 className="font-bold">{t(zh!, en!)}</h2>
-                <p>
-                  {t(
-                    "本批待接入正常玩法，不是假完成操作。",
-                    "Normal gameplay is being connected in this batch; no simulated completion action.",
-                  )}
-                </p>
-              </article>
-            ))}
+            {d.catalogue && (
+              <KnowledgePlay
+                key={
+                  "observation:" +
+                  legal.actorId +
+                  legal.visibilityKey +
+                  legal.cards.map((c) => c.cardId + ":" + c.cardVersion).join(",")
+                }
+                mode="observation"
+                me={legal}
+                catalogue={d.catalogue}
+              />
+            )}
           </section>
         </>
       )}
