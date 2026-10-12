@@ -7,6 +7,40 @@ const exact = (v, keys) =>
   Object.keys(v).sort().join() === keys.slice().sort().join();
 const integer = (v, min = 0) => Number.isSafeInteger(v) && v >= min;
 const text = (v, max = 512) => typeof v === "string" && v.length > 0 && v.length <= max;
+/** Internal settings validation; never a public projection or permission grant. */
+export function validStoredPlaySettings(v) {
+  if (
+    !exact(v, [
+      "schema",
+      "lastMode",
+      "difficulty",
+      ...(v?.journey !== undefined ? ["journey"] : []),
+    ]) ||
+    v.schema !== 1 ||
+    !PLAY_MODES.includes(v.lastMode) ||
+    !PLAY_DIFFICULTIES.includes(v.difficulty)
+  )
+    return false;
+  const j = v.journey;
+  return (
+    j === undefined ||
+    (exact(j, ["schema", "ruleVersion", "modes", "startedAt", "paused", "resultIds"]) &&
+      j.schema === 1 &&
+      j.ruleVersion === "local-mixed-journey-v1" &&
+      Array.isArray(j.modes) &&
+      j.modes.length >= 2 &&
+      j.modes.length <= 3 &&
+      new Set(j.modes).size === j.modes.length &&
+      j.modes.every((m) => PLAY_MODES.includes(m)) &&
+      text(j.startedAt, 64) &&
+      Number.isFinite(Date.parse(j.startedAt)) &&
+      typeof j.paused === "boolean" &&
+      Array.isArray(j.resultIds) &&
+      j.resultIds.length <= j.modes.length &&
+      new Set(j.resultIds).size === j.resultIds.length &&
+      j.resultIds.every((id) => text(id, 128)))
+  );
+}
 const row = (v) =>
   exact(v, [
     "id",

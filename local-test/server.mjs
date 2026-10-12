@@ -7,7 +7,7 @@ import {
 } from "./collection.mjs";
 import { seasonRankings, albumRankings } from "./collection-rankings.mjs";
 import { collectionHistory, collectionRecap } from "./collection-history.mjs";
-import { playMe, playCommand } from "./play.mjs";
+import { playMe, playCommand, playHealth } from "./play.mjs";
 import { PLAY_CONTENT_PACKS, playPackIssues, playPackHealth } from "../src/lib/play-packs.mjs";
 import { readingMe, readingCommand, discoverySearch } from "./discovery.mjs";
 import { createServer } from "node:http";
@@ -168,6 +168,7 @@ export function createLocalServer(database, { port = 8787, webPort = 8083 } = {}
           ),
           profileChecks: collectionProfileHealth(database, token),
           playPacks: playPackHealth(),
+          playChecks: playHealth(database, token),
         });
       }
       if (req.method === "POST" && path === "/collection/profile-preview")

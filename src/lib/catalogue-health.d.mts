@@ -1,6 +1,14 @@
 import type { CollectionCatalogue, Bilingual } from "./collection-store";
 import type { CollectionTheme, CREATOR_CONTENT_TEMPLATES } from "./collection-samples.mjs";
 export interface CatalogueHealth {
+  playChecks?: {
+    checked: number;
+    incompatible: number;
+    missingReferences: number;
+    readOnly: true;
+    applied: false;
+    autoRepair: false;
+  };
   playPacks?: import("./play-packs.mjs").PlayPackHealth;
   profileChecks?: {
     checked: number;

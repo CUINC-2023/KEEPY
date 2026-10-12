@@ -79,6 +79,10 @@ const run = (file, args = [], env = process.env) =>
     maxBuffer: 8e6,
   });
 const commands = [
+  "test:actor-boundary",
+  "test:memory-advanced",
+  "test:mixed-play-journey",
+  "test:play-health",
   "test:collection-play",
   "test:play-records",
   "test:play-packs",

@@ -179,6 +179,24 @@ export function CatalogueIntegrity() {
               <p>{t("沒有創作者範本。", "No creator templates.")}</p>
             )}
           </section>
+          {data.playChecks && (
+            <aside data-private-play-health className="space-y-3 rounded-xl border p-4">
+              <h3 className="font-bold">
+                {t("私人玩法保存診斷（唯讀）", "Private play storage diagnosis (read-only)")}
+              </h3>
+              <p>
+                {t("設定筆數", "Settings checked")}: {data.playChecks.checked} ·{" "}
+                {t("不相容", "Incompatible")}: {data.playChecks.incompatible} ·{" "}
+                {t("失效關聯", "Unavailable references")}: {data.playChecks.missingReferences}
+              </p>
+              <p>
+                {t(
+                  "不含帳戶、私人正文或proof；沒有自動修復。不相容來源停止讀写，備份／隔離還原後核對；不覆寫原庫或資產歷史。",
+                  "No accounts, private prose or proof; no automatic repair. Incompatible sources stop reads and writes. Check backup / isolated restoration without overwriting the original database or asset history.",
+                )}
+              </p>
+            </aside>
+          )}
           {data.profileChecks && (
             <aside data-play-quality className="space-y-3 rounded-xl border p-4">
               <h3 className="font-bold">

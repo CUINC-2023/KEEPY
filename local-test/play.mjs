@@ -10,6 +10,7 @@ import {
   PLAY_DIFFICULTIES,
 } from "../src/lib/collection-play.mjs";
 import { playQuestions, quizStart, quizAnswer } from "../src/lib/play-questions.mjs";
+import { validStoredPlaySettings } from "../src/lib/play-contract.mjs";
 const fail = (d, status, message) => {
   throw new d.constructor.DiscoveryError(status, "play", message);
 };
@@ -46,9 +47,47 @@ function eligible(d, id) {
 }
 function settings(d, id) {
   const row = d.db.prepare("SELECT * FROM play_private WHERE user_id=?").get(id);
-  return row
-    ? { version: row.version, data: JSON.parse(row.payload) }
-    : { version: 0, data: { schema: 1, lastMode: "memory", difficulty: "easy" } };
+  if (!row) return { version: 0, data: { schema: 1, lastMode: "memory", difficulty: "easy" } };
+  let data;
+  try {
+    data = JSON.parse(row.payload);
+  } catch {
+    fail(d, 422, "Stored play settings incompatible; read-only diagnosis required");
+  }
+  if (!Number.isSafeInteger(row.version) || row.version < 0 || !validStoredPlaySettings(data))
+    fail(d, 422, "Stored play settings incompatible; read-only diagnosis required");
+  return { version: row.version, data };
+}
+export function playHealth(d, token) {
+  d.official(token);
+  const report = {
+    checked: 0,
+    incompatible: 0,
+    missingReferences: 0,
+    readOnly: true,
+    applied: false,
+    autoRepair: false,
+  };
+  for (const row of d.db.prepare("SELECT user_id FROM play_private ORDER BY user_id").all()) {
+    report.checked++;
+    try {
+      const value = settings(d, row.user_id).data;
+      if (!d.db.prepare("SELECT id FROM users WHERE id=?").get(row.user_id)) {
+        report.incompatible++;
+        continue;
+      }
+      for (const [index, id] of (value.journey?.resultIds ?? []).entries()) {
+        const result = d.db
+          .prepare("SELECT payload FROM play_results WHERE user_id=? AND id=?")
+          .get(row.user_id, id);
+        if (!result || JSON.parse(result.payload).mode !== value.journey.modes[index])
+          report.missingReferences++;
+      }
+    } catch {
+      report.incompatible++;
+    }
+  }
+  return report;
 }
 function journeyProjection(d, id, journey, owner) {
   if (!journey) return null;
