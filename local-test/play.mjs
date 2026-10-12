@@ -50,6 +50,31 @@ function settings(d, id) {
     ? { version: row.version, data: JSON.parse(row.payload) }
     : { version: 0, data: { schema: 1, lastMode: "memory", difficulty: "easy" } };
 }
+function journeyProjection(d, id, journey, owner) {
+  if (!journey) return null;
+  const allowed = new Set(owner.cards.map((c) => c.cardId));
+  const valid = journey.resultIds.every((resultId, i) => {
+    const row = d.db
+      .prepare("SELECT payload FROM play_results WHERE user_id=? AND id=?")
+      .get(id, resultId);
+    if (!row) return false;
+    const value = JSON.parse(row.payload);
+    return (
+      value.mode === journey.modes[i] &&
+      value.sourceIds.length > 0 &&
+      value.sourceIds.every((cardId) => allowed.has(cardId))
+    );
+  });
+  return {
+    schema: 1,
+    ruleVersion: "local-mixed-journey-v1",
+    modes: journey.modes,
+    startedAt: journey.startedAt,
+    paused: journey.paused,
+    completed: valid ? journey.resultIds.length : 0,
+    invalidated: !valid,
+  };
+}
 export function playMe(d, token, params = {}) {
   const u = actor(d, token);
   if (Object.keys(params).some((k) => !["page", "mode"].includes(k)))
@@ -110,12 +135,22 @@ export function playMe(d, token, params = {}) {
         .get(u.id, allowed, PLAY_RULE_VERSION, kind, level);
       if (result) best.push(project(unpack(result)));
     }
+  const privateSettings = settings(d, u.id);
+  const journey = journeyProjection(d, u.id, privateSettings.data.journey, owner);
   return {
     schema: 1,
     source: "local-SQLite-private-play",
     actorId: u.id,
     visibilityKey: cat.visibilityKey,
-    settings: settings(d, u.id),
+    settings: {
+      version: privateSettings.version,
+      data: {
+        schema: 1,
+        lastMode: privateSettings.data.lastMode,
+        difficulty: privateSettings.data.difficulty,
+        ...(journey ? { journey } : {}),
+      },
+    },
     page: p,
     pages,
     total,
@@ -164,7 +199,7 @@ export function playCommand(d, token, input, key) {
   const u = actor(d, token);
   if (
     !input ||
-    !["result", "settings", "clear"].includes(input.action) ||
+    !["result", "settings", "clear", "journey"].includes(input.action) ||
     Object.keys(input).some((k) => !["action", "expectedVersion", "data"].includes(k))
   )
     fail(d, 422, "Invalid play command");
@@ -183,7 +218,40 @@ export function playCommand(d, token, input, key) {
         !PLAY_DIFFICULTIES.includes(v.difficulty)
       )
         fail(d, 422, "Invalid play settings");
-      result = { settings: v };
+      result = {
+        settings: { ...v, ...(prior.data.journey ? { journey: prior.data.journey } : {}) },
+      };
+    } else if (input.action === "journey") {
+      const v = input.data;
+      if (
+        !v ||
+        Object.keys(v).sort().join() !== "modes,paused,restart" ||
+        !Array.isArray(v.modes) ||
+        v.modes.length < 2 ||
+        v.modes.length > 3 ||
+        new Set(v.modes).size !== v.modes.length ||
+        !v.modes.every((mode) => PLAY_MODES.includes(mode)) ||
+        typeof v.paused !== "boolean" ||
+        typeof v.restart !== "boolean"
+      )
+        fail(d, 422, "Invalid bounded private journey");
+      if (
+        !v.restart &&
+        (!prior.data.journey ||
+          JSON.stringify(prior.data.journey.modes) !== JSON.stringify(v.modes))
+      )
+        fail(d, 409, "Journey changed; reload");
+      const journey = v.restart
+        ? {
+            schema: 1,
+            ruleVersion: "local-mixed-journey-v1",
+            modes: v.modes,
+            startedAt: d.at(),
+            paused: v.paused,
+            resultIds: [],
+          }
+        : { ...prior.data.journey, paused: v.paused };
+      result = { settings: { ...prior.data, journey } };
     } else if (input.action === "clear") {
       if (input.data !== null) fail(d, 422, "Confirm record-only deletion");
       d.db.prepare("DELETE FROM play_results WHERE user_id=?").run(u.id);
@@ -287,7 +355,18 @@ export function playCommand(d, token, input, key) {
       d.db
         .prepare("INSERT INTO play_results(id,user_id,at,payload,proof_hash) VALUES(?,?,?,?,?)")
         .run(id, u.id, d.at(), JSON.stringify(payload), proofHash);
-      result = { id, settings: prior.data };
+      const journey = prior.data.journey;
+      const progress = journeyProjection(d, u.id, journey, owner);
+      result = {
+        id,
+        settings:
+          journey &&
+          !journey.paused &&
+          !progress.invalidated &&
+          journey.modes[journey.resultIds.length] === proof.mode
+            ? { ...prior.data, journey: { ...journey, resultIds: [...journey.resultIds, id] } }
+            : prior.data,
+      };
     }
     const version = prior.version + 1;
     d.db

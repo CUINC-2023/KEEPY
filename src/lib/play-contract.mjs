@@ -61,7 +61,35 @@ export function isPlayProjection(v) {
     text(v.visibilityKey) &&
     exact(v.settings, ["version", "data"]) &&
     integer(v.settings.version) &&
-    exact(v.settings.data, ["schema", "lastMode", "difficulty"]) &&
+    exact(v.settings.data, [
+      "schema",
+      "lastMode",
+      "difficulty",
+      ...(v.settings.data?.journey ? ["journey"] : []),
+    ]) &&
+    (!v.settings.data.journey ||
+      (exact(v.settings.data.journey, [
+        "schema",
+        "ruleVersion",
+        "modes",
+        "startedAt",
+        "paused",
+        "completed",
+        "invalidated",
+      ]) &&
+        v.settings.data.journey.schema === 1 &&
+        v.settings.data.journey.ruleVersion === "local-mixed-journey-v1" &&
+        Array.isArray(v.settings.data.journey.modes) &&
+        v.settings.data.journey.modes.length >= 2 &&
+        v.settings.data.journey.modes.length <= 3 &&
+        new Set(v.settings.data.journey.modes).size === v.settings.data.journey.modes.length &&
+        v.settings.data.journey.modes.every((m) => PLAY_MODES.includes(m)) &&
+        text(v.settings.data.journey.startedAt, 64) &&
+        Number.isFinite(Date.parse(v.settings.data.journey.startedAt)) &&
+        typeof v.settings.data.journey.paused === "boolean" &&
+        typeof v.settings.data.journey.invalidated === "boolean" &&
+        integer(v.settings.data.journey.completed) &&
+        v.settings.data.journey.completed <= v.settings.data.journey.modes.length)) &&
     v.settings.data.schema === 1 &&
     PLAY_MODES.includes(v.settings.data.lastMode) &&
     PLAY_DIFFICULTIES.includes(v.settings.data.difficulty) &&

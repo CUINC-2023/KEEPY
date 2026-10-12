@@ -26,7 +26,23 @@ export interface PlayPrivate {
   source: "local-SQLite-private-play";
   actorId: string;
   visibilityKey: string;
-  settings: { version: number; data: { schema: 1; lastMode: string; difficulty: string } };
+  settings: {
+    version: number;
+    data: {
+      schema: 1;
+      lastMode: string;
+      difficulty: string;
+      journey?: {
+        schema: 1;
+        ruleVersion: string;
+        modes: string[];
+        startedAt: string;
+        paused: boolean;
+        completed: number;
+        invalidated: boolean;
+      };
+    };
+  };
   page: number;
   pages: number;
   total: number;
@@ -141,7 +157,9 @@ export function PlayRecords({
     [page, setPage] = useState(1),
     [mode, setMode] = useState("all"),
     [busy, setBusy] = useState(false),
-    [clear, setClear] = useState(false);
+    [clear, setClear] = useState(false),
+    [journeyOrder, setJourneyOrder] = useState("memory,knowledge,observation"),
+    [restartJourney, setRestartJourney] = useState(false);
   const pending = hasPendingDiscovery("/play/commands");
   useEffect(() => {
     const c = new AbortController(),
@@ -171,7 +189,11 @@ export function PlayRecords({
     window.addEventListener("keepy-play-readback", read);
     return () => window.removeEventListener("keepy-play-readback", read);
   }, []);
-  const command = async (action: "settings" | "clear", data: unknown, replay = false) => {
+  const command = async (
+    action: "settings" | "clear" | "journey",
+    data: unknown,
+    replay = false,
+  ) => {
     if (!snapshot || busy) return;
     const epoch = localSessionGeneration();
     setBusy(true);
@@ -275,6 +297,141 @@ export function PlayRecords({
         <p role="status">{t("讀取本人紀錄中…", "Loading your records…")}</p>
       ) : (
         <>
+          <section className="rounded border p-3 space-y-3" data-mixed-play-journey>
+            <h3 className="font-bold">{t("私人混合遊玩旅程", "Private mixed play journey")}</h3>
+            <p>
+              {t(
+                "版本local-mixed-journey-v1；只計開始後依順序保存的合法結果，不把過去紀錄當新進度。暫停時保存不計階段；無消耗、獎勵或正式XP。",
+                "Rule local-mixed-journey-v1 counts only eligible results saved in order after starting. Earlier records do not count; saves while paused do not advance stages. No consumption, rewards or official XP.",
+              )}
+            </p>
+            <label>
+              {t("受控階段", "Controlled stages")}{" "}
+              <select
+                aria-label="Mixed journey order"
+                value={journeyOrder}
+                disabled={busy || pending}
+                onChange={(e) => setJourneyOrder(e.target.value)}
+              >
+                {[
+                  "memory,knowledge,observation",
+                  "knowledge,observation",
+                  "observation,knowledge,memory",
+                ].map((order) => (
+                  <option key={order} value={order}>
+                    {order}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Button
+              data-start-journey
+              disabled={busy || pending}
+              onClick={() => {
+                if (snapshot.settings.data.journey) setRestartJourney(true);
+                else
+                  void command("journey", {
+                    modes: journeyOrder.split(","),
+                    paused: false,
+                    restart: true,
+                  });
+              }}
+            >
+              {t("開始／重新安排旅程", "Start / rearrange journey")}
+            </Button>
+            {snapshot.settings.data.journey ? (
+              <div data-mixed-journey-progress aria-live="polite">
+                <p>
+                  {snapshot.settings.data.journey.startedAt} ·{" "}
+                  {snapshot.settings.data.journey.ruleVersion}
+                </p>
+                <p>
+                  {snapshot.settings.data.journey.invalidated
+                    ? t(
+                        "旅程来源已失效，進度遮蔽；確認合法來源後重新安排。",
+                        "Journey sources unavailable; progress concealed. Check eligible sources before rearranging.",
+                      )
+                    : `${snapshot.settings.data.journey.completed}/${snapshot.settings.data.journey.modes.length} · ${snapshot.settings.data.journey.modes.join(" → ")}`}
+                </p>
+                <p>
+                  {snapshot.settings.data.journey.paused
+                    ? t("已暫停，可續作。", "Paused; you can resume.")
+                    : snapshot.settings.data.journey.completed ===
+                        snapshot.settings.data.journey.modes.length
+                      ? t(
+                          "旅程完成，回顧私人紀錄；不發獎勵。",
+                          "Journey complete. Review private records; no rewards issued.",
+                        )
+                      : t(
+                          "依順序完成下一玩法並保存摘要。",
+                          "Complete the next mode in order and save its summary.",
+                        )}
+                </p>
+                <Button
+                  data-pause-journey
+                  variant="outline"
+                  disabled={busy || pending}
+                  onClick={() =>
+                    void command("journey", {
+                      modes: snapshot.settings.data.journey!.modes,
+                      paused: !snapshot.settings.data.journey!.paused,
+                      restart: false,
+                    })
+                  }
+                >
+                  {t("暫停／繼續旅程", "Pause / resume journey")}
+                </Button>
+                {continuePlay &&
+                  !snapshot.settings.data.journey.invalidated &&
+                  snapshot.settings.data.journey.completed <
+                    snapshot.settings.data.journey.modes.length && (
+                    <Button
+                      variant="outline"
+                      data-next-journey
+                      onClick={() => {
+                        const el = document.getElementById(
+                          "play-" +
+                            snapshot.settings.data.journey!.modes[
+                              snapshot.settings.data.journey!.completed
+                            ],
+                        );
+                        el?.scrollIntoView({ block: "start", behavior: "auto" });
+                        el?.querySelector<HTMLButtonElement>("button:not([disabled])")?.focus({
+                          preventScroll: true,
+                        });
+                      }}
+                    >
+                      {t("定位下一階段（不開始新局）", "Find next stage (does not start a round)")}
+                    </Button>
+                  )}
+              </div>
+            ) : (
+              <p>
+                {t(
+                  "尚未選擇旅程；已有紀錄不會自動加入。",
+                  "No journey selected; existing records are not added automatically.",
+                )}
+              </p>
+            )}
+            <ConfirmDialog
+              open={restartJourney}
+              onCancel={() => setRestartJourney(false)}
+              title={t("重新安排私人旅程？", "Rearrange your private journey?")}
+              description={t(
+                "旅程進度從零開始；已保存遊玩紀錄保留，不發獎或改資產。",
+                "Journey progress restarts at zero. Saved play records remain; no rewards or asset changes.",
+              )}
+              confirmLabel={t("確認重新安排旅程", "Confirm rearranging journey")}
+              onConfirm={() => {
+                setRestartJourney(false);
+                void command("journey", {
+                  modes: journeyOrder.split(","),
+                  paused: false,
+                  restart: true,
+                });
+              }}
+            />
+          </section>
           <label>
             {t("本人下次玩法偏好", "Your next-play preference")}{" "}
             <select
@@ -282,7 +439,11 @@ export function PlayRecords({
               value={snapshot.settings.data.lastMode}
               disabled={busy || pending}
               onChange={(e) =>
-                void command("settings", { ...snapshot.settings.data, lastMode: e.target.value })
+                void command("settings", {
+                  schema: 1,
+                  lastMode: e.target.value,
+                  difficulty: snapshot.settings.data.difficulty,
+                })
               }
             >
               {["memory", "knowledge", "observation"].map((id) => (
