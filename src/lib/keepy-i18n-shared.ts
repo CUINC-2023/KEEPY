@@ -8,6 +8,7 @@ export const copy = {
   tasks: { "zh-TW": "探索任務", en: "Discovery tasks" },
   participationAdmin: { "zh-TW": "參與營運管理", en: "Participation management" },
   collection: { "zh-TW": "收藏進度與展示", en: "Collection showcase" },
+  collectionPlay: { "zh-TW": "收藏遊玩中心", en: "Collection play centre" },
   collectionAdmin: { "zh-TW": "收藏規則管理", en: "Collection rules" },
   journal: { "zh-TW": "收藏誌", en: "Collection journal" },
   discoveryAdmin: { "zh-TW": "內容與發現", en: "Content & discovery" },

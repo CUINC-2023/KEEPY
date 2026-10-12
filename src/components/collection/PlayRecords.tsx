@@ -161,6 +161,14 @@ export function PlayRecords({
     [journeyOrder, setJourneyOrder] = useState("memory,knowledge,observation"),
     [restartJourney, setRestartJourney] = useState(false);
   const pending = hasPendingDiscovery("/play/commands");
+  const modeLabel = (id: string) =>
+    id === "memory"
+      ? t("記憶配對", "Memory matching")
+      : id === "knowledge"
+        ? t("卡冊知識", "Album knowledge")
+        : id === "observation"
+          ? t("收藏觀察", "Collection observation")
+          : t("全部", "All");
   useEffect(() => {
     const c = new AbortController(),
       epoch = localSessionGeneration();
@@ -235,6 +243,7 @@ export function PlayRecords({
     <section
       className="panel space-y-3 p-4"
       data-private-play-records
+      id="play-records"
       aria-busy={busy || (!snapshot && !error)}
     >
       <h2 className="text-xl font-bold">
@@ -271,7 +280,7 @@ export function PlayRecords({
         >
           {["all", "memory", "knowledge", "observation"].map((id) => (
             <option key={id} value={id}>
-              {id}
+              {modeLabel(id)}
             </option>
           ))}
         </select>
@@ -319,7 +328,7 @@ export function PlayRecords({
                   "observation,knowledge,memory",
                 ].map((order) => (
                   <option key={order} value={order}>
-                    {order}
+                    {order.split(",").map(modeLabel).join(" → ")}
                   </option>
                 ))}
               </select>
@@ -351,7 +360,7 @@ export function PlayRecords({
                         "旅程来源已失效，進度遮蔽；確認合法來源後重新安排。",
                         "Journey sources unavailable; progress concealed. Check eligible sources before rearranging.",
                       )
-                    : `${snapshot.settings.data.journey.completed}/${snapshot.settings.data.journey.modes.length} · ${snapshot.settings.data.journey.modes.join(" → ")}`}
+                    : `${snapshot.settings.data.journey.completed}/${snapshot.settings.data.journey.modes.length} · ${snapshot.settings.data.journey.modes.map(modeLabel).join(" → ")}`}
                 </p>
                 <p>
                   {snapshot.settings.data.journey.paused
@@ -447,7 +456,9 @@ export function PlayRecords({
               }
             >
               {["memory", "knowledge", "observation"].map((id) => (
-                <option key={id}>{id}</option>
+                <option key={id} value={id}>
+                  {modeLabel(id)}
+                </option>
               ))}
             </select>
           </label>
@@ -485,12 +496,16 @@ export function PlayRecords({
             <ol>
               {snapshot.rows.map((r) => (
                 <li key={r.id}>
-                  {r.at} · {r.mode} / {r.difficulty} · {r.correct}/{r.total}{" "}
+                  {r.at} · {modeLabel(r.mode)} / {r.difficulty} · {r.correct}/{r.total}{" "}
                   {r.moves !== null ? " · " + r.moves : ""} · {r.ruleVersion}
                   {r.memoryConfig && (
                     <>
                       {" "}
-                      · {r.memoryConfig.variant} · {t("提示次數", "Hints used")}: {r.hintsUsed}
+                      ·{" "}
+                      {r.memoryConfig.variant === "practice"
+                        ? t("練習模式", "Practice mode")
+                        : t("限步模式", "Move-limited mode")}{" "}
+                      · {t("提示次數", "Hints used")}: {r.hintsUsed}
                     </>
                   )}
                 </li>

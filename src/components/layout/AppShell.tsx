@@ -177,6 +177,7 @@ const PLAYER_NAV: NavItem[] = [
   { to: "/app", label: "玩家首頁", Icon: IconHome, copyKey: "playerHome" },
   { to: "/app/album", label: "卡冊", Icon: IconCards, copyKey: "album" },
   { to: "/app/tasks", label: "探索任務", Icon: IconSparkle, copyKey: "tasks" },
+  { to: "/app/play", label: "收藏遊玩中心", Icon: IconCards, copyKey: "collectionPlay" },
   { to: "/app/collection", label: "收藏進度與展示", Icon: IconCards, copyKey: "collection" },
   { to: "/app/curations", label: "私人收藏策展", Icon: IconCards, copyKey: "curations" },
   { to: "/app/levels", label: "玩家成長預覽", Icon: IconSparkle, copyKey: "playerLevelPreview" },

@@ -144,6 +144,34 @@ export function CollectionPlay() {
             </Link>
           </section>
           <section className="grid min-w-0 gap-5 xl:grid-cols-2" data-play-entrances>
+            <nav
+              className="flex flex-wrap gap-3 xl:col-span-2"
+              aria-label={t("本頁玩法定位", "Find a play mode on this page")}
+              data-play-mode-navigation
+            >
+              {[
+                ["memory", t("記憶配對", "Memory matching")],
+                ["knowledge", t("卡冊知識", "Album knowledge")],
+                ["observation", t("收藏觀察", "Collection observation")],
+                ["records", t("旅程與私人回顧", "Journey and private review")],
+              ].map(([id, label]) => (
+                <a
+                  key={id}
+                  className="inline-flex min-h-11 items-center rounded border px-3 text-primary underline focus-visible:outline-2"
+                  href={"#play-" + id}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const el = document.getElementById("play-" + id);
+                    el?.scrollIntoView({ block: "start", behavior: "auto" });
+                    el?.querySelector<HTMLButtonElement>("button:not([disabled])")?.focus({
+                      preventScroll: true,
+                    });
+                  }}
+                >
+                  {label}
+                </a>
+              ))}
+            </nav>
             {d.catalogue && (
               <KnowledgePlay
                 key={
