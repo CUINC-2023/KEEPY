@@ -776,19 +776,23 @@ function ShowcaseContent({
       className={
         "space-y-6 rounded-2xl p-3 motion-reduce:transition-none " +
         (data.coverMode === "band" ? "border-t-8 border-t-primary " : "") +
-        (data.theme === "ink"
-          ? "border-2 border-foreground/60 bg-background text-foreground"
-          : data.theme === "dawn"
-            ? "border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-background to-primary/10"
-            : data.theme === "linen"
-              ? "border border-amber-500/30 bg-gradient-to-b from-amber-500/10 to-background"
-              : data.theme === "aurora"
-                ? "border border-primary/30 bg-gradient-to-br from-primary/15 via-background to-sky-500/10"
-                : data.theme === "contrast"
-                  ? "border-2 border-foreground"
-                  : data.theme === "quiet"
-                    ? "border border-border bg-muted/30"
-                    : "")
+        (data.theme === "cobalt"
+          ? "border-t-4 border-t-sky-600 bg-gradient-to-b from-sky-500/10 to-background text-foreground"
+          : data.theme === "graphite"
+            ? "border-2 border-foreground/70 bg-muted/20 text-foreground"
+            : data.theme === "ink"
+              ? "border-2 border-foreground/60 bg-background text-foreground"
+              : data.theme === "dawn"
+                ? "border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-background to-primary/10"
+                : data.theme === "linen"
+                  ? "border border-amber-500/30 bg-gradient-to-b from-amber-500/10 to-background"
+                  : data.theme === "aurora"
+                    ? "border border-primary/30 bg-gradient-to-br from-primary/15 via-background to-sky-500/10"
+                    : data.theme === "contrast"
+                      ? "border-2 border-foreground"
+                      : data.theme === "quiet"
+                        ? "border border-border bg-muted/30"
+                        : "")
       }
       data-showcase-layout={data.layout}
       data-showcase-style={data.theme}

@@ -412,7 +412,17 @@ function validateProfile(d, u, p) {
         .sort()
         .join(",") !== "bioEn,layout,poolIds" ||
       (x.theme !== undefined &&
-        !["classic", "quiet", "contrast", "linen", "aurora", "ink", "dawn"].includes(x.theme)) ||
+        ![
+          "classic",
+          "quiet",
+          "contrast",
+          "linen",
+          "aurora",
+          "ink",
+          "dawn",
+          "cobalt",
+          "graphite",
+        ].includes(x.theme)) ||
       (x.coverMode !== undefined && !["plain", "band"].includes(x.coverMode)) ||
       (x.badgeLayout !== undefined && !["list", "grid"].includes(x.badgeLayout)) ||
       (x.shelfLayout !== undefined && !["grid", "wide"].includes(x.shelfLayout)) ||

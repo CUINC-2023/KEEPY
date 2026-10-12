@@ -159,6 +159,8 @@ export function ShowcaseEditor({
           <option value="linen">{t("紙感暖光", "Warm paper")}</option>
           <option value="aurora">{t("柔和彩光", "Soft aurora")}</option>
           <option value="ink">{t("墨色線框", "Ink lines")}</option>
+          <option value="cobalt">{t("鈷藍色帶", "Cobalt bands")}</option>
+          <option value="graphite">{t("石墨線框", "Graphite outlines")}</option>
           <option value="dawn">{t("晨光層次", "Dawn layers")}</option>
         </select>
       </label>

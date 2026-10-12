@@ -189,6 +189,14 @@ const arrangedPreview = previewCollectionProfile(d, a, {
   data: arranged,
 }).projection;
 assert.equal(arrangedPreview.theme, "contrast");
+for (const theme of ["cobalt", "graphite"])
+  assert.equal(
+    previewCollectionProfile(d, a, {
+      ...previewCommand,
+      data: { ...arranged, presentation: { ...arranged.presentation, theme } },
+    }).projection.theme,
+    theme,
+  );
 assert.equal(arrangedPreview.shelfLayout, "wide");
 reject(
   () =>

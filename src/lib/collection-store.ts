@@ -59,7 +59,16 @@ export interface CollectionProfile {
     layout: "collector" | "albums" | "badges";
     bioEn: string;
     poolIds: string[];
-    theme?: "classic" | "quiet" | "contrast" | "linen" | "aurora" | "ink" | "dawn";
+    theme?:
+      | "classic"
+      | "quiet"
+      | "contrast"
+      | "linen"
+      | "aurora"
+      | "ink"
+      | "dawn"
+      | "cobalt"
+      | "graphite";
     coverMode?: "plain" | "band";
     badgeLayout?: "list" | "grid";
     shelfLayout?: "grid" | "wide";
@@ -131,7 +140,8 @@ export interface PublicCollection {
     player?: { status: "local-preview"; ruleVersion: string; level: number; xp: number };
     platform?: { status: "local-preview"; ruleVersion: string; stage: number };
   };
-  theme: "classic" | "quiet" | "contrast" | "linen" | "aurora" | "ink" | "dawn";
+  theme:
+    "classic" | "quiet" | "contrast" | "linen" | "aurora" | "ink" | "dawn" | "cobalt" | "graphite";
   coverMode: "plain" | "band";
   badgeLayout: "list" | "grid";
   shelfLayout: "grid" | "wide";
