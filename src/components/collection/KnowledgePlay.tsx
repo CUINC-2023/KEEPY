@@ -203,9 +203,17 @@ export function KnowledgePlay({
                   }}
                 />
                 <figcaption>
+                  <p
+                    className="rounded border-2 border-primary p-2 font-bold"
+                    data-observation-frame
+                  >
+                    {t("已核對框架", "Verified frame")}:{" "}
+                    {catalogue.cards.find((c) => c.cardId === q.cardId)?.rarity} ·{" "}
+                    {t("卡牌版本", "Card version")} {q.cardVersion}
+                  </p>
                   {t(
-                    "只使用目前合法卡面，不預載未知或隱藏卡。",
-                    "Only the currently eligible face; unknown or hidden cards are not preloaded.",
+                    "只使用目前合法卡面與已核對的稀有度框架；題目不聲稱照片細節。未知或隱藏卡不預載。",
+                    "Only the eligible face and verified rarity frame; questions do not assert photographic details. Unknown or hidden cards are not preloaded.",
                   )}
                 </figcaption>
                 <Button variant="outline" onClick={() => setHint(!hint)}>
