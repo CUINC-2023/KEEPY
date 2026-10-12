@@ -45,7 +45,7 @@ export function CollectionHome({
         className="flex flex-wrap gap-3"
         aria-label={t("本人期間回顧與來源", "Your period recap and sources")}
       >
-        <Link to="/app/collection" hash="collection-recap" className="text-primary underline">
+        <Link to="/app/recap" className="text-primary underline">
           {t("回顧本人期間收藏", "Revisit your period collection")}
         </Link>
         <Link to="/app/collection" hash="collection-history" className="text-primary underline">

@@ -52,6 +52,7 @@ import { Route as AppPlanningRouteImport } from './routes/app.planning'
 import { Route as AppPlayRouteImport } from './routes/app.play'
 import { Route as AppRankingsRouteImport } from './routes/app.rankings'
 import { Route as AppReadingRouteImport } from './routes/app.reading'
+import { Route as AppRecapRouteImport } from './routes/app.recap'
 import { Route as AppSynthesisRouteImport } from './routes/app.synthesis'
 import { Route as AppTasksRouteImport } from './routes/app.tasks'
 import { Route as AppWalletRouteImport } from './routes/app.wallet'
@@ -310,6 +311,11 @@ const AppRankingsRoute = AppRankingsRouteImport.update({
 const AppReadingRoute = AppReadingRouteImport.update({
   id: '/reading',
   path: '/reading',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRecapRoute = AppRecapRouteImport.update({
+  id: '/recap',
+  path: '/recap',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSynthesisRoute = AppSynthesisRouteImport.update({
@@ -572,6 +578,7 @@ export interface FileRoutesByFullPath {
   '/app/play': typeof AppPlayRoute
   '/app/rankings': typeof AppRankingsRoute
   '/app/reading': typeof AppReadingRoute
+  '/app/recap': typeof AppRecapRoute
   '/app/synthesis': typeof AppSynthesisRoute
   '/app/tasks': typeof AppTasksRoute
   '/app/wallet': typeof AppWalletRoute
@@ -655,6 +662,7 @@ export interface FileRoutesByTo {
   '/app/play': typeof AppPlayRoute
   '/app/rankings': typeof AppRankingsRoute
   '/app/reading': typeof AppReadingRoute
+  '/app/recap': typeof AppRecapRoute
   '/app/synthesis': typeof AppSynthesisRoute
   '/app/tasks': typeof AppTasksRoute
   '/app/wallet': typeof AppWalletRoute
@@ -743,6 +751,7 @@ export interface FileRoutesById {
   '/app/play': typeof AppPlayRoute
   '/app/rankings': typeof AppRankingsRoute
   '/app/reading': typeof AppReadingRoute
+  '/app/recap': typeof AppRecapRoute
   '/app/synthesis': typeof AppSynthesisRoute
   '/app/tasks': typeof AppTasksRoute
   '/app/wallet': typeof AppWalletRoute
@@ -833,6 +842,7 @@ export interface FileRouteTypes {
     | '/app/play'
     | '/app/rankings'
     | '/app/reading'
+    | '/app/recap'
     | '/app/synthesis'
     | '/app/tasks'
     | '/app/wallet'
@@ -916,6 +926,7 @@ export interface FileRouteTypes {
     | '/app/play'
     | '/app/rankings'
     | '/app/reading'
+    | '/app/recap'
     | '/app/synthesis'
     | '/app/tasks'
     | '/app/wallet'
@@ -1003,6 +1014,7 @@ export interface FileRouteTypes {
     | '/app/play'
     | '/app/rankings'
     | '/app/reading'
+    | '/app/recap'
     | '/app/synthesis'
     | '/app/tasks'
     | '/app/wallet'
@@ -1387,6 +1399,13 @@ declare module '@tanstack/react-router' {
       path: '/reading'
       fullPath: '/app/reading'
       preLoaderRoute: typeof AppReadingRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/recap': {
+      id: '/app/recap'
+      path: '/recap'
+      fullPath: '/app/recap'
+      preLoaderRoute: typeof AppRecapRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/synthesis': {
@@ -1774,6 +1793,7 @@ interface AppRouteChildren {
   AppPlayRoute: typeof AppPlayRoute
   AppRankingsRoute: typeof AppRankingsRoute
   AppReadingRoute: typeof AppReadingRoute
+  AppRecapRoute: typeof AppRecapRoute
   AppSynthesisRoute: typeof AppSynthesisRoute
   AppTasksRoute: typeof AppTasksRoute
   AppWalletRoute: typeof AppWalletRoute
@@ -1800,6 +1820,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppPlayRoute: AppPlayRoute,
   AppRankingsRoute: AppRankingsRoute,
   AppReadingRoute: AppReadingRoute,
+  AppRecapRoute: AppRecapRoute,
   AppSynthesisRoute: AppSynthesisRoute,
   AppTasksRoute: AppTasksRoute,
   AppWalletRoute: AppWalletRoute,
