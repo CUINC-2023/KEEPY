@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CollectionTemplateGallery } from "@/components/collection/CollectionTemplateGallery";
+import { PlayPackPreview } from "@/components/collection/PlayPackPreview";
 import { createFileRoute } from "@tanstack/react-router";
 import { ALBUM_TEMPLATES, ALBUM_TEMPLATE_NOTE, type AlbumTemplate } from "@/data/admin";
 import { POOLS } from "@/data/mock";
@@ -52,6 +53,7 @@ function AlbumTemplatesPage() {
 
       <StateSwitcher state={state} onChange={setState} />
       <CollectionTemplateGallery />
+      <PlayPackPreview />
 
       {state !== "ok" ? (
         <StatePlaceholder state={state} emptyTitle="尚無卡冊範本" />

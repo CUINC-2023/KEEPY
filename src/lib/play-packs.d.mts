@@ -1,0 +1,25 @@
+import type { Bilingual } from "./collection-store";
+export interface PlayContentPack {
+  id: string;
+  version: number;
+  synthetic: true;
+  published: false;
+  title: Bilingual;
+  source: Bilingual;
+  websiteUse: "local-sample-only";
+  socialUse: "unconfirmed";
+  printUse: "unconfirmed";
+  questions: {
+    id: string;
+    mode: string;
+    difficulty: string;
+    prompt: Bilingual;
+    options: { id: string; label: Bilingual }[];
+    answer: string;
+    explanation: Bilingual;
+    sourceRef: { templateId: string; version: number; chapter: number };
+    material: { ref: string; count: number };
+  }[];
+}
+export const PLAY_CONTENT_PACKS: PlayContentPack[];
+export function playPackIssues(pack: unknown): string[];

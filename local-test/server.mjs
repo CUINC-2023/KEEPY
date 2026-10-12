@@ -8,6 +8,7 @@ import {
 import { seasonRankings, albumRankings } from "./collection-rankings.mjs";
 import { collectionHistory, collectionRecap } from "./collection-history.mjs";
 import { playMe, playCommand } from "./play.mjs";
+import { PLAY_CONTENT_PACKS, playPackIssues } from "../src/lib/play-packs.mjs";
 import { readingMe, readingCommand, discoverySearch } from "./discovery.mjs";
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
@@ -146,6 +147,7 @@ export function createLocalServer(database, { port = 8787, webPort = 8083 } = {}
         return send(200, database.document("collection-rules"));
       }
       if (req.method === "GET" && path === "/admin/collection/health") {
+        // Keep publication approval separate from sample integrity.
         database.official(token);
         return send(200, {
           ...inspectCatalogue(
@@ -173,6 +175,15 @@ export function createLocalServer(database, { port = 8787, webPort = 8083 } = {}
         return send(200, supplyPreview(database, token, body, path.startsWith("/admin/")));
       if (req.method === "GET" && path === "/supply/me")
         return send(200, database.supplyList(token));
+      if (req.method === "GET" && path === "/admin/play/packs") {
+        database.official(token);
+        return send(200, {
+          schema: 1,
+          synthetic: true,
+          publicationApproval: false,
+          packs: PLAY_CONTENT_PACKS.map((pack) => ({ ...pack, issues: playPackIssues(pack) })),
+        });
+      }
       if (req.method === "GET" && path === "/admin/supply") {
         const r = database.supplyList(token, true);
         return send(200, { ...r, discoveryVersion: database.document("discovery").version });

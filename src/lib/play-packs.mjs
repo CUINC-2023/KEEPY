@@ -1,0 +1,112 @@
+import { COLLECTION_THEMES } from "./collection-samples.mjs";
+const bi = (zh, en) => ({ "zh-TW": zh, en });
+export const PLAY_CONTENT_PACKS = COLLECTION_THEMES.filter((t) =>
+  t.id.startsWith("local-demo-121-"),
+).map((t) => ({
+  id: "play-pack-" + t.id,
+  version: 1,
+  synthetic: true,
+  published: false,
+  title: t.title,
+  source: t.source,
+  websiteUse: "local-sample-only",
+  socialUse: "unconfirmed",
+  printUse: "unconfirmed",
+  questions: [
+    ...t.cardStories.map((s, i) => ({
+      id: t.id + "-knowledge-" + i,
+      mode: "knowledge",
+      difficulty: "easy",
+      prompt: bi(
+        "這段範本文字屬於哪個故事章節？ " + s["zh-TW"],
+        "Which sample story chapter contains this text? " + s.en,
+      ),
+      options: [0, 1, 2].map((n) => ({
+        id: String(n + 1),
+        label: bi("章節" + (n + 1), "Chapter " + (n + 1)),
+      })),
+      answer: String(i + 1),
+      explanation: s,
+      sourceRef: { templateId: t.id, version: t.version, chapter: i + 1 },
+      material: { ref: "text-only", count: 0 },
+    })),
+    ...[1, 2, 3].map((n) => ({
+      id: t.id + "-observation-" + n,
+      mode: "observation",
+      difficulty: "easy",
+      prompt: bi(
+        "觀察這個幾何示意版型，有幾個圓形？",
+        "Observe this geometric sample layout: how many circles?",
+      ),
+      options: [1, 2, 3].map((m) => ({ id: String(m), label: bi(String(m), String(m)) })),
+      answer: String(n),
+      explanation: bi(
+        "目前版型有" + n + "個圓形，來源為本機幾何圖文示意，不是真人照片。",
+        "This layout has " +
+          n +
+          " circles, sourced from a local geometric sample, not a real photograph.",
+      ),
+      sourceRef: { templateId: t.id, version: t.version, chapter: n },
+      material: { ref: "geometry-circles", count: n },
+    })),
+  ],
+}));
+const bilingual = (v) =>
+  !!v && ["zh-TW", "en"].every((l) => typeof v[l] === "string" && v[l].trim());
+export function playPackIssues(pack) {
+  const issues = [];
+  if (
+    !pack ||
+    pack.synthetic !== true ||
+    pack.published !== false ||
+    !Number.isSafeInteger(pack.version) ||
+    pack.version < 1
+  )
+    issues.push("sample-version");
+  if (!bilingual(pack?.title) || !bilingual(pack?.source)) issues.push("pack-translation");
+  if (
+    pack?.websiteUse !== "local-sample-only" ||
+    pack?.socialUse !== "unconfirmed" ||
+    pack?.printUse !== "unconfirmed"
+  )
+    issues.push("unconfirmed-use");
+  const questions = Array.isArray(pack?.questions) ? pack.questions : [];
+  if (!questions.length || questions.length > 40) issues.push("question-count");
+  if (new Set(questions.map((q) => q?.id)).size !== questions.length)
+    issues.push("duplicate-question");
+  for (const q of questions) {
+    if (
+      !q ||
+      !bilingual(q.prompt) ||
+      !bilingual(q.explanation) ||
+      !["knowledge", "observation"].includes(q.mode) ||
+      !["easy", "standard", "hard"].includes(q.difficulty)
+    )
+      issues.push("question-translation-or-type");
+    if (
+      !Array.isArray(q?.options) ||
+      q.options.length < 2 ||
+      q.options.length > 6 ||
+      new Set(q.options.map((o) => o.id)).size !== q.options.length ||
+      !q.options.every((o) => bilingual(o.label)) ||
+      !q.options.some((o) => o.id === q.answer)
+    )
+      issues.push("answer-or-options");
+    const theme = COLLECTION_THEMES.find((t) => t.id === q?.sourceRef?.templateId);
+    if (
+      !theme ||
+      q.sourceRef.version !== theme.version ||
+      !Number.isInteger(q.sourceRef.chapter) ||
+      q.sourceRef.chapter < 1 ||
+      q.sourceRef.chapter > theme.cardStories?.length
+    )
+      issues.push("source-relation");
+    if (
+      !["text-only", "geometry-circles"].includes(q?.material?.ref) ||
+      (q.material.ref === "geometry-circles" &&
+        (![1, 2, 3].includes(q.material.count) || q.answer !== String(q.material.count)))
+    )
+      issues.push("material-or-answer");
+  }
+  return [...new Set(issues)];
+}
