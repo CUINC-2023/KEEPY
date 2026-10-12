@@ -112,6 +112,7 @@ export function useLocalTest() {
 export function localTestState() {
   return state;
 }
+import { localRequestSignal, localTimeoutError } from "./local-request.mjs";
 export async function localApi<T>(
   path: string,
   body?: unknown,
@@ -120,9 +121,10 @@ export async function localApi<T>(
   signal?: AbortSignal,
 ): Promise<T> {
   const sessionGeneration = refreshSerial;
+  const requestSignal = localRequestSignal(signal);
   const expectedActor = path === "/me" || path === "/session" ? null : state.summary?.user.id;
   const response = await fetch("/api/local-test" + path, {
-    ...(signal ? { signal } : {}),
+    signal: requestSignal,
     credentials: "same-origin",
     headers: {
       ...(expectedActor ? { "X-KEEPY-Expected-Actor": expectedActor } : {}),
@@ -136,8 +138,12 @@ export async function localApi<T>(
           method,
           body: JSON.stringify(body),
         }),
+  }).catch((error) => {
+    throw localTimeoutError(requestSignal) ?? error;
   });
   const value = await response.json().catch(() => {
+    const timeout = localTimeoutError(requestSignal);
+    if (timeout) throw timeout;
     const error = unreadableLocalResponse(response.status);
     if (response.status === 401 && sessionGeneration === refreshSerial)
       clearLocalSession(error.message);
