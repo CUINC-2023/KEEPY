@@ -161,6 +161,8 @@ export function ShowcaseEditor({
           <option value="ink">{t("墨色線框", "Ink lines")}</option>
           <option value="cobalt">{t("鈷藍色帶", "Cobalt bands")}</option>
           <option value="graphite">{t("石墨線框", "Graphite outlines")}</option>
+          <option value="moss">{t("苔綠書架", "Moss shelves")}</option>
+          <option value="sepia">{t("褐彩典藏", "Sepia archive")}</option>
           <option value="dawn">{t("晨光層次", "Dawn layers")}</option>
         </select>
       </label>

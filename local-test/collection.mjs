@@ -470,6 +470,8 @@ function validateProfile(d, u, p) {
           "dawn",
           "cobalt",
           "graphite",
+          "moss",
+          "sepia",
         ].includes(x.theme)) ||
       (x.coverMode !== undefined && !["plain", "band"].includes(x.coverMode)) ||
       (x.badgeLayout !== undefined && !["list", "grid"].includes(x.badgeLayout)) ||

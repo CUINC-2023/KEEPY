@@ -71,7 +71,9 @@ export interface CollectionProfile {
       | "ink"
       | "dawn"
       | "cobalt"
-      | "graphite";
+      | "graphite"
+      | "moss"
+      | "sepia";
     coverMode?: "plain" | "band";
     badgeLayout?: "list" | "grid";
     shelfLayout?: "grid" | "wide";
@@ -144,7 +146,17 @@ export interface PublicCollection {
     platform?: { status: "local-preview"; ruleVersion: string; stage: number };
   };
   theme:
-    "classic" | "quiet" | "contrast" | "linen" | "aurora" | "ink" | "dawn" | "cobalt" | "graphite";
+    | "classic"
+    | "quiet"
+    | "contrast"
+    | "linen"
+    | "aurora"
+    | "ink"
+    | "dawn"
+    | "cobalt"
+    | "graphite"
+    | "moss"
+    | "sepia";
   coverMode: "plain" | "band";
   badgeLayout: "list" | "grid";
   shelfLayout: "grid" | "wide";

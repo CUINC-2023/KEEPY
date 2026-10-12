@@ -189,7 +189,7 @@ const arrangedPreview = previewCollectionProfile(d, a, {
   data: arranged,
 }).projection;
 assert.equal(arrangedPreview.theme, "contrast");
-for (const theme of ["cobalt", "graphite"])
+for (const theme of ["cobalt", "graphite", "moss", "sepia"])
   assert.equal(
     previewCollectionProfile(d, a, {
       ...previewCommand,
