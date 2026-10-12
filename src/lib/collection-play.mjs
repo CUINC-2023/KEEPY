@@ -25,6 +25,7 @@ export function memoryStart(ids, difficulty = "easy", seed = 1) {
     schema: 1,
     ruleVersion: PLAY_RULE_VERSION,
     mode: "memory",
+    inputIds: unique,
     difficulty,
     seed,
     cardIds: chosen,
@@ -79,7 +80,7 @@ export function memoryAction(state, event) {
   return s;
 }
 export function replayMemory(proof) {
-  let s = memoryStart(proof.cardIds, proof.difficulty, proof.seed);
+  let s = memoryStart(proof.inputIds ?? proof.cardIds, proof.difficulty, proof.seed);
   for (const event of proof.events) {
     const next = memoryAction(s, event);
     if (next === s) throw Error("Invalid replay action");

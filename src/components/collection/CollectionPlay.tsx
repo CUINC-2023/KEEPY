@@ -1,16 +1,24 @@
 import { Link } from "@tanstack/react-router";
+import { useLocalTest } from "@/lib/local-test-client";
 import { useCollection, refreshCollection, refreshCollectionMe } from "@/lib/collection-store";
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import { useLocale } from "@/lib/keepy-i18n-shared";
 import { Button } from "@/components/ui/button";
 import { MemoryPlay } from "./MemoryPlay";
 import { KnowledgePlay } from "./KnowledgePlay";
+import { PlayRecords } from "./PlayRecords";
 export function CollectionPlay() {
   const d = useCollection(),
     t = useDiscoveryText(),
     { locale } = useLocale();
+  const local = useLocalTest();
   const legal =
-    d.catalogueValid && d.me && d.me.visibilityKey === d.catalogue?.visibilityKey ? d.me : null;
+    local.summary?.user.role === "member" &&
+    d.catalogueValid &&
+    d.me &&
+    d.me.visibilityKey === d.catalogue?.visibilityKey
+      ? d.me
+      : null;
   return (
     <main className="space-y-5 p-4 md:p-8" data-collection-play>
       <h1 className="text-2xl font-bold">{t("收藏遊玩中心", "Collection play centre")}</h1>
@@ -127,6 +135,8 @@ export function CollectionPlay() {
                 legal.cards.map((c) => c.cardId + ":" + c.cardVersion).join(",")
               }
               cards={legal.cards}
+              actor={legal.actorId}
+              visibilityKey={legal.visibilityKey}
             />
             {d.catalogue && (
               <KnowledgePlay
@@ -142,6 +152,16 @@ export function CollectionPlay() {
               />
             )}
           </section>
+          <PlayRecords
+            key={
+              "records:" +
+              legal.actorId +
+              legal.visibilityKey +
+              legal.cards.map((c) => c.cardId).join(",")
+            }
+            actor={legal.actorId}
+            visibilityKey={legal.visibilityKey}
+          />
         </>
       )}
     </main>

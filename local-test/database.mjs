@@ -1,4 +1,5 @@
 import * as supply from "./supply.mjs";
+import { initPlay } from "./play.mjs";
 import {
   initDiscovery,
   publicDiscovery,
@@ -127,6 +128,7 @@ export class LocalDatabase {
     initDiscovery(this);
     collection.initCollection(this);
     participation.initParticipation(this);
+    initPlay(this);
   }
   publicParticipation() {
     return participation.publicParticipation(this);
@@ -536,6 +538,7 @@ export class LocalDatabase {
           "collection-profile",
           "participation-member",
           "reading-member",
+          "play-member",
         ].includes(kind) &&
         u.role !== (kind === "creator" ? "creator" : "official")
       )

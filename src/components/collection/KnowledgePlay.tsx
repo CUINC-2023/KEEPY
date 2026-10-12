@@ -6,6 +6,7 @@ import { useDiscoveryText } from "@/lib/discovery-copy";
 import { useLocale } from "@/lib/keepy-i18n-shared";
 import type { CollectionMe, CollectionCatalogue } from "@/lib/collection-store";
 import { playQuestions, quizStart, quizAnswer, type QuizRound } from "@/lib/play-questions.mjs";
+import { SavePlayResult } from "./PlayRecords";
 export function KnowledgePlay({
   me,
   catalogue,
@@ -21,7 +22,7 @@ export function KnowledgePlay({
     [round, setRound] = useState<QuizRound | null>(null),
     [error, setError] = useState(""),
     [hint, setHint] = useState(false);
-  const questions = playQuestions(me, catalogue, mode).filter(
+  const questions = playQuestions({ ...me, cards: me.cards.slice(0, 120) }, catalogue, mode).filter(
       (q) =>
         mode === "knowledge" || Boolean(cardsByPool(q.poolId).find((c) => c.id === q.cardId)?.art),
     ),
@@ -174,6 +175,20 @@ export function KnowledgePlay({
       )}
       {round?.complete && (
         <section data-play-complete>
+          <SavePlayResult
+            key={round.seed}
+            actor={me.actorId}
+            proof={{
+              mode,
+              difficulty: round.difficulty,
+              ruleVersion: round.ruleVersion,
+              seed: round.seed,
+              visibilityKey: me.visibilityKey,
+              cardIds: me.cards.slice(0, 120).map((c) => c.cardId),
+              cardVersions: me.cards.slice(0, 120).map((c) => c.cardVersion),
+              events: round.answers,
+            }}
+          />
           <h3 className="font-bold">
             {t("答題完成（無獎勵）", "Questions complete (no rewards)")}
           </h3>

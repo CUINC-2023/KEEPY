@@ -5,6 +5,7 @@ export interface MemoryRound {
   schema: 1;
   ruleVersion: string;
   mode: "memory";
+  inputIds: string[];
   difficulty: string;
   seed: number;
   cardIds: string[];

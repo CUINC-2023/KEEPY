@@ -7,6 +7,7 @@ import {
 } from "./collection.mjs";
 import { seasonRankings, albumRankings } from "./collection-rankings.mjs";
 import { collectionHistory, collectionRecap } from "./collection-history.mjs";
+import { playMe, playCommand } from "./play.mjs";
 import { readingMe, readingCommand, discoverySearch } from "./discovery.mjs";
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
@@ -74,6 +75,10 @@ export function createLocalServer(database, { port = 8787, webPort = 8083 } = {}
         });
       if (req.method === "GET" && path === "/participation")
         return send(200, database.publicParticipation());
+      if (req.method === "GET" && path === "/play/me")
+        return send(200, playMe(database, token, Object.fromEntries(url.searchParams)));
+      if (req.method === "POST" && path === "/play/commands")
+        return send(200, playCommand(database, token, body, req.headers["idempotency-key"]));
       if (req.method === "GET" && path === "/participation/me")
         return send(200, database.participationMe(token));
       if (req.method === "POST" && path === "/participation/commands")

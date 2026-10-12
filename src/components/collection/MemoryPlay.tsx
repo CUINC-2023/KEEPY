@@ -4,7 +4,16 @@ import { memoryStart, memoryAction, type MemoryRound } from "@/lib/collection-pl
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import { Button } from "@/components/ui/button";
 import { cardsByPool } from "@/data/mock";
-export function MemoryPlay({ cards }: { cards: CollectionCard[] }) {
+import { SavePlayResult } from "./PlayRecords";
+export function MemoryPlay({
+  cards,
+  actor,
+  visibilityKey,
+}: {
+  cards: CollectionCard[];
+  actor: string;
+  visibilityKey: string;
+}) {
   const t = useDiscoveryText(),
     [difficulty, setDifficulty] = useState("easy"),
     [round, setRound] = useState<MemoryRound | null>(null),
@@ -13,7 +22,7 @@ export function MemoryPlay({ cards }: { cards: CollectionCard[] }) {
     try {
       setRound(
         memoryStart(
-          cards.map((c) => c.cardId),
+          cards.slice(0, 120).map((c) => c.cardId),
           difficulty,
           crypto.getRandomValues(new Uint32Array(1))[0] || 1,
         ),
@@ -119,6 +128,24 @@ export function MemoryPlay({ cards }: { cards: CollectionCard[] }) {
             <Button onClick={() => setRound(memoryAction(round, { type: "continue" }))}>
               {t("繼續下一對", "Continue with the next pair")}
             </Button>
+          )}
+          {round.complete && (
+            <SavePlayResult
+              key={round.seed}
+              actor={actor}
+              proof={{
+                mode: "memory",
+                difficulty: round.difficulty,
+                ruleVersion: round.ruleVersion,
+                seed: round.seed,
+                visibilityKey,
+                cardIds: round.inputIds,
+                cardVersions: round.inputIds.map(
+                  (id) => cards.find((c) => c.cardId === id)!.cardVersion,
+                ),
+                events: round.events,
+              }}
+            />
           )}
           <p className="text-sm text-muted-foreground">
             {t(
