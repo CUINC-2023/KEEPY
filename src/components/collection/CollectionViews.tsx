@@ -806,7 +806,15 @@ function ShowcaseContent({
       data-showcase-style={data.theme}
       data-showcase-cover={data.coverMode}
     >
-      {order.map((k) => sections[k])}
+      {order
+        .filter((key) =>
+          key === "collector"
+            ? !!data.mainCard || data.shelf.length > 0
+            : key === "albums"
+              ? data.featured.length > 0 || data.progress.length > 0
+              : data.awards.length > 0,
+        )
+        .map((key) => sections[key])}
       {(data.bio || data.bioEn) && (
         <ProgressiveDetails
           summary={t("閱讀完整收藏介紹", "Read the full collection introduction")}

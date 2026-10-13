@@ -27,7 +27,7 @@ export function CompactHome() {
     if (image?.complete && image.naturalWidth === 0) setHeroFailed(true);
   }, []);
   const entryLinks = [
-    { to: "/app/collection", label: ui.collection },
+    { to: "/app/collection-index", label: ui.collectionIndex },
     { to: "/app/play", label: ui.play },
     { to: "/leaderboards", label: ui.rankings },
     { to: "/activities", label: ui.activities },
@@ -57,13 +57,15 @@ export function CompactHome() {
           )}
           <h1 className="text-3xl font-black leading-tight sm:text-5xl">{tx(SEASON.title)}</h1>
           <p className="line-clamp-2 break-words text-sm text-primary-foreground/85">
-            {home?.copy.summary[locale] ?? ui.summary}
+            {(home?.copy.summary[locale] ?? ui.summary).length > 180
+              ? (home?.copy.summary[locale] ?? ui.summary).slice(0, 180) + "…"
+              : (home?.copy.summary[locale] ?? ui.summary)}
           </p>
           <div className="flex flex-wrap gap-2" data-home-primary>
-            <Button asChild>
+            <Button asChild className="min-h-11">
               <Link to="/explore">{ui.explore}</Link>
             </Button>
-            <Button asChild variant="secondary">
+            <Button asChild variant="secondary" className="min-h-11">
               <Link to="/app/collection">{ui.collection}</Link>
             </Button>
           </div>
@@ -82,6 +84,7 @@ export function CompactHome() {
         ))}
       </nav>
       <ProgressiveDetails summary={ui.more}>
+        {home?.copy.summary[locale] && <p>{home.copy.summary[locale]}</p>}
         <p>{tx(content.heroDescription)}</p>
         <p>{ui.mock}</p>
         <p>{ui.games}</p>

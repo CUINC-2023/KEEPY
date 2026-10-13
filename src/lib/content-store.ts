@@ -77,6 +77,7 @@ export const HOME_UI_COPY = {
   "zh-TW": {
     explore: "探索收藏",
     collection: "本人收藏",
+    collectionIndex: "整理收藏",
     play: "收藏遊玩",
     rankings: "公開排行",
     more: "了解更多與使用限制",
@@ -93,7 +94,8 @@ export const HOME_UI_COPY = {
     index: "查看全部 →",
     status: "本機示意／前端預覽",
     imageUnavailable: "主視覺暫時無法載入；仍可探索公開內容。",
-    limit: "此站為前端預覽；本人保存與審核需要本機測試服務。未接真人登入、正式付款或實體履約。",
+    limit:
+      "本機示意／線上前端預覽；本人保存與審核須連接本機測試服務。未接真人登入、正式付款或實體履約。",
     mock: "示意主視覺，非已確認合作；日期與素材用途依各內容頁說明。",
     games: "五種練習玩法，無資產消耗或獎勵；紀錄僅本人可見。",
     rankingNote: "自願公開與排行同意；正式榜排除測試資料，不以消費或玩法分數排名。",
@@ -101,6 +103,7 @@ export const HOME_UI_COPY = {
   en: {
     explore: "Explore collections",
     collection: "My collection",
+    collectionIndex: "Organize collections",
     play: "Collection play",
     rankings: "Public rankings",
     more: "Learn more and usage limits",
@@ -118,7 +121,7 @@ export const HOME_UI_COPY = {
     status: "Local samples / frontend preview",
     imageUnavailable: "Hero artwork is unavailable; public exploration remains available.",
     limit:
-      "This is a frontend preview. Private saves and reviews need the Local Test service. No real sign-in, payment or physical fulfillment.",
+      "Local samples / online frontend preview. Private saves and reviews require the Local Test service. No real sign-in, payment or physical fulfillment.",
     mock: "Sample hero artwork, not a confirmed collaboration. See each content page for dates and material uses.",
     games: "Five practice games with no asset cost or rewards; records stay private.",
     rankingNote:
