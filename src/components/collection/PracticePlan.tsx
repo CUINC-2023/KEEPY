@@ -26,6 +26,7 @@ export function PracticePlan({
     items = draft ?? saved?.items ?? [],
     [mode, setMode] = useState("knowledge"),
     [difficulty, setDifficulty] = useState("easy"),
+    [hints, setHints] = useState<"none" | "allowed">("none"),
     [confirm, setConfirm] = useState(false),
     dirty = JSON.stringify(items) !== JSON.stringify(saved?.items ?? []);
   const setItems = onDraft;
@@ -85,21 +86,62 @@ export function PracticePlan({
               ))}
             </select>
           </label>
+          {["memory", "puzzle", "sequence"].includes(mode) && (
+            <label>
+              {t("計入提示條件", "Counted hint policy")}{" "}
+              <select
+                aria-label="Practice hints"
+                disabled={busy}
+                value={hints}
+                onChange={(e) => setHints(e.target.value as "none" | "allowed")}
+              >
+                <option value="none">{t("只計無提示结果", "Unassisted results only")}</option>
+                <option value="allowed">{t("允許最多3次提示", "Up to 3 hints allowed")}</option>
+              </select>
+            </label>
+          )}
+          <p className="text-sm">
+            {t(
+              "請在原玩法面板選相同難度與提示；清單不改抽卡、素材或正式規則。",
+              "Choose the matching difficulty and hints in the existing mode panel. The list changes no draws, material or official rules.",
+            )}
+          </p>
           <Button
             data-add-practice
             disabled={
               busy ||
               items.length >= 12 ||
-              items.some((i) => i.mode === mode && i.difficulty === difficulty)
+              items.some(
+                (i) =>
+                  i.mode === mode &&
+                  i.difficulty === difficulty &&
+                  i.hints === (["memory", "puzzle", "sequence"].includes(mode) ? hints : undefined),
+              )
             }
-            onClick={() => setItems([...items, { mode, difficulty }])}
+            onClick={() =>
+              setItems([
+                ...items,
+                {
+                  mode,
+                  difficulty,
+                  ...(["memory", "puzzle", "sequence"].includes(mode) ? { hints } : {}),
+                },
+              ])
+            }
           >
             {t("加入練習草稿", "Add practice draft")}
           </Button>
           <ol>
             {items.map((item, i) => (
-              <li key={item.mode + item.difficulty} className="flex flex-wrap gap-2 items-center">
+              <li
+                key={item.mode + item.difficulty + item.hints}
+                className="flex flex-wrap gap-2 items-center"
+              >
                 {i + 1}. {name(item.mode)} / {item.difficulty}
+                {item.hints &&
+                  (item.hints === "none"
+                    ? t(" · 無提示結果", " · unassisted result")
+                    : t(" · 允許最多3次提示", " · up to 3 hints allowed"))}
                 <Button
                   variant="outline"
                   disabled={busy || i === 0}

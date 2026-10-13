@@ -11,18 +11,22 @@ export function validPracticeItems(items) {
     items.length <= 12 &&
     items.every(
       (i) =>
-        exact(i, ["mode", "difficulty"]) &&
+        exact(i, ["mode", "difficulty", ...(i?.hints !== undefined ? ["hints"] : [])]) &&
         PLAY_MODES.includes(i.mode) &&
-        PLAY_DIFFICULTIES.includes(i.difficulty),
+        PLAY_DIFFICULTIES.includes(i.difficulty) &&
+        (i.hints === undefined ||
+          (["memory", "puzzle", "sequence"].includes(i.mode) &&
+            ["none", "allowed"].includes(i.hints))),
     ) &&
-    new Set(items.map((i) => i.mode + ":" + i.difficulty)).size === items.length
+    new Set(items.map((i) => i.mode + ":" + i.difficulty + ":" + (i.hints ?? "legacy"))).size ===
+      items.length
   );
 }
 export function validPracticeStored(v) {
   return (
     exact(v, ["schema", "ruleVersion", "items", "startedAt", "paused", "resultIds"]) &&
     v.schema === 1 &&
-    v.ruleVersion === "local-practice-v1" &&
+    v.ruleVersion === practiceRuleVersion(v.items) &&
     validPracticeItems(v.items) &&
     typeof v.startedAt === "string" &&
     v.startedAt.length <= 64 &&
@@ -46,7 +50,7 @@ export function validPracticeProjection(v) {
       "invalidated",
     ]) &&
     v.schema === 1 &&
-    v.ruleVersion === "local-practice-v1" &&
+    v.ruleVersion === practiceRuleVersion(v.items) &&
     validPracticeItems(v.items) &&
     typeof v.startedAt === "string" &&
     v.startedAt.length <= 64 &&
@@ -57,5 +61,23 @@ export function validPracticeProjection(v) {
     v.completed >= 0 &&
     v.completed <= v.items.length &&
     (!v.invalidated || v.completed === 0)
+  );
+}
+export function practiceRuleVersion(items) {
+  return Array.isArray(items) && items.some((i) => i?.hints !== undefined)
+    ? "local-practice-v2"
+    : "local-practice-v1";
+}
+export function practiceResultMatches(item, result) {
+  return (
+    !!item &&
+    !!result &&
+    item.mode === result.mode &&
+    item.difficulty === result.difficulty &&
+    (item.hints === undefined ||
+      (Number.isSafeInteger(result.assistance?.hintsUsed) &&
+        result.assistance.hintsUsed >= 0 &&
+        result.assistance.hintsUsed <= 3 &&
+        (item.hints !== "none" || result.assistance.hintsUsed === 0)))
   );
 }

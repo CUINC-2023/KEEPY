@@ -10,7 +10,11 @@ import {
   PLAY_DIFFICULTIES,
 } from "../src/lib/collection-play.mjs";
 import { playQuestions, quizStart, quizAnswer } from "../src/lib/play-questions.mjs";
-import { validPracticeItems } from "../src/lib/play-practice.mjs";
+import {
+  validPracticeItems,
+  practiceRuleVersion,
+  practiceResultMatches,
+} from "../src/lib/play-practice.mjs";
 import { validStoredPlaySettings } from "../src/lib/play-contract.mjs";
 import {
   PUZZLE_RULE_VERSION,
@@ -148,8 +152,7 @@ function practiceProjection(d, id, p, owner) {
     if (!row) return false;
     const r = JSON.parse(row.payload);
     return (
-      r.mode === p.items[i].mode &&
-      r.difficulty === p.items[i].difficulty &&
+      practiceResultMatches(p.items[i], r) &&
       r.sourceIds.length > 0 &&
       r.sourceIds.every((id) => allowed.has(id))
     );
@@ -361,7 +364,7 @@ export function playCommand(d, token, input, key) {
             practice: v.restart
               ? {
                   schema: 1,
-                  ruleVersion: "local-practice-v1",
+                  ruleVersion: practiceRuleVersion(v.items),
                   items: v.items,
                   startedAt: d.at(),
                   paused: v.paused,
@@ -570,13 +573,7 @@ export function playCommand(d, token, input, key) {
       const p = prior.data.practice,
         practiceProgress = practiceProjection(d, u.id, p, owner),
         item = p?.items[p.resultIds.length];
-      if (
-        p &&
-        !p.paused &&
-        !practiceProgress.invalidated &&
-        item?.mode === proof.mode &&
-        item?.difficulty === proof.difficulty
-      )
+      if (p && !p.paused && !practiceProgress.invalidated && practiceResultMatches(item, payload))
         result.settings = {
           ...result.settings,
           practice: { ...p, resultIds: [...p.resultIds, id] },
