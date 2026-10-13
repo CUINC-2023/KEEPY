@@ -72,6 +72,8 @@ try {
   for (const path of [
     "/collection/me",
     "/play/me",
+    "/play/mistakes",
+    "/play/me?start=2026-10-05T00:00:00Z",
     "/discovery/reading/me",
     "/participation/me",
     "/supply/me",
@@ -81,6 +83,65 @@ try {
   assert.equal((await request("/collection/profile", a, "member-b", input)).status, 409);
   assert.equal((await request("/collection/profile", "forged", "member-a", input)).status, 401);
   assert.equal((await request("/play/me", o, "official-a")).status, 403);
+  assert.equal((await request("/play/mistakes", o, "official-a")).status, 403);
+  assert.equal((await request("/play/mistakes", "forged", "member-a")).status, 401);
+  assert.equal(
+    (
+      await request("/collection/profile", b, "member-a", {
+        ...input,
+        data: {
+          ...input.data,
+          collectionIndex: { schema: 1, q: "private-draft", kind: "note", sort: "title", page: 1 },
+          notes: [
+            {
+              schema: 1,
+              id: "note-stale",
+              kind: "card",
+              subjectId: "guessed-foreign",
+              category: "story",
+              text: "private",
+              tags: ["review"],
+            },
+          ],
+        },
+      })
+    ).status,
+    409,
+  );
+  assert.equal(
+    (
+      await request("/collection/profile", a, "member-a", {
+        ...input,
+        data: {
+          ...input.data,
+          collectionIndex: { schema: 1, q: "x".repeat(101), kind: "note", sort: "title", page: 1 },
+        },
+      })
+    ).status,
+    422,
+  );
+  assert.equal(
+    (
+      await request("/collection/profile", a, "member-a", {
+        ...input,
+        data: {
+          ...input.data,
+          notes: [
+            {
+              schema: 1,
+              id: "note-guess",
+              kind: "award",
+              subjectId: "unearned-guess",
+              category: "story",
+              text: "private",
+              tags: ["review"],
+            },
+          ],
+        },
+      })
+    ).status,
+    422,
+  );
   assert.equal(snapshot(), before);
   // /me is the authoritative identity read; an assertion can never grant a role.
   assert.equal((await request("/me", b, "member-a")).value.user.id, "member-b");

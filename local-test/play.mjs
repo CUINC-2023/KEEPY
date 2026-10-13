@@ -82,6 +82,15 @@ export function playHealth(d, token) {
     readOnly: true,
     applied: false,
     autoRepair: false,
+    quizReviews: {
+      checked: 0,
+      incompatible: 0,
+      legacyWithoutReview: 0,
+      unavailableSources: 0,
+      truncated: false,
+      readOnly: true,
+      applied: false,
+    },
   };
   for (const row of d.db.prepare("SELECT user_id FROM play_private ORDER BY user_id").all()) {
     report.checked++;
@@ -115,6 +124,40 @@ export function playHealth(d, token) {
       }
     } catch {
       report.incompatible++;
+    }
+  }
+  const reviewRows = d.db
+    .prepare("SELECT user_id,payload FROM play_results ORDER BY at DESC,id DESC LIMIT 1001")
+    .all();
+  report.quizReviews.truncated = reviewRows.length > 1000;
+  for (const row of reviewRows.slice(0, 1000)) {
+    try {
+      const r = JSON.parse(row.payload);
+      if (!r || !PLAY_MODES.includes(r.mode)) {
+        report.quizReviews.incompatible++;
+        continue;
+      }
+      if (!["knowledge", "observation"].includes(r.mode)) continue;
+      report.quizReviews.checked++;
+      if (!r.quizReview) {
+        report.quizReviews.legacyWithoutReview++;
+        continue;
+      }
+      if (!validQuizReview(r.quizReview)) {
+        report.quizReviews.incompatible++;
+        continue;
+      }
+      const { cat, owner } = eligible(d, row.user_id),
+        held = new Set(owner.cards.map((c) => c.cardId)),
+        current = new Map(playQuestions(owner, cat, r.mode).map((q) => [q.id, q]));
+      if (
+        !Array.isArray(r.sourceIds) ||
+        r.sourceIds.some((id) => !held.has(id)) ||
+        r.quizReview.questions.some((q) => !currentQuizQuestion(q, current.get(q.id)))
+      )
+        report.quizReviews.unavailableSources++;
+    } catch {
+      report.quizReviews.incompatible++;
     }
   }
   return report;

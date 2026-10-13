@@ -181,6 +181,37 @@ export function CatalogueIntegrity() {
           </section>
           {data.playChecks && (
             <aside data-private-play-health className="space-y-3 rounded-xl border p-4">
+              {data.playChecks.quizReviews && (
+                <section data-quiz-review-health className="space-y-2">
+                  <h4 className="font-bold">
+                    {t("逐題快照完整性（唯讀）", "Question snapshot integrity (read-only)")}
+                  </h4>
+                  <p>
+                    {t(
+                      "已核對／不相容／舊摘要缺逐題／來源失效",
+                      "Checked / incompatible / old summary lacks questions / unavailable sources",
+                    )}
+                    : {data.playChecks.quizReviews.checked} /{" "}
+                    {data.playChecks.quizReviews.incompatible} /{" "}
+                    {data.playChecks.quizReviews.legacyWithoutReview} /{" "}
+                    {data.playChecks.quizReviews.unavailableSources}
+                  </p>
+                  <p>
+                    {t(
+                      "僅計數，不輸出私人題文、答案或帳戶。不可變紀錄不提供覆寫修復，先隔離備份核對。",
+                      "Counts only, without private questions, answers or accounts. Immutable records have no overwrite repair; inspect isolated backups first.",
+                    )}
+                  </p>
+                  {data.playChecks.quizReviews.truncated && (
+                    <p>
+                      {t(
+                        "只核對近期1000筆，不宣稱全庫通過。",
+                        "Only the latest 1000 records checked, not full-database approval.",
+                      )}
+                    </p>
+                  )}
+                </section>
+              )}
               <h3 className="font-bold">
                 {t("私人玩法保存診斷（唯讀）", "Private play storage diagnosis (read-only)")}
               </h3>

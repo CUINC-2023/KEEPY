@@ -2,6 +2,15 @@ import type { CollectionCatalogue, Bilingual } from "./collection-store";
 import type { CollectionTheme, CREATOR_CONTENT_TEMPLATES } from "./collection-samples.mjs";
 export interface CatalogueHealth {
   playChecks?: {
+    quizReviews?: {
+      checked: number;
+      incompatible: number;
+      legacyWithoutReview: number;
+      unavailableSources: number;
+      truncated: boolean;
+      readOnly: true;
+      applied: false;
+    };
     checked: number;
     incompatible: number;
     missingReferences: number;

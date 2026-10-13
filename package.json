@@ -85,7 +85,8 @@
     "test:play-mistakes": "node tests/play-mistakes.test.mjs",
     "test:play-comparison": "node tests/play-comparison.test.mjs",
     "test:collection-private-index": "node tests/collection-private-index.test.mjs",
-    "test:collection-note-tags": "node tests/collection-note-tags.test.mjs"
+    "test:collection-note-tags": "node tests/collection-note-tags.test.mjs",
+    "test:new-content-health": "node tests/new-content-health.test.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -163,5 +164,5 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
   },
-  "version": "0.22.215"
+  "version": "0.22.225"
 }
