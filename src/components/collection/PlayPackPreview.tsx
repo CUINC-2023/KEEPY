@@ -17,6 +17,8 @@ export function PlayPackPreview() {
     [error, setError] = useState(false),
     [retry, setRetry] = useState(0),
     [selected, setSelected] = useState(""),
+    [modeFilter, setModeFilter] = useState("all"),
+    [difficultyFilter, setDifficultyFilter] = useState("all"),
     [answers, setAnswers] = useState<Record<string, string>>({}),
     [previewed, setPreviewed] = useState(""),
     [previewBusy, setPreviewBusy] = useState(false);
@@ -25,6 +27,8 @@ export function PlayPackPreview() {
     setData(null);
     setError(false);
     setSelected("");
+    setModeFilter("all");
+    setDifficultyFilter("all");
     setAnswers({});
     setPreviewed("");
     setPreviewBusy(false);
@@ -171,45 +175,114 @@ export function PlayPackPreview() {
               ))}
             </section>
           )}
-          {pack.questions.map((q) => (
-            <article key={q.id} className="space-y-3 border-t py-4">
-              <h3 className="font-bold">{q.prompt[locale]}</h3>
-              <p>
-                {q.mode} / {q.difficulty} · {q.sourceRef.templateId} v{q.sourceRef.version} /{" "}
-                {q.sourceRef.chapter}
-              </p>
-              {q.material.ref === "geometry-circles" && (
-                <div
-                  className="flex flex-wrap gap-3"
-                  aria-label={t("合法幾何示意素材", "Eligible geometric sample material")}
-                >
-                  {Array.from({ length: q.material.count }, (_, i) => (
-                    <span key={i} aria-hidden="true" className="h-8 w-8 rounded-full bg-primary" />
+          <section data-pack-distribution className="space-y-3 rounded border p-3">
+            <h3 className="font-bold">
+              {t("分類與難度分布（示意）", "Category and difficulty distribution (sample)")}
+            </h3>
+            <p>
+              {["knowledge", "observation"]
+                .map((m) => m + ": " + pack.questions.filter((q) => q.mode === m).length)
+                .join(" · ")}{" "}
+              ·{" "}
+              {["easy", "standard", "hard"]
+                .map(
+                  (level) =>
+                    level + ": " + pack.questions.filter((q) => q.difficulty === level).length,
+                )
+                .join(" · ")}
+            </p>
+            <label>
+              {t("適用玩法", "Applicable mode")}{" "}
+              <select
+                aria-label="Pack mode filter"
+                value={modeFilter}
+                onChange={(e) => setModeFilter(e.target.value)}
+              >
+                {["all", "knowledge", "observation"].map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              {t("示意難度", "Sample difficulty")}{" "}
+              <select
+                aria-label="Pack difficulty filter"
+                value={difficultyFilter}
+                onChange={(e) => setDifficultyFilter(e.target.value)}
+              >
+                {["all", "easy", "standard", "hard"].map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </select>
+            </label>
+            <p>
+              {t(
+                "品質檢查與指定版預覽不等於核准，也不自動啟用玩家題庫。",
+                "Quality checks and specified-version previews are not approval and never automatically activate player banks.",
+              )}
+            </p>
+          </section>
+          {!pack.questions.some(
+            (q) =>
+              (modeFilter === "all" || q.mode === modeFilter) &&
+              (difficultyFilter === "all" || q.difficulty === difficultyFilter),
+          ) && (
+            <p role="status">
+              {t(
+                "此分類／難度沒有已核對題目，不補造。",
+                "No verified questions for this category / difficulty; none are invented.",
+              )}
+            </p>
+          )}
+          {pack.questions
+            .filter(
+              (q) =>
+                (modeFilter === "all" || q.mode === modeFilter) &&
+                (difficultyFilter === "all" || q.difficulty === difficultyFilter),
+            )
+            .map((q) => (
+              <article key={q.id} className="space-y-3 border-t py-4">
+                <h3 className="font-bold">{q.prompt[locale]}</h3>
+                <p>
+                  {q.mode} / {q.difficulty} · {q.sourceRef.templateId} v{q.sourceRef.version} /{" "}
+                  {q.sourceRef.chapter}
+                </p>
+                {q.material.ref === "geometry-circles" && (
+                  <div
+                    className="flex flex-wrap gap-3"
+                    aria-label={t("合法幾何示意素材", "Eligible geometric sample material")}
+                  >
+                    {Array.from({ length: q.material.count }, (_, i) => (
+                      <span
+                        key={i}
+                        aria-hidden="true"
+                        className="h-8 w-8 rounded-full bg-primary"
+                      />
+                    ))}
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {q.options.map((o) => (
+                    <Button
+                      key={o.id}
+                      variant="outline"
+                      aria-pressed={answers[q.id] === o.id}
+                      onClick={() => setAnswers({ ...answers, [q.id]: o.id })}
+                    >
+                      {o.label[locale]}
+                    </Button>
                   ))}
                 </div>
-              )}
-              <div className="flex flex-wrap gap-2">
-                {q.options.map((o) => (
-                  <Button
-                    key={o.id}
-                    variant="outline"
-                    aria-pressed={answers[q.id] === o.id}
-                    onClick={() => setAnswers({ ...answers, [q.id]: o.id })}
-                  >
-                    {o.label[locale]}
-                  </Button>
-                ))}
-              </div>
-              {answers[q.id] && (
-                <p role="status">
-                  {answers[q.id] === q.answer
-                    ? t("此示意答案符合來源。", "This sample answer matches its source.")
-                    : t("請核對來源解答。", "Check the source answer.")}{" "}
-                  {q.explanation[locale]}
-                </p>
-              )}
-            </article>
-          ))}
+                {answers[q.id] && (
+                  <p role="status">
+                    {answers[q.id] === q.answer
+                      ? t("此示意答案符合來源。", "This sample answer matches its source.")
+                      : t("請核對來源解答。", "Check the source answer.")}{" "}
+                    {q.explanation[locale]}
+                  </p>
+                )}
+              </article>
+            ))}
         </div>
       )}
     </section>

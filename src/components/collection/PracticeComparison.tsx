@@ -28,7 +28,11 @@ export function PracticeComparison() {
       </p>
       {me ? (
         <Compare
-          key={me.actorId + me.visibilityKey}
+          key={
+            me.actorId +
+            me.visibilityKey +
+            me.cards.map((c) => c.cardId + ":" + c.cardVersion).join(",")
+          }
           actor={me.actorId}
           visibilityKey={me.visibilityKey}
         />
