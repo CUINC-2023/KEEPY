@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import { useLocale } from "@/lib/keepy-i18n-shared";
 import type { CollectionMe } from "@/lib/collection-store";
+import { ContentPagination } from "@/components/content/ContentPagination";
 export function CollectionAlbums({ me }: { me: CollectionMe }) {
   const t = useDiscoveryText(),
     { locale } = useLocale();
@@ -12,6 +13,8 @@ export function CollectionAlbums({ me }: { me: CollectionMe }) {
     [rarity, setRarity] = useState("all"),
     [sort, setSort] = useState("title"),
     [selected, setSelected] = useState(""),
+    [page, setPage] = useState(1),
+    [cardPage, setCardPage] = useState(1),
     [positionStatus, setPositionStatus] = useState<"saved" | "cleared" | "unavailable" | null>(
       null,
     );
@@ -40,9 +43,18 @@ export function CollectionAlbums({ me }: { me: CollectionMe }) {
     .sort((a, b) =>
       sort === "progress"
         ? b.pct - a.pct || a.poolId.localeCompare(b.poolId)
-        : a.title[locale].localeCompare(b.title[locale]),
+        : a.title[locale].localeCompare(b.title[locale]) || a.poolId.localeCompare(b.poolId),
     );
   const detail = me.progress.find((p) => p.poolId === selected);
+  const pages = Math.max(1, Math.ceil(rows.length / 6)),
+    currentPage = Math.min(page, pages);
+  const cards = me.acquiredCards.filter((c) => c.poolId === detail?.poolId);
+  const cardPages = Math.max(1, Math.ceil(cards.length / 6)),
+    currentCardPage = Math.min(cardPage, cardPages);
+  const selectAlbum = (id: string) => {
+    setSelected(id);
+    setCardPage(1);
+  };
   return (
     <section id="collection-albums" data-collection-albums className="panel min-w-0 space-y-4 p-5">
       <h2 className="text-xl font-bold">{t("我的卡冊", "My albums")}</h2>
@@ -54,7 +66,10 @@ export function CollectionAlbums({ me }: { me: CollectionMe }) {
             maxLength={200}
             className="block max-w-full border bg-background p-2"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setPage(1);
+            }}
           />
         </label>
         <label>
@@ -63,7 +78,10 @@ export function CollectionAlbums({ me }: { me: CollectionMe }) {
             aria-label="Album category"
             className="block border bg-background p-2"
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setPage(1);
+            }}
           >
             <option value="all">{t("全部", "All")}</option>
             <option value="complete">{t("已完成", "Complete")}</option>
@@ -76,7 +94,10 @@ export function CollectionAlbums({ me }: { me: CollectionMe }) {
             aria-label="Album rarity"
             className="block border bg-background p-2"
             value={rarity}
-            onChange={(e) => setRarity(e.target.value)}
+            onChange={(e) => {
+              setRarity(e.target.value);
+              setPage(1);
+            }}
           >
             <option value="all">{t("全部", "All")}</option>
             {[...new Set(me.acquiredCards.map((c) => c.rarity))].sort().map((r) => (
@@ -90,7 +111,10 @@ export function CollectionAlbums({ me }: { me: CollectionMe }) {
             aria-label="Album sort"
             className="block border bg-background p-2"
             value={sort}
-            onChange={(e) => setSort(e.target.value)}
+            onChange={(e) => {
+              setSort(e.target.value);
+              setPage(1);
+            }}
           >
             <option value="title">{t("名稱", "Title")}</option>
             <option value="progress">{t("完成度", "Completion")}</option>
@@ -111,16 +135,15 @@ export function CollectionAlbums({ me }: { me: CollectionMe }) {
               .reduce((n, c) => n + (c.count ?? 0), 0)}{" "}
             · {t("曾取得不同款式", "Acquired distinct designs")}: {detail.owned}
           </p>
-          <ul>
-            {me.acquiredCards
-              .filter((c) => c.poolId === detail.poolId)
-              .map((c) => (
-                <li key={c.cardId} className="break-words">
-                  {c.name} · {t("曾取得不同款式", "Acquired distinct design")} 1 ·{" "}
-                  {t("目前持有", "Currently held")} {c.count ?? 0} · {c.rarity}
-                </li>
-              ))}
+          <ul data-album-designs>
+            {cards.slice((currentCardPage - 1) * 6, currentCardPage * 6).map((c) => (
+              <li key={c.cardId} className="break-words">
+                {c.name} · {t("曾取得不同款式", "Acquired distinct design")} 1 ·{" "}
+                {t("目前持有", "Currently held")} {c.count ?? 0} · {c.rarity}
+              </li>
+            ))}
           </ul>
+          <ContentPagination page={currentCardPage} pages={cardPages} onChange={setCardPage} />
           <Link
             className="text-primary underline"
             to="/app/album/$poolId"
@@ -167,7 +190,7 @@ export function CollectionAlbums({ me }: { me: CollectionMe }) {
               .filter((p) => p.poolId !== detail.poolId)
               .slice(0, 3)
               .map((p) => (
-                <Button variant="outline" key={p.poolId} onClick={() => setSelected(p.poolId)}>
+                <Button variant="outline" key={p.poolId} onClick={() => selectAlbum(p.poolId)}>
                   {p.title[locale]}
                 </Button>
               ))}
@@ -184,19 +207,22 @@ export function CollectionAlbums({ me }: { me: CollectionMe }) {
           </Button>
         </div>
       ) : (
-        <div className="grid gap-3 md:grid-cols-2">
-          {rows.map((p) => (
-            <Button
-              key={p.poolId}
-              id={"album-return-" + p.poolId}
-              variant="outline"
-              className="h-auto whitespace-normal text-left"
-              onClick={() => setSelected(p.poolId)}
-            >
-              {p.title[locale]} · {p.owned}/{p.total} · {p.pct}%{" "}
-              {p.complete && t("完成", "Complete")}
-            </Button>
-          ))}
+        <div data-album-list className="space-y-3">
+          <div className="grid gap-3 md:grid-cols-2">
+            {rows.slice((currentPage - 1) * 6, currentPage * 6).map((p) => (
+              <Button
+                key={p.poolId}
+                id={"album-return-" + p.poolId}
+                variant="outline"
+                className="h-auto whitespace-normal text-left"
+                onClick={() => selectAlbum(p.poolId)}
+              >
+                {p.title[locale]} · {p.owned}/{p.total} · {p.pct}%{" "}
+                {p.complete && t("完成", "Complete")}
+              </Button>
+            ))}
+          </div>
+          <ContentPagination page={currentPage} pages={pages} onChange={setPage} />
         </div>
       )}
       {!detail && !rows.length && (
