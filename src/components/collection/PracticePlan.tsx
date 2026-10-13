@@ -7,6 +7,8 @@ import { useDiscoveryText } from "@/lib/discovery-copy";
 import type { PlayPrivate } from "./PlayRecords";
 import type { PracticeItem } from "@/lib/play-practice.mjs";
 import { practiceRoundCount, practiceStep } from "@/lib/play-practice.mjs";
+import { PRACTICE_PRESETS, practicePreset } from "@/lib/practice-presets.mjs";
+import { useLocale } from "@/lib/keepy-i18n-shared";
 export function PracticePlan({
   snapshot,
   busy,
@@ -23,6 +25,7 @@ export function PracticePlan({
   onDraft: (items: PracticeItem[] | null) => void;
 }) {
   const t = useDiscoveryText(),
+    { locale } = useLocale(),
     saved = snapshot.settings.data.practice,
     items = draft ?? saved?.items ?? [],
     [mode, setMode] = useState("knowledge"),
@@ -58,6 +61,33 @@ export function PracticePlan({
       </p>
       {editable ? (
         <>
+          <fieldset className="space-y-2" data-practice-presets>
+            <legend className="font-semibold">
+              {t("練習预設 → 未保存草稿", "Practice preset → unsaved draft")}
+            </legend>
+            <div className="flex flex-wrap gap-2">
+              {PRACTICE_PRESETS.map((preset) => (
+                <Button
+                  key={preset.id}
+                  variant="outline"
+                  data-practice-preset={preset.id}
+                  disabled={busy}
+                  onClick={() => {
+                    const next = practicePreset(preset.id);
+                    if (next) setItems(next);
+                  }}
+                >
+                  {preset.title[locale]}
+                </Button>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t(
+                "替換本頁未保存清單，可取消恢復；不立即開始或保存。較高難度、回合與提示可在下方調整；素材資格仍由原流程核對。",
+                "Replaces this page’s unsaved list; cancel to restore. Does not start or save automatically. Adjust difficulty, rounds and hints below; existing source checks still apply.",
+              )}
+            </p>
+          </fieldset>
           <label>
             {t("玩法", "Mode")}{" "}
             <select
