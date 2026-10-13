@@ -110,47 +110,90 @@ function Guide({ actor }: { actor: string }) {
         {t("保存並開始閱讀導覽", "Save and start reading guide")}
       </Button>
       {saved && guide ? (
-        <div data-reading-guide-progress>
-          <p>
-            {guide.title[locale]} · {t("私人已讀標記", "Private read marks")} {saved.step}/3 · v
-            {me?.profile.version}
-          </p>
-          {saved.step < 3 ? (
-            <>
-              <p>{guide.steps[saved.step]?.[locale]}</p>
-              <Link
-                to="/pools/$poolId"
-                params={{ poolId: saved.poolId }}
-                className="underline text-primary"
-              >
-                {t("閱讀目前公開系列", "Read the currently public series")}
-              </Link>
-              <Link
-                to="/app/album/$poolId"
-                params={{ poolId: saved.poolId }}
-                className="underline text-primary"
-              >
-                {t("查看本人卡冊", "Check your album")}
-              </Link>
-              <Button
-                disabled={busy || pending}
-                onClick={() => void save({ ...saved, step: saved.step + 1 })}
-              >
-                {t("已讀此說明，保存下一步", "Read this explanation; save next step")}
-              </Button>
-            </>
-          ) : (
-            <p>
+        <>
+          <details className="rounded border p-3" data-guide-operation-examples>
+            <summary className="cursor-pointer font-bold">
               {t(
-                "閱讀導覽標記完成；不代表持卡或取得成就。",
-                "Reading guide marks complete; this does not mean holdings or an earned achievement.",
+                "新手／進階操作示例與環境說明",
+                "Starter / advanced examples and environment limits",
+              )}
+            </summary>
+            <ol className="list-decimal space-y-3 pl-5 pt-3">
+              <li>
+                {t(
+                  "新手：先閱讀所選公開系列，再查看本人卡冊的曾取得與目前持有欄；重複卡不增加不同款式完成度。此導覽的已讀標記只保存閱讀位置。",
+                  "Starter: read the selected public series, then compare acquired designs with current holdings in your album. Duplicates do not increase distinct-design completion. Guide read marks save reading position only.",
+                )}
+              </li>
+              <li>
+                {t(
+                  "進階：在練習工作台選合法持卡與同難度，保存私人清單後完成一局，再保存遊玩摘要。多回合需逐局保存，原key未確認時先核對；舊總分不推造錯題。",
+                  "Advanced: choose eligible held material and matching difficulty in the practice workbench. Save a private list, complete a round, then save its summary. Each round is saved individually; confirm an unresolved original key first. Old totals never become invented mistakes.",
+                )}
+              </li>
+              <li>
+                {t(
+                  "回顧與分享：期間以台北時間含起日、不含迄日；同規則、難度與提示才比較。筆記與規劃預設私人，分享只用目前匿名公開投影，不承諾獎勵。",
+                  "Review and share: Taipei periods include the start date and exclude the end date. Compare only matching rules, difficulty and hints. Notes and planning are private by default; sharing uses only the current anonymous public projection, without rewards.",
+                )}
+              </li>
+            </ol>
+            <p className="pt-3">
+              {t(
+                "本機需啟動既有API與SQLite服務；Staging僅前端預覽，不能在線保存本人資料或送審發布。沒有真人會員或雲端同步。",
+                "Locally, start the existing API and SQLite service. Staging is a front-end preview and cannot save personal data or submit / publish online. No real membership or cloud sync.",
               )}
             </p>
-          )}
-          <Button variant="outline" disabled={busy || pending} onClick={() => void save(undefined)}>
-            {t("取消本人閱讀導覽", "Cancel my reading guide")}
-          </Button>
-        </div>
+            <Link to="/app/play" className="text-primary underline">
+              {t("前往原練習工作台", "Go to the existing practice workbench")}
+            </Link>
+          </details>
+          <div data-reading-guide-progress>
+            <p>
+              {guide.title[locale]} · {t("私人已讀標記", "Private read marks")} {saved.step}/3 · v
+              {me?.profile.version}
+            </p>
+            {saved.step < 3 ? (
+              <>
+                <p>{guide.steps[saved.step]?.[locale]}</p>
+                <Link
+                  to="/pools/$poolId"
+                  params={{ poolId: saved.poolId }}
+                  className="underline text-primary"
+                >
+                  {t("閱讀目前公開系列", "Read the currently public series")}
+                </Link>
+                <Link
+                  to="/app/album/$poolId"
+                  params={{ poolId: saved.poolId }}
+                  className="underline text-primary"
+                >
+                  {t("查看本人卡冊", "Check your album")}
+                </Link>
+                <Button
+                  disabled={busy || pending}
+                  onClick={() => void save({ ...saved, step: saved.step + 1 })}
+                >
+                  {t("已讀此說明，保存下一步", "Read this explanation; save next step")}
+                </Button>
+              </>
+            ) : (
+              <p>
+                {t(
+                  "閱讀導覽標記完成；不代表持卡或取得成就。",
+                  "Reading guide marks complete; this does not mean holdings or an earned achievement.",
+                )}
+              </p>
+            )}
+            <Button
+              variant="outline"
+              disabled={busy || pending}
+              onClick={() => void save(undefined)}
+            >
+              {t("取消本人閱讀導覽", "Cancel my reading guide")}
+            </Button>
+          </div>
+        </>
       ) : (
         <p>
           {t(
