@@ -46,7 +46,7 @@ export interface CollectionProfile {
   readingLayout?: {
     schema: 1;
     mode: "full" | "compact";
-    first: "timeline" | "awards" | "growth" | "play" | "curations";
+    first: "timeline" | "awards" | "growth" | "play" | "curations" | "notes";
   };
   curations?: {
     id: string;

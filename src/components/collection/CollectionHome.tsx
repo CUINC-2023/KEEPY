@@ -98,6 +98,47 @@ export function CollectionHome({
       <HomeReadingLayout
         key={me.actorId + ":" + me.profile.version}
         me={me}
+        notes={
+          <section className="space-y-3" data-home-note-summary>
+            <h3 className="font-bold">{t("已保存本人私人筆記", "Your saved private notes")}</h3>
+            {p.notes?.length ? (
+              <ul>
+                {p.notes.slice(0, 3).map((n) => (
+                  <li key={n.id} className="break-words">
+                    <span>
+                      {n.category} · {(n.tags ?? []).join(" / ")}
+                    </span>
+                    <p>{n.text.slice(0, 160)}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>
+                {t(
+                  "尚無目前有效本人筆記；可先閱讀公開故事或核對本人持卡。",
+                  "No currently eligible personal notes. Read public stories or check your holdings first.",
+                )}
+              </p>
+            )}
+            <nav className="flex flex-wrap gap-3">
+              <Link to="/app/notes" className="underline text-primary">
+                {t("接續原私人筆記", "Continue existing private notes")}
+              </Link>
+              <Link to="/app/collection-index" className="underline text-primary">
+                {t("查找原本人索引", "Search your existing index")}
+              </Link>
+              <Link to="/app/planning" className="underline text-primary">
+                {t("接續原私人規劃", "Continue your existing private planning")}
+              </Link>
+            </nav>
+            <p className="text-sm">
+              {t(
+                "只顯示原來源允許的本人筆記，沒有歷史時間時不冒称最近取得；不加入匿名公開投影。",
+                "Only currently permitted personal notes, without inventing acquisition times where history is absent. Never included in anonymous public projections.",
+              )}
+            </p>
+          </section>
+        }
         timeline={<AcquisitionTimeline key={me.actorId} me={me} />}
         growth={growth}
         play={

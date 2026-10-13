@@ -17,7 +17,7 @@ function read(actor: string, suffix = ""): Preference | null {
     const p = JSON.parse(raw);
     return p?.schema === 1 &&
       ["full", "compact"].includes(p.mode) &&
-      ["timeline", "awards", "growth", "play", "curations"].includes(p.first)
+      ["timeline", "awards", "growth", "play", "curations", "notes"].includes(p.first)
       ? { schema: 1, mode: p.mode, first: p.first }
       : null;
   } catch {
@@ -31,6 +31,7 @@ export function HomeReadingLayout({
   growth,
   play,
   curations,
+  notes,
 }: {
   me: CollectionMe;
   timeline: ReactNode;
@@ -38,6 +39,7 @@ export function HomeReadingLayout({
   growth: ReactNode;
   play: ReactNode;
   curations: ReactNode;
+  notes: ReactNode;
 }) {
   const actor = me.actorId,
     t = useDiscoveryText(),
@@ -91,6 +93,7 @@ export function HomeReadingLayout({
     ["growth", growth],
     ["play", play],
     ["curations", curations],
+    ["notes", notes],
   ] as const;
   const blocks = [
     ...available.filter(([id]) => id === draft.first),
@@ -126,15 +129,17 @@ export function HomeReadingLayout({
               edit({
                 ...draft,
                 first:
-                  e.target.value === "play"
-                    ? "play"
-                    : e.target.value === "curations"
-                      ? "curations"
-                      : e.target.value === "growth"
-                        ? "growth"
-                        : e.target.value === "awards"
-                          ? "awards"
-                          : "timeline",
+                  e.target.value === "notes"
+                    ? "notes"
+                    : e.target.value === "play"
+                      ? "play"
+                      : e.target.value === "curations"
+                        ? "curations"
+                        : e.target.value === "growth"
+                          ? "growth"
+                          : e.target.value === "awards"
+                            ? "awards"
+                            : "timeline",
               })
             }
           >
@@ -145,6 +150,7 @@ export function HomeReadingLayout({
             </option>
             <option value="play">{t("私人遊玩摘要", "Private play summary")}</option>
             <option value="curations">{t("私人策展摘要", "Private curation summary")}</option>
+            <option value="notes">{t("私人筆記摘要", "Private note summary")}</option>
           </select>
         </label>
       </fieldset>
@@ -223,15 +229,17 @@ export function HomeReadingLayout({
         draft.mode === "compact" ? (
           <details key={id} data-home-block={id}>
             <summary>
-              {id === "timeline"
-                ? t("私人取得年表", "Private acquisition timeline")
-                : id === "play"
-                  ? t("私人遊玩摘要", "Private play summary")
-                  : id === "curations"
-                    ? t("私人策展摘要", "Private curation summary")
-                    : id === "growth"
-                      ? t("成長與參與摘要", "Growth and participation summaries")
-                      : t("已取得成就精選", "Earned achievements")}
+              {id === "notes"
+                ? t("私人筆記摘要", "Private note summary")
+                : id === "timeline"
+                  ? t("私人取得年表", "Private acquisition timeline")
+                  : id === "play"
+                    ? t("私人遊玩摘要", "Private play summary")
+                    : id === "curations"
+                      ? t("私人策展摘要", "Private curation summary")
+                      : id === "growth"
+                        ? t("成長與參與摘要", "Growth and participation summaries")
+                        : t("已取得成就精選", "Earned achievements")}
             </summary>
             {content}
           </details>
