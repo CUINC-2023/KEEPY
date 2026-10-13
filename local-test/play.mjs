@@ -18,6 +18,7 @@ import {
 } from "../src/lib/play-practice.mjs";
 import { validStoredPlaySettings } from "../src/lib/play-contract.mjs";
 import { validQuizReview, currentQuizQuestion } from "../src/lib/play-review.mjs";
+import { validPlayPeriodTime } from "../src/lib/play-period.mjs";
 import {
   PUZZLE_RULE_VERSION,
   SEQUENCE_RULE_VERSION,
@@ -244,9 +245,7 @@ export function playMe(d, token, params = {}) {
   const start = params.start ?? "",
     end = params.end ?? "";
   if (
-    [start, end].some(
-      (v) => typeof v !== "string" || v.length > 40 || (v && !Number.isFinite(Date.parse(v))),
-    ) ||
+    [start, end].some((v) => !validPlayPeriodTime(v)) ||
     (start && end && Date.parse(start) >= Date.parse(end))
   )
     fail(d, 422, "Invalid private comparison period");

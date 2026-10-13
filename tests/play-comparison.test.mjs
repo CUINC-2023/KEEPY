@@ -57,6 +57,18 @@ try {
     () => playMe(d, a, { start: "invalid" }),
     (e) => e.status === 422,
   );
+  for (const start of [
+    "1",
+    "2026-02-30T00:00:00+08:00",
+    "2025-02-29T00:00:00Z",
+    "2026-10-05T24:00:00Z",
+    "2026-10-05T00:00:00+14:30",
+  ])
+    assert.throws(
+      () => playMe(d, a, { start }),
+      (e) => e.status === 422,
+    );
+  assert.equal(playMe(d, a, { start: "2024-02-29T00:00:00Z" }).total, 3);
   assert.throws(
     () => playMe(d, a, { owner: "member-b" }),
     (e) => e.status === 422,
