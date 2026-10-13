@@ -115,12 +115,14 @@ function FollowButton({ item }: { item: DiscoveryItem }) {
 export function DiscoveryEntry({
   item,
   detail = false,
+  compact = false,
   exploreSearch,
   previewItems,
   onPreviewNavigate,
 }: {
   item: DiscoveryItem;
   detail?: boolean;
+  compact?: boolean;
   exploreSearch?: ExploreSearch;
   previewItems?: DiscoveryItem[];
   onPreviewNavigate?: (item: DiscoveryItem) => void;
@@ -133,10 +135,10 @@ export function DiscoveryEntry({
   const returnSearch = exploreSearch ?? normalizeExploreSearch(location.search);
   const privatePreview = previewItems !== undefined;
   const text = item.copy;
-  const Title = detail ? "h1" : "h2";
+  const Title = detail ? "h1" : compact ? "h3" : "h2";
   return (
     <article
-      className="panel min-w-0 space-y-3 p-5 focus-visible:outline focus-visible:outline-primary"
+      className={`${compact ? "space-y-1 border-b border-border py-2 last:border-0" : "panel space-y-3 p-5"} min-w-0 focus-visible:outline focus-visible:outline-primary`}
       tabIndex={-1}
       data-content-id={item.id}
     >
@@ -161,9 +163,13 @@ export function DiscoveryEntry({
                 item.category,
               )}
       </p>
-      <Title className="break-words text-xl font-black">{text.title[locale]}</Title>
+      <Title className={`break-words font-black ${compact ? "text-base" : "text-xl"}`}>
+        {text.title[locale]}
+      </Title>
       <p className="whitespace-pre-wrap break-words text-sm text-muted-foreground">
-        {text.summary[locale]}
+        {compact && text.summary[locale].length > 140
+          ? text.summary[locale].slice(0, 140) + "…"
+          : text.summary[locale]}
       </p>
       {detail &&
         item.materials?.map((m, i) => (
@@ -361,18 +367,27 @@ export function DiscoveryEntry({
           })}
         </div>
       )}
-      <DiscoveryNotice />
+      {!compact && <DiscoveryNotice />}
     </article>
   );
 }
-export function DiscoveryHome({ nextOnly = false }: { nextOnly?: boolean }) {
+export function DiscoveryHome({
+  nextOnly = false,
+  compact = false,
+  sectionKey,
+}: {
+  nextOnly?: boolean;
+  compact?: boolean;
+  sectionKey?: "stories" | "pools" | "cards" | "season-wish";
+}) {
   const data = useDiscovery(),
     t = useDiscoveryText();
   const [trackingError, setTrackingError] = useState(false);
   const actorId = data.me?.actorId;
   useEffect(() => {
-    if (actorId) void trackDiscovery("visit", "discovery").catch(() => setTrackingError(true));
-  }, [actorId]);
+    if (actorId && !compact)
+      void trackDiscovery("visit", "discovery").catch(() => setTrackingError(true));
+  }, [actorId, compact]);
   const groups = nextOnly
     ? ([
         [
@@ -402,6 +417,22 @@ export function DiscoveryHome({ nextOnly = false }: { nextOnly?: boolean }) {
           data.items.filter((i) => i.kind === "series" && i.category === "upcoming"),
         ],
       ] as const);
+  if (compact) {
+    const index = { pools: 0, cards: 1, stories: 2, "season-wish": 3 }[sectionKey ?? "stories"];
+    const items = groups[index]?.[1] ?? [];
+    return (
+      <div className="space-y-2" data-discovery="compact">
+        {items.slice(0, 2).map((item) => (
+          <DiscoveryEntry key={item.id} item={item} compact />
+        ))}
+        {!items.length && data.loaded && !data.error && (
+          <p className="text-xs text-muted-foreground">
+            {t("目前沒有有效公開內容", "No content is currently public")}
+          </p>
+        )}
+      </div>
+    );
+  }
   return (
     <div className="space-y-6" data-discovery="home">
       <DiscoveryStatus />
