@@ -130,6 +130,8 @@ export function playHealth(d, token) {
     .prepare("SELECT user_id,payload FROM play_results ORDER BY at DESC,id DESC LIMIT 1001")
     .all();
   report.quizReviews.truncated = reviewRows.length > 1000;
+  // Request-local only: no cross-account or cross-request cache survives invalidation.
+  const reviewContexts = new Map();
   for (const row of reviewRows.slice(0, 1000)) {
     try {
       const r = JSON.parse(row.payload);
@@ -147,13 +149,24 @@ export function playHealth(d, token) {
         report.quizReviews.incompatible++;
         continue;
       }
-      const { cat, owner } = eligible(d, row.user_id),
-        held = new Set(owner.cards.map((c) => c.cardId)),
-        current = new Map(playQuestions(owner, cat, r.mode).map((q) => [q.id, q]));
+      if (!reviewContexts.has(row.user_id)) {
+        const { cat, owner } = eligible(d, row.user_id);
+        reviewContexts.set(row.user_id, {
+          held: new Set(owner.cards.map((c) => c.cardId)),
+          current: new Map(
+            ["knowledge", "observation"].flatMap((mode) =>
+              playQuestions(owner, cat, mode).map((q) => [mode + ":" + q.id, q]),
+            ),
+          ),
+        });
+      }
+      const { held, current } = reviewContexts.get(row.user_id);
       if (
         !Array.isArray(r.sourceIds) ||
         r.sourceIds.some((id) => !held.has(id)) ||
-        r.quizReview.questions.some((q) => !currentQuizQuestion(q, current.get(q.id)))
+        r.quizReview.questions.some(
+          (q) => !currentQuizQuestion(q, current.get(r.mode + ":" + q.id)),
+        )
       )
         report.quizReviews.unavailableSources++;
     } catch {
