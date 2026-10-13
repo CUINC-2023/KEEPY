@@ -6,6 +6,7 @@ import { useCollection, refreshCollectionMe, type CollectionMe } from "@/lib/col
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import { useLocale } from "@/lib/keepy-i18n-shared";
 import { PLANNING_SECTIONS } from "@/lib/collection-planning.mjs";
+import { practiceRoundCount } from "@/lib/play-practice.mjs";
 import { isPlayProjection } from "@/lib/play-contract.mjs";
 import { localApi, localSessionGeneration, useLocalTest } from "@/lib/local-test-client";
 import {
@@ -238,7 +239,7 @@ function Board({ me }: { me: CollectionMe }) {
                           "練習來源失效，進度遮蔽。",
                           "Practice sources unavailable; progress concealed.",
                         )
-                      : `${play.settings.data.practice.completed}/${play.settings.data.practice.items.length} · ${play.settings.data.practice.paused ? t("已暫停", "Paused") : play.settings.data.practice.ruleVersion}`
+                      : `${play.settings.data.practice.completed}/${practiceRoundCount(play.settings.data.practice.items)} · ${play.settings.data.practice.paused ? t("已暫停", "Paused") : play.settings.data.practice.ruleVersion}`
                     : t("尚未選擇私人練習清單。", "No private practice list selected.")}
                 </p>
               )}

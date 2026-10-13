@@ -6,6 +6,7 @@ import { PLAY_MODES, PLAY_DIFFICULTIES } from "@/lib/collection-play.mjs";
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import type { PlayPrivate } from "./PlayRecords";
 import type { PracticeItem } from "@/lib/play-practice.mjs";
+import { practiceRoundCount, practiceStep } from "@/lib/play-practice.mjs";
 export function PracticePlan({
   snapshot,
   busy,
@@ -26,6 +27,7 @@ export function PracticePlan({
     items = draft ?? saved?.items ?? [],
     [mode, setMode] = useState("knowledge"),
     [difficulty, setDifficulty] = useState("easy"),
+    [rounds, setRounds] = useState(1),
     [hints, setHints] = useState<"none" | "allowed">("none"),
     [confirm, setConfirm] = useState(false),
     dirty = JSON.stringify(items) !== JSON.stringify(saved?.items ?? []);
@@ -106,11 +108,27 @@ export function PracticePlan({
               "Choose the matching difficulty and hints in the existing mode panel. The list changes no draws, material or official rules.",
             )}
           </p>
+          <label>
+            {t("每項回合數（整份最多30）", "Rounds per item (30 total maximum)")}{" "}
+            <select
+              aria-label="Practice rounds"
+              value={rounds}
+              disabled={busy}
+              onChange={(e) => setRounds(Number(e.target.value))}
+            >
+              {[1, 2, 3, 4, 5].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </label>
           <Button
             data-add-practice
             disabled={
               busy ||
               items.length >= 12 ||
+              practiceRoundCount(items) + rounds > 30 ||
               items.some(
                 (i) =>
                   i.mode === mode &&
@@ -124,6 +142,7 @@ export function PracticePlan({
                 {
                   mode,
                   difficulty,
+                  ...(rounds > 1 ? { rounds } : {}),
                   ...(["memory", "puzzle", "sequence"].includes(mode) ? { hints } : {}),
                 },
               ])
@@ -138,6 +157,7 @@ export function PracticePlan({
                 className="flex flex-wrap gap-2 items-center"
               >
                 {i + 1}. {name(item.mode)} / {item.difficulty}
+                {item.rounds && ` · ×${item.rounds}`}
                 {item.hints &&
                   (item.hints === "none"
                     ? t(" · 無提示結果", " · unassisted result")
@@ -197,16 +217,26 @@ export function PracticePlan({
       )}
       {saved ? (
         <div data-practice-progress>
+          {!!saved.roundSummaries?.length && (
+            <ol data-practice-round-summaries>
+              {saved.roundSummaries.map((r) => (
+                <li key={r.position}>
+                  {r.position}. {name(r.mode)} / {r.difficulty} · {r.correct}/{r.total} ·{" "}
+                  {r.ruleVersion}
+                </li>
+              ))}
+            </ol>
+          )}
           <p>
             {saved.startedAt} · {saved.ruleVersion} ·{" "}
             {saved.invalidated
               ? t("來源失效，進度已遮蔽。", "Sources unavailable; progress concealed.")
-              : `${saved.completed}/${saved.items.length}`}
+              : `${saved.completed}/${practiceRoundCount(saved.items)}`}
           </p>
           <p>
             {saved.paused
               ? t("清單已暫停。", "List paused.")
-              : saved.completed === saved.items.length
+              : saved.completed === practiceRoundCount(saved.items)
                 ? t("練習完成，回顧私人紀錄。", "Practice complete; review private records.")
                 : t(
                     "只計下一個玩法／難度相符的合法保存結果。",
@@ -239,12 +269,12 @@ export function PracticePlan({
               >
                 {t("取消已保存清單（保留紀錄）", "Cancel saved list (keep records)")}
               </Button>
-              {!saved.invalidated && saved.completed < saved.items.length && (
+              {!saved.invalidated && saved.completed < practiceRoundCount(saved.items) && (
                 <Button
                   data-next-practice
                   variant="outline"
                   onClick={() => {
-                    const next = saved.items[saved.completed]!,
+                    const next = practiceStep(saved.items, saved.completed)!,
                       el = document.getElementById("play-" + next.mode);
                     el?.scrollIntoView({ block: "start", behavior: "auto" });
                     el?.querySelector<HTMLSelectElement>("select")?.focus({ preventScroll: true });

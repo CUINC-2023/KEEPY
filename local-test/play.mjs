@@ -14,6 +14,7 @@ import {
   validPracticeItems,
   practiceRuleVersion,
   practiceResultMatches,
+  practiceStep,
 } from "../src/lib/play-practice.mjs";
 import { validStoredPlaySettings } from "../src/lib/play-contract.mjs";
 import {
@@ -96,7 +97,7 @@ export function playHealth(d, token) {
         })),
         ...(value.practice?.resultIds ?? []).map((id, index) => ({
           id,
-          ...value.practice.items[index],
+          ...practiceStep(value.practice.items, index),
         })),
       ];
       for (const reference of references) {
@@ -107,7 +108,7 @@ export function playHealth(d, token) {
         if (
           !payload ||
           payload.mode !== reference.mode ||
-          (reference.difficulty && payload.difficulty !== reference.difficulty)
+          (reference.difficulty && !practiceResultMatches(reference, payload))
         )
           report.missingReferences++;
       }
@@ -144,6 +145,7 @@ function journeyProjection(d, id, journey, owner) {
 }
 function practiceProjection(d, id, p, owner) {
   if (!p) return null;
+  const rounds = [];
   const allowed = new Set(owner.cards.map((c) => c.cardId));
   const valid = p.resultIds.every((resultId, i) => {
     const row = d.db
@@ -151,8 +153,16 @@ function practiceProjection(d, id, p, owner) {
       .get(id, resultId);
     if (!row) return false;
     const r = JSON.parse(row.payload);
+    rounds.push({
+      position: i + 1,
+      mode: r.mode,
+      difficulty: r.difficulty,
+      ruleVersion: r.ruleVersion,
+      correct: r.correct,
+      total: r.total,
+    });
     return (
-      practiceResultMatches(p.items[i], r) &&
+      practiceResultMatches(practiceStep(p.items, i), r) &&
       r.sourceIds.length > 0 &&
       r.sourceIds.every((id) => allowed.has(id))
     );
@@ -165,6 +175,7 @@ function practiceProjection(d, id, p, owner) {
     paused: p.paused,
     completed: valid ? p.resultIds.length : 0,
     invalidated: !valid,
+    ...(p.ruleVersion === "local-practice-v3" ? { roundSummaries: valid ? rounds : [] } : {}),
   };
 }
 export function playMe(d, token, params = {}) {
@@ -572,7 +583,7 @@ export function playCommand(d, token, input, key) {
       };
       const p = prior.data.practice,
         practiceProgress = practiceProjection(d, u.id, p, owner),
-        item = p?.items[p.resultIds.length];
+        item = p && practiceStep(p.items, p.resultIds.length);
       if (p && !p.paused && !practiceProgress.invalidated && practiceResultMatches(item, payload))
         result.settings = {
           ...result.settings,
