@@ -5,7 +5,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useCollection, refreshCollectionMe, type CollectionMe } from "@/lib/collection-store";
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import { useLocale } from "@/lib/keepy-i18n-shared";
-import { PLANNING_SECTIONS } from "@/lib/collection-planning.mjs";
+import { normalizePlanningOrder } from "@/lib/collection-planning.mjs";
 import { practiceRoundCount } from "@/lib/play-practice.mjs";
 import { isPlayProjection } from "@/lib/play-contract.mjs";
 import { localApi, localSessionGeneration, useLocalTest } from "@/lib/local-test-client";
@@ -58,7 +58,7 @@ function Board({ me }: { me: CollectionMe }) {
   const t = useDiscoveryText(),
     { locale } = useLocale(),
     local = useLocalTest(),
-    saved = me.profile.data.planningOrder ?? PLANNING_SECTIONS,
+    saved = normalizePlanningOrder(me.profile.data.planningOrder),
     [order, setOrder] = useState(saved),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
@@ -102,6 +102,7 @@ function Board({ me }: { me: CollectionMe }) {
       journey: t("收藏與遊玩旅程", "Collection and play journeys"),
       practice: t("練習清單", "Practice list"),
       guide: t("閱讀導覽", "Reading guide"),
+      curations: t("本人策展接續", "Continue your curations"),
     })[id] ?? id;
   async function save(replay = false) {
     if (busy) return;
@@ -178,6 +179,53 @@ function Board({ me }: { me: CollectionMe }) {
               )}
               <Link className="underline text-primary" to="/app/collection" hash="collection-goals">
                 {t("編輯原收藏目標", "Edit existing collection goals")}
+              </Link>
+            </>
+          ) : id === "curations" ? (
+            <>
+              <p>
+                {t(
+                  "策展需目前合法持有款式；目標採曾取得不同款式，練習採已保存合法局，三者來源分開，不自行判定成就或發獎。",
+                  "Curation requires currently eligible held designs. Goals count acquired distinct designs; practice counts saved eligible rounds. Sources remain separate, without deciding achievements or rewards.",
+                )}
+              </p>
+              {me.profile.data.curations?.some((g) => g.cardIds.length) ? (
+                <ul>
+                  {me.profile.data.curations
+                    .filter((g) => g.cardIds.length)
+                    .map((g) => (
+                      <li key={g.id} className="break-words">
+                        {g.title} ·{" "}
+                        {g.cardIds.filter((id) => me.cards.some((c) => c.cardId === id)).length}{" "}
+                        {t("合法選卡", "eligible selections")} ·{" "}
+                        {t("目標相關系列", "related goal series")}:{" "}
+                        {[
+                          ...new Set(
+                            me.cards
+                              .filter(
+                                (c) =>
+                                  g.cardIds.includes(c.cardId) &&
+                                  (me.profile.data.goalPoolIds ?? []).includes(c.poolId),
+                              )
+                              .map((c) => c.poolId),
+                          ),
+                        ]
+                          .map((id) => me.progress.find((p) => p.poolId === id)?.title[locale])
+                          .filter(Boolean)
+                          .join(" / ") || t("尚未選目標關聯", "No goal relation selected")}
+                      </li>
+                    ))}
+                </ul>
+              ) : (
+                <p>
+                  {t(
+                    "尚無包含合法持卡的本人策展；先核對本人收藏。",
+                    "No curation containing eligible holdings; check your collection first.",
+                  )}
+                </p>
+              )}
+              <Link to="/app/curations" className="text-primary underline">
+                {t("接續原私人策展編輯", "Continue your existing private curation editor")}
               </Link>
             </>
           ) : id === "guide" ? (
