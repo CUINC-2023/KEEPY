@@ -60,7 +60,7 @@ export function privateCollectionIndex(me, catalogue, p = PRIVATE_INDEX_DEFAULT,
         kind: "note",
         id: n.id,
         title: n.category,
-        summary: n.text,
+        summary: n.text + " " + (n.tags ?? []).join(" "),
         sourceVersion: me.profile.version,
       })),
     ...(me.profile.data.curations ?? [])

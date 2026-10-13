@@ -1,4 +1,5 @@
 export const NOTE_CATEGORIES = ["story", "plan", "practice", "memory"];
+export const NOTE_TAGS = ["favorite", "research", "next", "review"];
 export function validCollectionNotes(v) {
   return (
     Array.isArray(v) &&
@@ -7,7 +8,15 @@ export function validCollectionNotes(v) {
     v.every(
       (n) =>
         n &&
-        Object.keys(n).sort().join() === "category,id,kind,schema,subjectId,text" &&
+        Object.keys(n)
+          .filter((k) => k !== "tags")
+          .sort()
+          .join() === "category,id,kind,schema,subjectId,text" &&
+        (n.tags === undefined ||
+          (Array.isArray(n.tags) &&
+            n.tags.length <= 3 &&
+            new Set(n.tags).size === n.tags.length &&
+            n.tags.every((t) => NOTE_TAGS.includes(t)))) &&
         n.schema === 1 &&
         typeof n.id === "string" &&
         /^note-[a-z0-9-]{1,40}$/.test(n.id) &&

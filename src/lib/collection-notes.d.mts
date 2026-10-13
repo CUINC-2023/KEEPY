@@ -5,8 +5,10 @@ export interface CollectionNote {
   subjectId: string;
   category: string;
   text: string;
+  tags?: string[];
 }
 export const NOTE_CATEGORIES: string[];
+export const NOTE_TAGS: string[];
 export function validCollectionNotes(value: unknown): boolean;
 export function noteSubjectAllowed(
   note: CollectionNote,

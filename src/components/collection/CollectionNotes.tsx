@@ -5,7 +5,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useCollection, refreshCollectionMe, type CollectionMe } from "@/lib/collection-store";
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import { useLocale } from "@/lib/keepy-i18n-shared";
-import { NOTE_CATEGORIES, type CollectionNote } from "@/lib/collection-notes.mjs";
+import { NOTE_CATEGORIES, NOTE_TAGS, type CollectionNote } from "@/lib/collection-notes.mjs";
 import {
   discoveryCommand,
   retryDiscoveryCommand,
@@ -66,6 +66,8 @@ function Editor({ me }: { me: CollectionMe }) {
     [subject, setSubject] = useState(""),
     [query, setQuery] = useState(""),
     [filter, setFilter] = useState("all"),
+    [selection, setSelection] = useState<string[]>([]),
+    [batchTag, setBatchTag] = useState("review"),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const dirty = JSON.stringify(notes) !== JSON.stringify(saved),
@@ -203,64 +205,184 @@ function Editor({ me }: { me: CollectionMe }) {
         </select>
       </label>
       {shown.length ? (
-        <ul className="space-y-4">
-          {shown.map((n) => (
-            <li key={n.id} className="space-y-2 rounded border p-3">
-              <h2>{subjectName(n)}</h2>
-              <label>
-                {t("筆記分類", "Note category")}{" "}
-                <select
-                  aria-label={"Note category " + n.id}
-                  value={n.category}
+        <>
+          <section data-note-batch className="space-y-3 rounded border p-3">
+            <h2 className="font-bold">
+              {t("整理目前查找的本人筆記草稿", "Arrange drafts of your currently found notes")}
+            </h2>
+            <p>
+              {t(
+                "每則最多3個受控標籤；批次只修改所選本人草稿，保存時同一原子操作。取消恢復已保存資料。",
+                "Up to 3 controlled tags per note. Batch edits affect selected personal drafts only, saved as one atomic operation. Cancel restores saved data.",
+              )}
+            </p>
+            <Button variant="outline" onClick={() => setSelection(shown.map((n) => n.id))}>
+              {t("選取目前結果", "Select current results")}
+            </Button>
+            <Button variant="outline" onClick={() => setSelection([])}>
+              {t("取消選取", "Clear selection")}
+            </Button>
+            <label>
+              {t("批次標籤", "Batch tag")}{" "}
+              <select
+                aria-label="Batch note tag"
+                value={batchTag}
+                onChange={(e) => setBatchTag(e.target.value)}
+              >
+                {NOTE_TAGS.map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </select>
+            </label>
+            <p>
+              {t("已選目前結果", "Selected current results")}:{" "}
+              {shown.filter((n) => selection.includes(n.id)).length}
+            </p>
+            <Button
+              disabled={
+                busy ||
+                !shown.some((n) => selection.includes(n.id)) ||
+                shown.some(
+                  (n) =>
+                    selection.includes(n.id) &&
+                    (n.tags?.length ?? 0) >= 3 &&
+                    !n.tags?.includes(batchTag),
+                )
+              }
+              onClick={() =>
+                setNotes(
+                  notes.map((n) =>
+                    shown.some((s) => s.id === n.id) && selection.includes(n.id)
+                      ? { ...n, tags: [...new Set([...(n.tags ?? []), batchTag])] }
+                      : n,
+                  ),
+                )
+              }
+            >
+              {t("套用所選標籤草稿", "Apply selected tag to drafts")}
+            </Button>
+            <Button
+              disabled={busy || !shown.some((n) => selection.includes(n.id))}
+              variant="outline"
+              onClick={() =>
+                setNotes(
+                  notes.map((n) =>
+                    shown.some((s) => s.id === n.id) && selection.includes(n.id)
+                      ? { ...n, tags: (n.tags ?? []).filter((v) => v !== batchTag) }
+                      : n,
+                  ),
+                )
+              }
+            >
+              {t("移除所選標籤草稿", "Remove selected tag from drafts")}
+            </Button>
+          </section>
+          <ul className="space-y-4">
+            {shown.map((n) => (
+              <li key={n.id} className="space-y-2 rounded border p-3">
+                <h2>{subjectName(n)}</h2>
+                <label>
+                  <input
+                    type="checkbox"
+                    aria-label={"Select note " + n.id}
+                    checked={selection.includes(n.id)}
+                    disabled={busy}
+                    onChange={(e) =>
+                      setSelection(
+                        e.target.checked
+                          ? [...selection, n.id]
+                          : selection.filter((id) => id !== n.id),
+                      )
+                    }
+                  />
+                  {t("選入批次草稿", "Select for batch draft")}
+                </label>
+                <p>
+                  {t("本人標籤", "Your tags")}:{" "}
+                  {(n.tags ?? []).join(" · ") || t("未選標籤", "No tags selected")}
+                </p>
+                {notes.some(
+                  (other) =>
+                    other.id !== n.id && other.kind === n.kind && other.subjectId === n.subjectId,
+                ) && (
+                  <details data-related-private-notes>
+                    <summary>
+                      {t(
+                        "同一合法來源的本人相關筆記",
+                        "Your related notes from the same eligible source",
+                      )}
+                    </summary>
+                    <ul>
+                      {notes
+                        .filter(
+                          (other) =>
+                            other.id !== n.id &&
+                            other.kind === n.kind &&
+                            other.subjectId === n.subjectId,
+                        )
+                        .map((other) => (
+                          <li key={other.id} className="break-words">
+                            {other.category} · {other.text.slice(0, 80)}
+                          </li>
+                        ))}
+                    </ul>
+                  </details>
+                )}
+                <label>
+                  {t("筆記分類", "Note category")}{" "}
+                  <select
+                    aria-label={"Note category " + n.id}
+                    value={n.category}
+                    disabled={busy}
+                    onChange={(e) =>
+                      setNotes(
+                        notes.map((v) => (v.id === n.id ? { ...v, category: e.target.value } : v)),
+                      )
+                    }
+                  >
+                    {NOTE_CATEGORIES.map((c) => (
+                      <option key={c}>{c}</option>
+                    ))}
+                  </select>
+                </label>
+                <textarea
+                  aria-label={"Note text " + n.id}
+                  className="block min-h-32 w-full rounded border bg-background p-2"
+                  maxLength={1000}
+                  value={n.text}
                   disabled={busy}
                   onChange={(e) =>
-                    setNotes(
-                      notes.map((v) => (v.id === n.id ? { ...v, category: e.target.value } : v)),
-                    )
+                    setNotes(notes.map((v) => (v.id === n.id ? { ...v, text: e.target.value } : v)))
                   }
+                />
+                {n.kind === "card" ? (
+                  <Link
+                    className="underline"
+                    to="/app/cards/$cardId"
+                    params={{ cardId: n.subjectId }}
+                  >
+                    {t("核對本人卡牌來源", "Check your card source")}
+                  </Link>
+                ) : n.kind === "album" ? (
+                  <Link className="underline" to="/pools/$poolId" params={{ poolId: n.subjectId }}>
+                    {t("閱讀目前公開系列", "Read the current public series")}
+                  </Link>
+                ) : (
+                  <Link to="/app/achievements" className="underline">
+                    {t("查看已取得成就", "View earned achievements")}
+                  </Link>
+                )}
+                <Button
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => setNotes(notes.filter((v) => v.id !== n.id))}
                 >
-                  {NOTE_CATEGORIES.map((c) => (
-                    <option key={c}>{c}</option>
-                  ))}
-                </select>
-              </label>
-              <textarea
-                aria-label={"Note text " + n.id}
-                className="block min-h-32 w-full rounded border bg-background p-2"
-                maxLength={1000}
-                value={n.text}
-                disabled={busy}
-                onChange={(e) =>
-                  setNotes(notes.map((v) => (v.id === n.id ? { ...v, text: e.target.value } : v)))
-                }
-              />
-              {n.kind === "card" ? (
-                <Link
-                  className="underline"
-                  to="/app/cards/$cardId"
-                  params={{ cardId: n.subjectId }}
-                >
-                  {t("核對本人卡牌來源", "Check your card source")}
-                </Link>
-              ) : n.kind === "album" ? (
-                <Link className="underline" to="/pools/$poolId" params={{ poolId: n.subjectId }}>
-                  {t("閱讀目前公開系列", "Read the current public series")}
-                </Link>
-              ) : (
-                <Link to="/app/achievements" className="underline">
-                  {t("查看已取得成就", "View earned achievements")}
-                </Link>
-              )}
-              <Button
-                variant="outline"
-                disabled={busy}
-                onClick={() => setNotes(notes.filter((v) => v.id !== n.id))}
-              >
-                {t("移除筆記草稿", "Remove note draft")}
-              </Button>
-            </li>
-          ))}
-        </ul>
+                  {t("移除筆記草稿", "Remove note draft")}
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </>
       ) : (
         <p>
           {notes.length
