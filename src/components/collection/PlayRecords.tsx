@@ -273,8 +273,8 @@ export function PlayRecords({
       </h2>
       <p>
         {t(
-          "三玩法近期摘要與同規則、同難度個人最佳；與正式XP、成就與排行榜分開，不是雲端同步。來源失效的紀錄不再投影。",
-          "Recent summaries and personal bests for the same rule and difficulty, separate from official XP, achievements and rankings. No cloud sync; records with unavailable sources are not projected.",
+          "五玩法近期摘要與同規則、同難度個人最佳；與正式XP、成就與排行榜分開，不是雲端同步。來源失效的紀錄不再投影。",
+          "Recent summaries across five modes and personal bests for the same rule and difficulty, separate from official XP, achievements and rankings. No cloud sync; records with unavailable sources are not projected.",
         )}
       </p>
       {pending && !error && (

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useCollection } from "@/lib/collection-store";
@@ -163,8 +163,21 @@ function PracticeQuestion({ row }: { row: MistakesProjection["rows"][number] }) 
     { locale } = useLocale(),
     [answer, setAnswer] = useState<string | null>(null),
     q = row.question;
+  const root = useRef<HTMLElement>(null),
+    prior = useRef<string | null>(null);
+  useEffect(() => {
+    if (answer !== null)
+      root.current
+        ?.querySelector<HTMLElement>("[data-mistake-feedback]")
+        ?.focus({ preventScroll: true });
+    else if (prior.current !== null)
+      root.current
+        ?.querySelector<HTMLButtonElement>("[data-mistake-answer]")
+        ?.focus({ preventScroll: true });
+    prior.current = answer;
+  }, [answer]);
   return (
-    <article className="panel space-y-3 p-4" data-mistake-question>
+    <article ref={root} className="panel space-y-3 p-4" data-mistake-question>
       <h2 className="text-lg font-bold">{q.prompt[locale]}</h2>
       <p>
         {row.at} · {row.ruleVersion} · {row.difficulty} · v{q.cardVersion}/{q.sourceVersion}
@@ -187,7 +200,12 @@ function PracticeQuestion({ row }: { row: MistakesProjection["rows"][number] }) 
         ))}
       </div>
       {answer !== null && (
-        <div role="status" data-mistake-feedback>
+        <div
+          role="status"
+          tabIndex={-1}
+          data-mistake-feedback
+          className="focus-visible:outline-2 focus-visible:outline-primary"
+        >
           <p>
             {answer === q.answer
               ? t("重練答對", "Correct in practice")
