@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import seasonArtwork from "@/assets/peekfuture-season-hero.jpg";
 import { useDiscoveryText } from "@/lib/discovery-copy";
 // Only current, allowed alternatives; never recover a card or older image.
 export function ContentImage({ alt }: { alt: string }) {
   const [failed, setFailed] = useState(false),
     t = useDiscoveryText();
+  const imageRef = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    const image = imageRef.current;
+    if (image?.complete && image.naturalWidth === 0) setFailed(true);
+  }, []);
   return failed ? (
     <p
       data-content-image-error
@@ -18,6 +23,7 @@ export function ContentImage({ alt }: { alt: string }) {
     </p>
   ) : (
     <img
+      ref={imageRef}
       loading="lazy"
       decoding="async"
       className="h-auto w-full rounded-xl"

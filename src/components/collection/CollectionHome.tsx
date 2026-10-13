@@ -9,6 +9,7 @@ import { HomeReadingLayout } from "./HomeReadingLayout";
 import { CollectionReadingGuide } from "./CollectionReadingGuide";
 import { PlayRecords } from "./PlayRecords";
 import { useLocalTest } from "@/lib/local-test-client";
+import { ProgressiveDetails } from "@/components/ui/progressive-details";
 export function CollectionHome({
   me,
   renderCard,
@@ -27,16 +28,27 @@ export function CollectionHome({
     <section data-collection-home className="panel min-w-0 space-y-4 p-5">
       <h2 className="text-2xl font-bold break-words">{p.displayName}</h2>
       <CollectionNextStep me={me} />
-      <Link className="text-primary underline" to="/app/collection-index">
-        {t("查找本人卡冊、卡牌、筆記與策展", "Find your albums, cards, notes and curations")}
-      </Link>
-      <Link className="text-primary underline" to="/app/planning">
-        {t("本人私人收藏規劃板", "Your private collection planning board")}
-      </Link>
-      <Link className="text-primary underline" to="/app/notes">
-        {t("本人私人收藏筆記", "Your private collection notes")}
-      </Link>
-      <CollectionReadingGuide />
+      <nav
+        className="grid gap-2 sm:grid-cols-3"
+        aria-label={t("本人快捷操作", "Your quick actions")}
+        data-home-primary-entrances
+      >
+        <Link className="rounded-xl border p-3 text-primary underline" to="/app/collection-index">
+          {t("查找本人卡冊、卡牌、筆記與策展", "Find your albums, cards, notes and curations")}
+        </Link>
+        <Link className="rounded-xl border p-3 text-primary underline" to="/app/planning">
+          {t("本人私人收藏規劃板", "Your private collection planning board")}
+        </Link>
+        <Link className="rounded-xl border p-3 text-primary underline" to="/app/notes">
+          {t("本人私人收藏筆記", "Your private collection notes")}
+        </Link>
+      </nav>
+      <ProgressiveDetails
+        lazy
+        summary={t("收藏指南與閱讀路徑", "Collection guides and reading routes")}
+      >
+        <CollectionReadingGuide />
+      </ProgressiveDetails>
       <Link className="text-primary underline" to="/app/play">
         {t("收藏遊玩中心（無消耗／無獎勵）", "Collection play centre (no costs or rewards)")}
       </Link>

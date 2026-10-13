@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ProgressiveDetails } from "@/components/ui/progressive-details";
 import { DiscoveryHome, DiscoveryStatus } from "./DiscoveryContent";
 import { ReturnEntrances } from "./PublicExplore";
+import { useEffect, useRef, useState } from "react";
 
 export function CompactHome() {
   const content = useContent(),
@@ -18,6 +19,13 @@ export function CompactHome() {
     tx = usePlayerUiText(),
     now = useSeasonClock();
   const home = discovery.items.find((item) => item.kind === "home");
+  const [heroFailed, setHeroFailed] = useState(false);
+  const heroRef = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    // A failed SSR image can finish before React attaches its error listener.
+    const image = heroRef.current;
+    if (image?.complete && image.naturalWidth === 0) setHeroFailed(true);
+  }, []);
   const entryLinks = [
     { to: "/app/collection", label: ui.collection },
     { to: "/app/play", label: ui.play },
@@ -27,17 +35,26 @@ export function CompactHome() {
   return (
     <div className="mx-auto max-w-6xl space-y-5" data-home-compact>
       <section className="relative overflow-hidden rounded-xl border border-border">
-        <img
-          src={seasonHero}
-          alt={ui.mock}
-          width={1600}
-          height={900}
-          fetchPriority="high"
-          className="absolute inset-0 h-full w-full object-cover object-[62%_center]"
-        />
+        {!heroFailed && (
+          <img
+            ref={heroRef}
+            src={seasonHero}
+            alt={ui.mock}
+            width={1600}
+            height={900}
+            fetchPriority="high"
+            onError={() => setHeroFailed(true)}
+            className="absolute inset-0 h-full w-full object-cover object-[62%_center]"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/20" />
         <div className="relative max-w-2xl space-y-3 p-5 text-primary-foreground sm:p-8">
           <p className="text-xs font-semibold text-gold">KEEPY · {ui.status}</p>
+          {heroFailed && (
+            <p role="status" data-home-image-error className="text-xs text-primary-foreground">
+              {ui.imageUnavailable}
+            </p>
+          )}
           <h1 className="text-3xl font-black leading-tight sm:text-5xl">{tx(SEASON.title)}</h1>
           <p className="line-clamp-2 break-words text-sm text-primary-foreground/85">
             {home?.copy.summary[locale] ?? ui.summary}

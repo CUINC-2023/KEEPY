@@ -92,6 +92,7 @@ export const HOME_UI_COPY = {
     physical: "實體典藏說明",
     index: "查看全部 →",
     status: "本機示意／前端預覽",
+    imageUnavailable: "主視覺暫時無法載入；仍可探索公開內容。",
     limit: "此站為前端預覽；本人保存與審核需要本機測試服務。未接真人登入、正式付款或實體履約。",
     mock: "示意主視覺，非已確認合作；日期與素材用途依各內容頁說明。",
     games: "五種練習玩法，無資產消耗或獎勵；紀錄僅本人可見。",
@@ -115,6 +116,7 @@ export const HOME_UI_COPY = {
     physical: "Physical collection guide",
     index: "View all →",
     status: "Local samples / frontend preview",
+    imageUnavailable: "Hero artwork is unavailable; public exploration remains available.",
     limit:
       "This is a frontend preview. Private saves and reviews need the Local Test service. No real sign-in, payment or physical fulfillment.",
     mock: "Sample hero artwork, not a confirmed collaboration. See each content page for dates and material uses.",

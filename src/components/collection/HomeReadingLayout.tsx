@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { ProgressiveDetails } from "@/components/ui/progressive-details";
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import { type CollectionMe, refreshCollectionMe } from "@/lib/collection-store";
 import {
@@ -227,22 +228,26 @@ export function HomeReadingLayout({
       )}
       {blocks.map(([id, content]) =>
         draft.mode === "compact" ? (
-          <details key={id} data-home-block={id}>
-            <summary>
-              {id === "notes"
-                ? t("私人筆記摘要", "Private note summary")
-                : id === "timeline"
-                  ? t("私人取得年表", "Private acquisition timeline")
-                  : id === "play"
-                    ? t("私人遊玩摘要", "Private play summary")
-                    : id === "curations"
-                      ? t("私人策展摘要", "Private curation summary")
-                      : id === "growth"
-                        ? t("成長與參與摘要", "Growth and participation summaries")
-                        : t("已取得成就精選", "Earned achievements")}
-            </summary>
-            {content}
-          </details>
+          <div key={id} data-home-block={id}>
+            <ProgressiveDetails
+              lazy
+              summary={
+                id === "notes"
+                  ? t("私人筆記摘要", "Private note summary")
+                  : id === "timeline"
+                    ? t("私人取得年表", "Private acquisition timeline")
+                    : id === "play"
+                      ? t("私人遊玩摘要", "Private play summary")
+                      : id === "curations"
+                        ? t("私人策展摘要", "Private curation summary")
+                        : id === "growth"
+                          ? t("成長與參與摘要", "Growth and participation summaries")
+                          : t("已取得成就精選", "Earned achievements")
+              }
+            >
+              {content}
+            </ProgressiveDetails>
+          </div>
         ) : (
           <div key={id} data-home-block={id}>
             {content}
