@@ -5,6 +5,62 @@ import { useLocale } from "@/lib/keepy-i18n-shared";
 import { Progress } from "@/components/ui/progress";
 import { BadgeMark } from "@/components/player/BadgeMark";
 import { CreatorContentTemplate } from "@/components/content/CreatorContentTemplate";
+function Composition({
+  pattern,
+  variant = 0,
+}: {
+  pattern: "round" | "steps" | "waves";
+  variant?: number;
+}) {
+  return (
+    <svg
+      viewBox="0 0 100 80"
+      aria-hidden="true"
+      className="h-20 w-28 max-w-full text-primary"
+      data-template-composition={pattern}
+    >
+      {pattern === "round" ? (
+        variant === 1 ? (
+          <g fill="currentColor" fillOpacity=".25" stroke="currentColor">
+            <circle cx="40" cy="40" r="25" />
+            <circle cx="65" cy="40" r="25" />
+          </g>
+        ) : (
+          <circle
+            cx="50"
+            cy={variant === 0 ? 30 : 40}
+            r="25"
+            fill={variant === 2 ? "none" : "currentColor"}
+            fillOpacity=".25"
+            stroke="currentColor"
+            strokeWidth="3"
+          />
+        )
+      ) : pattern === "steps" ? (
+        <g fill="currentColor" fillOpacity=".3" stroke="currentColor">
+          {[0, 1, 2].map((i) => (
+            <rect
+              key={i}
+              x={12 + i * 25}
+              y={variant === 1 ? 20 + (i === 1 ? 25 : 0) : 55 - i * 15}
+              width="24"
+              height={variant === 2 ? 8 : 20 + i * 10}
+            />
+          ))}
+        </g>
+      ) : (
+        <g fill="none" stroke="currentColor" strokeWidth="3">
+          {[0, 1, 2].map((i) => (
+            <path
+              key={i}
+              d={`M 5 ${15 + i * (variant === 2 ? 23 : 18)} Q 30 ${5 + i * 18} 50 ${20 + i * 18} T 95 ${variant === 1 ? 35 : 15 + i * 18}`}
+            />
+          ))}
+        </g>
+      )}
+    </svg>
+  );
+}
 export function CollectionTemplateGallery() {
   const t = useDiscoveryText(),
     { locale } = useLocale(),
@@ -47,6 +103,7 @@ export function CollectionTemplateGallery() {
                     : "bg-gradient-to-tr from-primary/20 via-background to-gold/20")
               }
             >
+              {x.composition && <Composition pattern={x.composition} />}
               <span>{x.title[locale]}</span>
             </div>
             <h2 className="text-xl font-bold">{x.title[locale]}</h2>
@@ -66,6 +123,7 @@ export function CollectionTemplateGallery() {
                   className="grid aspect-[2/3] w-16 place-items-center rounded border bg-muted text-center text-xs"
                   key={i}
                 >
+                  {x.composition && <Composition pattern={x.composition} variant={i} />}
                   {t("文字示意款式", "Sample text design")} {i + 1}
                 </div>
               ))}

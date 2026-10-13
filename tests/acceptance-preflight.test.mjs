@@ -17,6 +17,7 @@ import {
   portAvailable,
   failureCategory,
   handoffSummary,
+  selectAcceptanceCommands,
 } from "../local-test/acceptance-preflight.mjs";
 const root = fileURLToPath(new URL("../", import.meta.url)),
   dir = mkdtempSync(join(tmpdir(), "keepy-preflight-"));
@@ -44,6 +45,46 @@ async function freePorts() {
   return { api: ports[0], web: ports[1], chrome: ports[2] };
 }
 test("strict isolated port contract and exact source/report versions", () => {
+  assert.equal(parseAcceptanceArgs(["--out", "new"]).suite, "full");
+  assert.equal(
+    parseAcceptanceArgs(["--out", "new", "--suite", "permissions"]).suite,
+    "permissions",
+  );
+  assert.throws(() => parseAcceptanceArgs(["--out", "new", "--suite", "arbitrary-script"]));
+  const commands = [
+    "test:actor-boundary",
+    "test:collection-samples",
+    "test:practice-rounds",
+    "lint",
+    "typecheck",
+    "build",
+  ];
+  assert.deepEqual(selectAcceptanceCommands(commands, "permissions"), [
+    "test:actor-boundary",
+    "lint",
+    "typecheck",
+    "build",
+  ]);
+  assert.deepEqual(selectAcceptanceCommands(commands, "play"), [
+    "test:practice-rounds",
+    "lint",
+    "typecheck",
+    "build",
+  ]);
+  assert.deepEqual(selectAcceptanceCommands(commands, "full"), commands);
+  assert.throws(() => selectAcceptanceCommands(commands, "unknown"));
+  const summary = handoffSummary(
+    {
+      status: "PARTIAL_PASS",
+      suite: "permissions",
+      fullAcceptance: "NOT_RUN",
+      checks: [],
+      ports: {},
+    },
+    "qa",
+  );
+  assert.equal(summary.fullAcceptance, "NOT_RUN");
+  assert.ok(summary.continue.includes("Selected checks only"));
   assert.deepEqual(parseAcceptanceArgs(["--out", "new"]).ports, {
     api: 8787,
     web: 8083,

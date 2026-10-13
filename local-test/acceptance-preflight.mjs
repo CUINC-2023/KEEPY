@@ -9,7 +9,14 @@ export class DiagnosticError extends Error {
   }
 }
 export function parseAcceptanceArgs(args) {
-  const allowed = new Set(["--out", "--db", "--api-port", "--web-port", "--chrome-port"]),
+  const allowed = new Set([
+      "--out",
+      "--db",
+      "--api-port",
+      "--web-port",
+      "--chrome-port",
+      "--suite",
+    ]),
     values = {};
   if (args.length % 2) throw new DiagnosticError("INVALID_ARGUMENTS");
   for (let i = 0; i < args.length; i += 2) {
@@ -24,7 +31,39 @@ export function parseAcceptanceArgs(args) {
     chrome: parsePort(values["--chrome-port"] ?? "9337"),
   };
   if (new Set(Object.values(ports)).size !== 3) throw new DiagnosticError("PORTS_MUST_DIFFER");
-  return { out: values["--out"], db: values["--db"], ports };
+  const suite = values["--suite"] ?? "full";
+  if (!["full", "permissions", "play"].includes(suite)) throw new DiagnosticError("INVALID_SUITE");
+  return { out: values["--out"], db: values["--db"], ports, suite };
+}
+/** Select existing checks only; callers cannot supply arbitrary commands or paths. */
+export function selectAcceptanceCommands(commands, suite) {
+  if (!["full", "permissions", "play"].includes(suite)) throw new DiagnosticError("INVALID_SUITE");
+  const common = new Set([
+    "lint",
+    "typecheck",
+    "build",
+    "test:acceptance",
+    "test:acceptance-preflight",
+  ]);
+  const permissions = new Set([
+    "test:actor-boundary",
+    "test:new-private-reliability",
+    "test:collection-contract",
+    "test:reading-bulk",
+    "test:supply",
+    "test:local",
+    "test:local:group-one",
+    "test:local:group-two",
+    "test:local-request",
+  ]);
+  return commands.filter(
+    (c) =>
+      suite === "full" ||
+      common.has(c) ||
+      (suite === "permissions"
+        ? permissions.has(c)
+        : /play|practice|puzzle|sequence|memory|mistakes/.test(c)),
+  );
 }
 export function parsePort(value) {
   if (!/^\d{1,5}$/.test(String(value)) || Number(value) < 1 || Number(value) > 65535)
@@ -160,6 +199,8 @@ export function handoffSummary(report, out) {
   return {
     version: report.version,
     status: report.status,
+    suite: report.suite ?? "full",
+    fullAcceptance: report.fullAcceptance ?? "NOT_RUN",
     failureCategory: report.failureCategory ?? null,
     checks: report.checks.map(({ item, status }) => ({ item, status })),
     notExecuted: report.notExecuted ?? [],
@@ -173,9 +214,11 @@ export function handoffSummary(report, out) {
     ports: report.ports,
     manualAcceptance: "PENDING",
     continue:
-      report.status === "PASS"
-        ? "Review acceptance evidence and complete the unchecked manual checklist. Local-only; no deployment."
-        : "Inspect the failure category and code, fix the stated cause, and retry in a NEW output directory. Never kill unrelated processes.",
+      report.status === "PARTIAL_PASS"
+        ? "Selected checks only passed. Full acceptance is NOT_RUN; run --suite full before a full acceptance or deployment claim."
+        : report.status === "PASS"
+          ? "Review acceptance evidence and complete the unchecked manual checklist. Local-only; no deployment."
+          : "Inspect the failure category and code, fix the stated cause, and retry in a NEW output directory. Never kill unrelated processes.",
     limitations: report.limitations,
   };
 }

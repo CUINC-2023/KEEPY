@@ -10,6 +10,7 @@ import {
   DiagnosticError,
   failureCategory,
   handoffSummary,
+  selectAcceptanceCommands,
 } from "./acceptance-preflight.mjs";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
@@ -54,6 +55,8 @@ const report = {
   environment: "Local Test only",
   ports,
   status: "RUNNING",
+  suite: options.suite,
+  fullAcceptance: "NOT_RUN",
   checks: [],
   manualAcceptance: "PENDING",
   limitations: [
@@ -78,7 +81,7 @@ const run = (file, args = [], env = process.env) =>
     windowsHide: true,
     maxBuffer: 8e6,
   });
-const commands = [
+const allCommands = [
   "test:practice-presets",
   "test:practice-challenge",
   "test:practice-rounds",
@@ -155,6 +158,8 @@ const commands = [
   "typecheck",
   "build",
 ];
+const commands = selectAcceptanceCommands(allCommands, options.suite);
+report.notExecuted = allCommands.filter((c) => !commands.includes(c));
 const stages = [
   "preflight",
   ...commands,
@@ -347,7 +352,8 @@ try {
     item: "Original SQLite table counts/digests and immutable version inventory unchanged",
     status: "PASS",
   });
-  report.status = "PASS";
+  report.status = options.suite === "full" ? "PASS" : "PARTIAL_PASS";
+  report.fullAcceptance = options.suite === "full" ? "PASS" : "NOT_RUN";
   report.source.unchanged = JSON.stringify(sourceBefore) === JSON.stringify(hashSource());
   assert.equal(report.source.unchanged, true);
 } catch (error) {
@@ -355,8 +361,9 @@ try {
   report.failureCategory = failureCategory(phase, error);
   report.failureCode = error.code ?? "PHASE_FAILED";
   if (error.diagnostics) report.diagnostics = error.diagnostics;
-  report.notExecuted = stages.slice(stages.indexOf(phase) + 1);
-  report.checks.push(...report.notExecuted.map((item) => ({ item, status: "NOT_RUN" })));
+  const interrupted = stages.slice(stages.indexOf(phase) + 1);
+  report.notExecuted = [...new Set([...report.notExecuted, ...interrupted])];
+  report.checks.push(...interrupted.map((item) => ({ item, status: "NOT_RUN" })));
   report.checks.push({
     item: phase,
     status: "FAIL",

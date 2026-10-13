@@ -800,6 +800,131 @@ export const COLLECTION_THEMES = [
       ],
     },
   ],
+  ...[
+    {
+      id: "local-demo-270-round",
+      coverTone: "orbit",
+      composition: "round",
+      title: {
+        "zh-TW": "圓窗時刻 · 虛構範本",
+        en: "Round Window Moments · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "三張紙上圓窗依序移動重心：首張把圓置於上方，第二張用交疊建立距離，第三張留下中央空白。紫色與淡金色僅是本機幾何設計，不是真人照片、拍攝紀錄或合作。",
+        en: "Three paper windows shift their visual center: the first lifts a circle, the second creates distance through overlap, and the third opens the center. Violet and pale gold form local geometry, not photographs, shoot records or collaborations.",
+      },
+      guide: {
+        "zh-TW":
+          "先讀上移、交疊、留白三個構圖提案，再比較不同款式。完整、部分與空收藏只作隔離情境；範本不提供抽卡或獎勵。",
+        en: "Read the raised, overlapping and open compositions before comparing designs. Full, partial and empty collections are isolated scenarios; templates offer no draws or rewards.",
+      },
+      bio: {
+        "zh-TW": "以圓窗與留白整理自己的閱讀節奏。",
+        en: "Arrange my reading rhythm through circles and open space.",
+      },
+      badge: {
+        "zh-TW": "圓窗 · 視覺範本，非正式成就",
+        en: "Round Window · Visual template, not a formal achievement",
+      },
+      cardStories: [
+        {
+          "zh-TW": "上移：單圓把重心移向上方，底部保留閱讀空間。",
+          en: "Rise: one circle lifts the center, leaving reading space below.",
+        },
+        {
+          "zh-TW": "交疊：雙圓以重疊區分前後層次。",
+          en: "Overlap: two circles distinguish front and back through their intersection.",
+        },
+        {
+          "zh-TW": "留白：圓環保留中間空間，讓故事暫停。",
+          en: "Open: a ring reserves its center for a pause in the story.",
+        },
+      ],
+    },
+    {
+      id: "local-demo-270-step",
+      coverTone: "garden",
+      composition: "steps",
+      title: {
+        "zh-TW": "階梯色譜 · 虛構範本",
+        en: "Steps of Color · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "用三段矩形構成一座想像中的紙上階梯。綠色與深淺邊界帶出向上、轉角與休息平台，不表示真實場地或拍攝。每張卡面都是本機向量與文字示意。",
+        en: "Three rectangular tiers form an imagined paper staircase. Green fields and contrasting edges suggest ascent, a turn and a landing, without representing a real location or shoot. Every design is local vector and text illustration.",
+      },
+      guide: {
+        "zh-TW":
+          "依向上、轉角、平台閱讀，也可自選順序。重複卡與不同款式分開；預覽不授予持卡、徽章或正式權利。",
+        en: "Read ascent, turn and landing in sequence or choose another order. Duplicates and distinct designs stay separate; previews grant no holdings, badges or formal rights.",
+      },
+      bio: {
+        "zh-TW": "收藏色塊之間的轉折。",
+        en: "Collect the turns between color fields.",
+      },
+      badge: {
+        "zh-TW": "階梯 · 視覺範本，非正式成就",
+        en: "Steps · Visual template, not a formal achievement",
+      },
+      cardStories: [
+        {
+          "zh-TW": "向上：三個矩形依次增加高度。",
+          en: "Ascent: three rectangles increase in height.",
+        },
+        {
+          "zh-TW": "轉角：移動中段的位置，讓閱讀方向改變。",
+          en: "Turn: shifting the middle tier changes the reading direction.",
+        },
+        {
+          "zh-TW": "平台：上方水平線留出安靜的結尾。",
+          en: "Landing: a horizontal upper edge leaves a quiet ending.",
+        },
+      ],
+    },
+    {
+      id: "local-demo-270-wave",
+      coverTone: "tide",
+      composition: "waves",
+      title: {
+        "zh-TW": "波紋郵札 · 虛構範本",
+        en: "Ripple Postcards · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "以藍色曲線構想三張不存在的郵札：平行線、相遇的弧線與漸疏的波紋。這些線條不描述真實海岸、天氣或寄送紀錄；素材完全來自本機向量與雙語文字。",
+        en: "Blue curves imagine three postcards that do not exist: parallel lines, meeting arcs and widening ripples. The lines describe no real coast, weather or delivery record; materials are entirely local vectors and bilingual text.",
+      },
+      guide: {
+        "zh-TW":
+          "比較平行、相遇與漸疏的閱讀節奏。只在示意情境查看已展示款式；沒有真人素材、正式上架、實體寄送或營運成效宣告。",
+        en: "Compare parallel, meeting and widening rhythms. View only the designs shown in sample scenarios; no real-person materials, release, physical delivery or performance claims.",
+      },
+      bio: {
+        "zh-TW": "把曲線留下的空間放進收藏故事。",
+        en: "Keep the space between curves in my collection story.",
+      },
+      badge: {
+        "zh-TW": "波紋 · 視覺範本，非正式成就",
+        en: "Ripples · Visual template, not a formal achievement",
+      },
+      cardStories: [
+        {
+          "zh-TW": "平行：三條曲線維持相同方向。",
+          en: "Parallel: three curves keep the same direction.",
+        },
+        {
+          "zh-TW": "相遇：中段弧線靠近，形成閱讀停點。",
+          en: "Meeting: middle arcs approach to form a reading pause.",
+        },
+        {
+          "zh-TW": "漸疏：線條距離增加，留下下一頁空間。",
+          en: "Widening: the lines move apart, leaving space for the next page.",
+        },
+      ],
+    },
+  ],
 ].map((t) => ({
   ...t,
   synthetic: true,

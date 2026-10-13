@@ -1,6 +1,7 @@
 export interface CollectionTheme {
   cardStories?: { "zh-TW": string; en: string }[];
   coverTone?: "orbit" | "garden" | "tide";
+  composition?: "round" | "steps" | "waves";
   id: string;
   version: number;
   synthetic: boolean;
