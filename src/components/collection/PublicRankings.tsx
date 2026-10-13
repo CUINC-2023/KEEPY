@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { ProgressiveDetails } from "@/components/ui/progressive-details";
 import { useDiscoveryText } from "@/lib/discovery-copy";
 import { localApi, useLocalTest } from "@/lib/local-test-client";
 import { SeasonRankings } from "./SeasonRankings";
@@ -86,12 +87,20 @@ export function PublicRankings({ summary = false }: { summary?: boolean }) {
         </h1>
       )}
       {!summary && <RankingNavigation />}
-      <p>
+      <p className="text-sm">
         {t(
-          "依公开系列平均完成度、完成系列數與成就排序，同分並列（1、1、3）。僅自願公開且同意排行的正式資料；本機Mock與synthetic全部排除，不以儲值排名。",
-          "Ranked by average public series completion, completed series and achievements; ties share positions (1, 1, 3). Only public, opted-in real data qualify. All local Mock and synthetic accounts are excluded. Spending is not ranked.",
+          "公開收藏完成度、完成系列與已取得成就；同分並列。正式榜只計自願公開資料，不含測試、消費或玩法分數。",
+          "Public completion, completed series and earned achievements; ties share ranks. Formal rankings require voluntary public data and exclude test data, spending and game scores.",
         )}
       </p>
+      <ProgressiveDetails summary={t("計分與同分規則", "Scoring and tie rules")}>
+        <p>
+          {t(
+            "依公开系列平均完成度、完成系列數與成就排序，同分並列（1、1、3）。僅自願公開且同意排行的正式資料；本機Mock與synthetic全部排除，不以儲值排名。",
+            "Ranked by average public series completion, completed series and achievements; ties share positions (1, 1, 3). Only public, opted-in real data qualify. All local Mock and synthetic accounts are excluded. Spending is not ranked.",
+          )}
+        </p>
+      </ProgressiveDetails>
       {!summary && (
         <label className="block">
           {t("查找公開收藏家", "Find public collector")}

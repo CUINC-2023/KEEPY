@@ -85,6 +85,20 @@ export function ShowcaseEditor({
                 theme: "quiet",
                 shelfLayout: "grid",
               },
+              {
+                id: "prism-albums",
+                label: t("折光卡冊導覽", "Prism album tour"),
+                layout: "albums",
+                theme: "cobalt",
+                shelfLayout: "wide",
+              },
+              {
+                id: "paper-badges",
+                label: t("紙頁徽章典藏", "Paper badge archive"),
+                layout: "badges",
+                theme: "sepia",
+                shelfLayout: "grid",
+              },
             ] as const
           ).map((p) => (
             <Button

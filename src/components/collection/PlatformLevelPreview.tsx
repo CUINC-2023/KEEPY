@@ -2,6 +2,7 @@ import { useParticipation } from "@/lib/participation-store";
 import { previewPlatformLevel } from "@/lib/platform-level-preview.mjs";
 import type { CollectionMe } from "@/lib/collection-store";
 import { useDiscoveryText } from "@/lib/discovery-copy";
+import { ProgressiveDetails } from "@/components/ui/progressive-details";
 export function PlatformLevelPreview({ me }: { me: CollectionMe }) {
   const d = useParticipation(),
     t = useDiscoveryText();
@@ -95,27 +96,29 @@ export function PlatformLevelPreview({ me }: { me: CollectionMe }) {
               </p>
             )}
           </details>
-          {!value.sources.length ? (
-            <p>
-              {t(
-                "目前沒有符合候選條件的完成來源。",
-                "No completed sources meet the candidate conditions yet.",
-              )}
-            </p>
-          ) : (
-            <ul className="space-y-2">
-              {value.sources.map((s) => (
-                <li key={s.id}>
-                  {
-                    d.data?.tasks.find((task) => task.id === s.id)?.title[
-                      t("zh-TW", "en") as "zh-TW" | "en"
-                    ]
-                  }{" "}
-                  · {t("任務快照版本", "Task snapshot version")} {s.ruleVersion}
-                </li>
-              ))}
-            </ul>
-          )}
+          <ProgressiveDetails summary={t("有效參與來源明細", "Eligible participation sources")}>
+            {!value.sources.length ? (
+              <p>
+                {t(
+                  "目前沒有符合候選條件的完成來源。",
+                  "No completed sources meet the candidate conditions yet.",
+                )}
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {value.sources.map((s) => (
+                  <li key={s.id}>
+                    {
+                      d.data?.tasks.find((task) => task.id === s.id)?.title[
+                        t("zh-TW", "en") as "zh-TW" | "en"
+                      ]
+                    }{" "}
+                    · {t("任務快照版本", "Task snapshot version")} {s.ruleVersion}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </ProgressiveDetails>
           <p className="text-sm">
             {t(
               "歷史任務快照與目前公開來源共同核對；停用、下架或遮蔽後重算，不改正式等級或歷史紀錄。",

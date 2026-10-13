@@ -142,6 +142,25 @@ export function DiscoveryEntry({
       tabIndex={-1}
       data-content-id={item.id}
     >
+      {compact && item.kind === "article" && (
+        <div
+          className="max-w-20 [&_img]:aspect-square [&_img]:object-cover"
+          data-compact-story-cover
+        >
+          {item.materials?.find((material) => material.ref === "season-hero") ? (
+            <ContentImage
+              alt={item.materials.find((material) => material.ref === "season-hero")!.alt[locale]}
+            />
+          ) : (
+            <span
+              aria-hidden="true"
+              className="flex h-16 w-16 items-center justify-center rounded-lg border border-border bg-muted text-xl text-primary"
+            >
+              ▤
+            </span>
+          )}
+        </div>
+      )}
       {detail && !privatePreview && item.kind !== "article" && <ExploreBackLink />}
       <p className="text-xs font-bold text-gold">
         {item.kind === "article"

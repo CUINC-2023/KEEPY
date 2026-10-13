@@ -21,6 +21,7 @@ import { Link, useBlocker } from "@tanstack/react-router";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { BadgeMark } from "@/components/player/BadgeMark";
 import { Button } from "@/components/ui/button";
+import { ProgressiveDetails } from "@/components/ui/progressive-details";
 import { CollectionCardView } from "./CollectionCardView";
 import { useLocale } from "@/lib/keepy-i18n-shared";
 import { useDiscoveryText } from "@/lib/discovery-copy";
@@ -746,7 +747,10 @@ function ShowcaseContent({
       <section key="collector" id="collection-public-cards" className="space-y-4">
         <h2>{t("精選卡牌", "Featured cards")}</h2>
         {data.mainCard && <Cards cards={[data.mainCard]} />}
-        <Cards cards={data.shelf} wide={data.shelfLayout === "wide"} />
+        <Cards
+          cards={data.shelf.filter((card) => card.cardId !== data.mainCard?.cardId)}
+          wide={data.shelfLayout === "wide"}
+        />
       </section>
     ),
     albums: (
@@ -802,9 +806,16 @@ function ShowcaseContent({
       data-showcase-style={data.theme}
       data-showcase-cover={data.coverMode}
     >
-      <p className="whitespace-pre-wrap break-words">
-        {locale === "en" && data.bioEn ? data.bioEn : data.bio}
-      </p>
+      {order.map((k) => sections[k])}
+      {(data.bio || data.bioEn) && (
+        <ProgressiveDetails
+          summary={t("閱讀完整收藏介紹", "Read the full collection introduction")}
+        >
+          <p className="whitespace-pre-wrap break-words">
+            {locale === "en" && data.bioEn ? data.bioEn : data.bio}
+          </p>
+        </ProgressiveDetails>
+      )}
       {!!data.curations?.length && (
         <section data-public-curations className="space-y-4">
           <h2>{t("本人允許的公開策展", "Owner-permitted public curations")}</h2>
@@ -839,7 +850,13 @@ function ShowcaseContent({
               >
                 {g.title}
               </h3>
-              <p className="whitespace-pre-wrap break-words">{g.note}</p>
+              {g.note.length > 160 ? (
+                <ProgressiveDetails summary={t("閱讀完整展區故事", "Read the full section story")}>
+                  <p className="whitespace-pre-wrap break-words">{g.note}</p>
+                </ProgressiveDetails>
+              ) : (
+                <p className="whitespace-pre-wrap break-words">{g.note}</p>
+              )}
               <Cards cards={g.cards} />
               <nav
                 className="flex flex-wrap gap-3"
@@ -944,7 +961,6 @@ function ShowcaseContent({
           </a>
         )}
       </nav>
-      {order.map((k) => sections[k])}
     </div>
   );
 }
