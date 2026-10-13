@@ -10,6 +10,7 @@ import { PlayRecords } from "./PlayRecords";
 import { PlayRoundGuard } from "./PlayRoundGuard";
 import { PuzzlePlay } from "./PuzzlePlay";
 import { SequencePlay } from "./SequencePlay";
+import { PracticeWorkbench } from "./PracticeWorkbench";
 export function CollectionPlay() {
   const d = useCollection(),
     t = useDiscoveryText(),
@@ -151,6 +152,7 @@ export function CollectionPlay() {
               {t("探索公開內容", "Explore public content")}
             </Link>
           </section>
+          {d.catalogue && <PracticeWorkbench me={legal} catalogue={d.catalogue} />}
           <section className="grid min-w-0 gap-5 xl:grid-cols-2" data-play-entrances>
             <nav
               className="flex flex-wrap gap-3 xl:col-span-2"
