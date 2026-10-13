@@ -17,6 +17,7 @@ import {
   practiceStep,
 } from "../src/lib/play-practice.mjs";
 import { validStoredPlaySettings } from "../src/lib/play-contract.mjs";
+import { validQuizReview, currentQuizQuestion } from "../src/lib/play-review.mjs";
 import {
   PUZZLE_RULE_VERSION,
   SEQUENCE_RULE_VERSION,
@@ -319,6 +320,76 @@ export function privatePlaySummary(d, token, range) {
     ranking: false,
   };
 }
+export function playMistakes(d, token, params = {}) {
+  const u = actor(d, token);
+  const page = Number(params.page ?? 1),
+    mode = params.mode ?? "all";
+  if (
+    Object.keys(params).some((k) => !["page", "mode"].includes(k)) ||
+    !Number.isSafeInteger(page) ||
+    page < 1 ||
+    page > 10000 ||
+    !["all", "knowledge", "observation"].includes(mode)
+  )
+    fail(d, 422, "Invalid bounded mistakes query");
+  const { cat, owner } = eligible(d, u.id),
+    allowed = JSON.stringify(owner.cards.map((c) => c.cardId)),
+    where =
+      "user_id=? AND json_extract(payload,'$.mode') IN ('knowledge','observation') AND json_array_length(json_extract(payload,'$.sourceIds'))>0 AND NOT EXISTS(SELECT 1 FROM json_each(play_results.payload,'$.sourceIds') s WHERE s.type!='text' OR s.value NOT IN (SELECT value FROM json_each(?)))";
+  const records = d.db
+    .prepare(
+      "SELECT id,at,payload FROM play_results WHERE " +
+        where +
+        (mode === "all" ? "" : " AND json_extract(payload,'$.mode')=?") +
+        " ORDER BY at DESC,id DESC LIMIT 101",
+    )
+    .all(u.id, allowed, ...(mode === "all" ? [] : [mode]));
+  const current = new Map(
+      ["knowledge", "observation"].flatMap((m) =>
+        playQuestions(owner, cat, m).map((q) => [m + ":" + q.id, q]),
+      ),
+    ),
+    rows = [];
+  let legacyWithoutReview = 0;
+  for (const r of records.slice(0, 100)) {
+    const payload = JSON.parse(r.payload);
+    if (!payload.quizReview) {
+      legacyWithoutReview++;
+      continue;
+    }
+    if (!validQuizReview(payload.quizReview))
+      fail(d, 422, "Stored quiz review incompatible; read-only diagnosis required");
+    for (const question of payload.quizReview.questions) {
+      if (
+        question.selected !== question.answer &&
+        currentQuizQuestion(question, current.get(payload.mode + ":" + question.id))
+      )
+        rows.push({
+          resultId: r.id,
+          at: r.at,
+          mode: payload.mode,
+          difficulty: payload.difficulty,
+          ruleVersion: payload.ruleVersion,
+          question,
+        });
+    }
+  }
+  const pages = Math.max(1, Math.ceil(rows.length / 20)),
+    p = Math.min(page, pages);
+  return {
+    schema: 1,
+    source: "local-private-current-quiz-review",
+    actorId: u.id,
+    visibilityKey: cat.visibilityKey,
+    page: p,
+    pages,
+    pageSize: 20,
+    total: rows.length,
+    rows: rows.slice((p - 1) * 20, p * 20),
+    legacyWithoutReview,
+    historyLimited: records.length > 100,
+  };
+}
 export function playCommand(d, token, input, key) {
   const u = actor(d, token);
   if (
@@ -529,6 +600,14 @@ export function playCommand(d, token, input, key) {
       const payload = {
         schema: 1,
         mode: proof.mode,
+        ...(["knowledge", "observation"].includes(proof.mode)
+          ? {
+              quizReview: {
+                schema: 1,
+                questions: state.questions.map((q, i) => ({ ...q, selected: state.answers[i] })),
+              },
+            }
+          : {}),
         difficulty: proof.difficulty,
         ruleVersion: proof.ruleVersion,
         ...(state.memoryConfig

@@ -46,6 +46,7 @@ import { Route as AppCurationsRouteImport } from './routes/app.curations'
 import { Route as AppGrowthRouteImport } from './routes/app.growth'
 import { Route as AppHistoryRouteImport } from './routes/app.history'
 import { Route as AppLevelsRouteImport } from './routes/app.levels'
+import { Route as AppMistakesRouteImport } from './routes/app.mistakes'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppParticipationLevelRouteImport } from './routes/app.participation-level'
 import { Route as AppPlanningRouteImport } from './routes/app.planning'
@@ -281,6 +282,11 @@ const AppHistoryRoute = AppHistoryRouteImport.update({
 const AppLevelsRoute = AppLevelsRouteImport.update({
   id: '/levels',
   path: '/levels',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMistakesRoute = AppMistakesRouteImport.update({
+  id: '/mistakes',
+  path: '/mistakes',
   getParentRoute: () => AppRoute,
 } as any)
 const AppNotesRoute = AppNotesRouteImport.update({
@@ -572,6 +578,7 @@ export interface FileRoutesByFullPath {
   '/app/growth': typeof AppGrowthRoute
   '/app/history': typeof AppHistoryRoute
   '/app/levels': typeof AppLevelsRoute
+  '/app/mistakes': typeof AppMistakesRoute
   '/app/notes': typeof AppNotesRoute
   '/app/participation-level': typeof AppParticipationLevelRoute
   '/app/planning': typeof AppPlanningRoute
@@ -656,6 +663,7 @@ export interface FileRoutesByTo {
   '/app/growth': typeof AppGrowthRoute
   '/app/history': typeof AppHistoryRoute
   '/app/levels': typeof AppLevelsRoute
+  '/app/mistakes': typeof AppMistakesRoute
   '/app/notes': typeof AppNotesRoute
   '/app/participation-level': typeof AppParticipationLevelRoute
   '/app/planning': typeof AppPlanningRoute
@@ -745,6 +753,7 @@ export interface FileRoutesById {
   '/app/growth': typeof AppGrowthRoute
   '/app/history': typeof AppHistoryRoute
   '/app/levels': typeof AppLevelsRoute
+  '/app/mistakes': typeof AppMistakesRoute
   '/app/notes': typeof AppNotesRoute
   '/app/participation-level': typeof AppParticipationLevelRoute
   '/app/planning': typeof AppPlanningRoute
@@ -836,6 +845,7 @@ export interface FileRouteTypes {
     | '/app/growth'
     | '/app/history'
     | '/app/levels'
+    | '/app/mistakes'
     | '/app/notes'
     | '/app/participation-level'
     | '/app/planning'
@@ -920,6 +930,7 @@ export interface FileRouteTypes {
     | '/app/growth'
     | '/app/history'
     | '/app/levels'
+    | '/app/mistakes'
     | '/app/notes'
     | '/app/participation-level'
     | '/app/planning'
@@ -1008,6 +1019,7 @@ export interface FileRouteTypes {
     | '/app/growth'
     | '/app/history'
     | '/app/levels'
+    | '/app/mistakes'
     | '/app/notes'
     | '/app/participation-level'
     | '/app/planning'
@@ -1357,6 +1369,13 @@ declare module '@tanstack/react-router' {
       path: '/levels'
       fullPath: '/app/levels'
       preLoaderRoute: typeof AppLevelsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/mistakes': {
+      id: '/app/mistakes'
+      path: '/mistakes'
+      fullPath: '/app/mistakes'
+      preLoaderRoute: typeof AppMistakesRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/notes': {
@@ -1787,6 +1806,7 @@ interface AppRouteChildren {
   AppGrowthRoute: typeof AppGrowthRoute
   AppHistoryRoute: typeof AppHistoryRoute
   AppLevelsRoute: typeof AppLevelsRoute
+  AppMistakesRoute: typeof AppMistakesRoute
   AppNotesRoute: typeof AppNotesRoute
   AppParticipationLevelRoute: typeof AppParticipationLevelRoute
   AppPlanningRoute: typeof AppPlanningRoute
@@ -1814,6 +1834,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppGrowthRoute: AppGrowthRoute,
   AppHistoryRoute: AppHistoryRoute,
   AppLevelsRoute: AppLevelsRoute,
+  AppMistakesRoute: AppMistakesRoute,
   AppNotesRoute: AppNotesRoute,
   AppParticipationLevelRoute: AppParticipationLevelRoute,
   AppPlanningRoute: AppPlanningRoute,

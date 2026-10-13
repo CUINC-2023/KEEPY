@@ -81,7 +81,8 @@
     "test:collection-planning": "node tests/collection-planning.test.mjs",
     "test:new-private-reliability": "node tests/new-private-reliability.test.mjs",
     "test:practice-challenge": "node tests/practice-challenge.test.mjs",
-    "test:practice-rounds": "node tests/practice-rounds.test.mjs"
+    "test:practice-rounds": "node tests/practice-rounds.test.mjs",
+    "test:play-mistakes": "node tests/play-mistakes.test.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -159,5 +160,5 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
   },
-  "version": "0.22.203"
+  "version": "0.22.204"
 }
