@@ -4,7 +4,8 @@ export const PLAY_CONTENT_PACKS = COLLECTION_THEMES.filter(
   (t) =>
     t.id.startsWith("local-demo-121-") ||
     t.id.startsWith("local-demo-156-") ||
-    t.id.startsWith("local-demo-176-"),
+    t.id.startsWith("local-demo-176-") ||
+    t.id.startsWith("local-demo-206-"),
 ).map((t) => ({
   id: "play-pack-" + t.id,
   version: 1,
@@ -15,7 +16,7 @@ export const PLAY_CONTENT_PACKS = COLLECTION_THEMES.filter(
   websiteUse: "local-sample-only",
   socialUse: "unconfirmed",
   printUse: "unconfirmed",
-  ...(t.id.startsWith("local-demo-176-")
+  ...(t.id.startsWith("local-demo-176-") || t.id.startsWith("local-demo-206-")
     ? {
         puzzleMaterials: [2, 3, 4].map((size) => ({
           id: t.id + "-puzzle-" + size,

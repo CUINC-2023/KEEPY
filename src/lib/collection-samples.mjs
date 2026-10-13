@@ -559,6 +559,125 @@ export const COLLECTION_THEMES = [
       ],
     },
   ],
+  ...[
+    {
+      id: "local-demo-206-rain",
+      coverTone: "tide",
+      title: {
+        "zh-TW": "雨線索引 · 虛構範本",
+        en: "Rainline Index · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "用斜線的間距構想雨聲，不描繪未確認的真實天氣或地點。 這是未拍攝本機文字與幾何企劃，沒有真人、合作、日期或成效宣告。",
+        en: "The spacing of diagonal lines suggests rainfall, without claiming actual weather or locations. This is an unphotographed local text and geometric concept, with no claims about real people, collaboration, dates or performance.",
+      },
+      guide: {
+        "zh-TW": "先讀三章，再比較公開不同款式；全／部分／空收藏僅隔離fixture，不自動成為抽卡池。",
+        en: "Read three chapters, then compare distinct public designs. Full / partial / empty collections are isolated fixtures, never automatically draw pools.",
+      },
+      bio: {
+        "zh-TW": "從雨線索引選擇自己的閱讀節奏。",
+        en: "Choose my reading rhythm through Rainline Index.",
+      },
+      badge: {
+        "zh-TW": "雨線索引 · 視覺範本，非正式成就",
+        en: "Rainline Index · Visual sample, not a formal achievement",
+      },
+      cardStories: [
+        {
+          "zh-TW": "第一章：一條細線引導視線，背景保持安靜。",
+          en: "Chapter I: a fine line guides the eye against a quiet background.",
+        },
+        {
+          "zh-TW": "第二章：兩組線条交錯，空白區分出閱讀層次。",
+          en: "Chapter II: two line groups overlap, with space separating reading layers.",
+        },
+        {
+          "zh-TW": "第三章：雨線逐漸疏開，留下接續故事的位置。",
+          en: "Chapter III: the lines open out, leaving room for the next passage.",
+        },
+      ],
+    },
+    {
+      id: "local-demo-206-letter",
+      coverTone: "orbit",
+      title: {
+        "zh-TW": "圓環書信 · 虛構範本",
+        en: "Circular Letters · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "圓環像沒有寄出的信封，將開口方向與文字順序排成故事。 這是未拍攝本機文字與幾何企劃，沒有真人、合作、日期或成效宣告。",
+        en: "Open rings suggest unsent envelopes, arranging openings and text into a story. This is an unphotographed local text and geometric concept, with no claims about real people, collaboration, dates or performance.",
+      },
+      guide: {
+        "zh-TW": "先讀三章，再比較公開不同款式；全／部分／空收藏僅隔離fixture，不自動成為抽卡池。",
+        en: "Read three chapters, then compare distinct public designs. Full / partial / empty collections are isolated fixtures, never automatically draw pools.",
+      },
+      bio: {
+        "zh-TW": "從圓環書信選擇自己的閱讀節奏。",
+        en: "Choose my reading rhythm through Circular Letters.",
+      },
+      badge: {
+        "zh-TW": "圓環書信 · 視覺範本，非正式成就",
+        en: "Circular Letters · Visual sample, not a formal achievement",
+      },
+      cardStories: [
+        {
+          "zh-TW": "第一章：圓環的缺口標記故事入口。",
+          en: "Chapter I: an opening in the ring marks the entrance.",
+        },
+        {
+          "zh-TW": "第二章：大小不同的圓環留下內外兩種距離。",
+          en: "Chapter II: different ring sizes establish inner and outer distances.",
+        },
+        {
+          "zh-TW": "第三章：一個空白中心接住讀者自己的註記。",
+          en: "Chapter III: an empty center receives the reader’s own notes.",
+        },
+      ],
+    },
+    {
+      id: "local-demo-206-moon",
+      coverTone: "garden",
+      title: {
+        "zh-TW": "月頁留邊 · 虛構範本",
+        en: "Moonlit Margins · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "以淡色頁邊與幾何弧線構想夜讀，不模擬真人攝影或天文事實。 這是未拍攝本機文字與幾何企劃，沒有真人、合作、日期或成效宣告。",
+        en: "Pale margins and geometric arcs suggest reading at night, without simulating real photographs or astronomical facts. This is an unphotographed local text and geometric concept, with no claims about real people, collaboration, dates or performance.",
+      },
+      guide: {
+        "zh-TW": "先讀三章，再比較公開不同款式；全／部分／空收藏僅隔離fixture，不自動成為抽卡池。",
+        en: "Read three chapters, then compare distinct public designs. Full / partial / empty collections are isolated fixtures, never automatically draw pools.",
+      },
+      bio: {
+        "zh-TW": "從月頁留邊選擇自己的閱讀節奏。",
+        en: "Choose my reading rhythm through Moonlit Margins.",
+      },
+      badge: {
+        "zh-TW": "月頁留邊 · 視覺範本，非正式成就",
+        en: "Moonlit Margins · Visual sample, not a formal achievement",
+      },
+      cardStories: [
+        {
+          "zh-TW": "第一章：頁邊一道弧線把視線帶向正文。",
+          en: "Chapter I: a margin arc leads the eye toward the text.",
+        },
+        {
+          "zh-TW": "第二章：文字與淡色塊留出各自可讀的邊界。",
+          en: "Chapter II: text and pale blocks keep separate readable boundaries.",
+        },
+        {
+          "zh-TW": "第三章：最後的留白讓本冊結束，並保留下一冊入口。",
+          en: "Chapter III: final open space closes this album while leaving an entrance to another.",
+        },
+      ],
+    },
+  ],
 ].map((t) => ({
   ...t,
   synthetic: true,

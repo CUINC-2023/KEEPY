@@ -23,8 +23,8 @@ for (const t of CREATOR_CONTENT_TEMPLATES) {
   assert.equal(t.shootDate, null);
 }
 assert.equal(JSON.stringify(base), before);
-assert.equal(COLLECTION_THEMES.length, 21);
-assert.equal(new Set(COLLECTION_THEMES.map((t) => t.id)).size, 21);
+assert.equal(COLLECTION_THEMES.length, 24);
+assert.equal(new Set(COLLECTION_THEMES.map((t) => t.id)).size, 24);
 assert.ok(
   COLLECTION_THEMES.slice(12, 15).every(
     (t) => t.id.startsWith("local-demo-121-") && t.cardStories.length === 3,
@@ -36,7 +36,7 @@ assert.ok(
   ),
 );
 assert.ok(
-  COLLECTION_THEMES.slice(18).every(
+  COLLECTION_THEMES.slice(18, 21).every(
     (t) => t.id.startsWith("local-demo-176-") && t.cardStories.length === 3,
   ),
 );
@@ -133,3 +133,9 @@ try {
 } finally {
   d.close();
 }
+
+assert.ok(
+  COLLECTION_THEMES.slice(21).every(
+    (t) => t.id.startsWith("local-demo-206-") && t.cardStories.length === 3,
+  ),
+);
