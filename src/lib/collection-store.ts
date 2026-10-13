@@ -38,6 +38,7 @@ export interface CollectionAward {
   recordedAt: string;
 }
 export interface CollectionProfile {
+  collectionIndex?: import("./collection-private-index.mjs").PrivateIndexPreference;
   planningOrder?: string[];
   notes?: import("./collection-notes.mjs").CollectionNote[];
   readingGuide?: import("./collection-reading-guide.mjs").ReadingGuide;

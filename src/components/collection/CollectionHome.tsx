@@ -27,6 +27,9 @@ export function CollectionHome({
     <section data-collection-home className="panel min-w-0 space-y-4 p-5">
       <h2 className="text-2xl font-bold break-words">{p.displayName}</h2>
       <CollectionNextStep me={me} />
+      <Link className="text-primary underline" to="/app/collection-index">
+        {t("查找本人卡冊、卡牌、筆記與策展", "Find your albums, cards, notes and curations")}
+      </Link>
       <Link className="text-primary underline" to="/app/planning">
         {t("本人私人收藏規劃板", "Your private collection planning board")}
       </Link>

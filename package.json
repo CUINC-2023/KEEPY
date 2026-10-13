@@ -83,7 +83,8 @@
     "test:practice-challenge": "node tests/practice-challenge.test.mjs",
     "test:practice-rounds": "node tests/practice-rounds.test.mjs",
     "test:play-mistakes": "node tests/play-mistakes.test.mjs",
-    "test:play-comparison": "node tests/play-comparison.test.mjs"
+    "test:play-comparison": "node tests/play-comparison.test.mjs",
+    "test:collection-private-index": "node tests/collection-private-index.test.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -161,5 +162,5 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
   },
-  "version": "0.22.210"
+  "version": "0.22.211"
 }

@@ -42,6 +42,7 @@ import { Route as AnnouncementsAnnouncementIdRouteImport } from './routes/announ
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppAchievementsRouteImport } from './routes/app.achievements'
 import { Route as AppCollectionRouteImport } from './routes/app.collection'
+import { Route as AppCollectionIndexRouteImport } from './routes/app.collection-index'
 import { Route as AppCurationsRouteImport } from './routes/app.curations'
 import { Route as AppGrowthRouteImport } from './routes/app.growth'
 import { Route as AppHistoryRouteImport } from './routes/app.history'
@@ -263,6 +264,11 @@ const AppAchievementsRoute = AppAchievementsRouteImport.update({
 const AppCollectionRoute = AppCollectionRouteImport.update({
   id: '/collection',
   path: '/collection',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCollectionIndexRoute = AppCollectionIndexRouteImport.update({
+  id: '/collection-index',
+  path: '/collection-index',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCurationsRoute = AppCurationsRouteImport.update({
@@ -580,6 +586,7 @@ export interface FileRoutesByFullPath {
   '/announcements/$announcementId': typeof AnnouncementsAnnouncementIdRoute
   '/app/achievements': typeof AppAchievementsRoute
   '/app/collection': typeof AppCollectionRoute
+  '/app/collection-index': typeof AppCollectionIndexRoute
   '/app/curations': typeof AppCurationsRoute
   '/app/growth': typeof AppGrowthRoute
   '/app/history': typeof AppHistoryRoute
@@ -666,6 +673,7 @@ export interface FileRoutesByTo {
   '/announcements/$announcementId': typeof AnnouncementsAnnouncementIdRoute
   '/app/achievements': typeof AppAchievementsRoute
   '/app/collection': typeof AppCollectionRoute
+  '/app/collection-index': typeof AppCollectionIndexRoute
   '/app/curations': typeof AppCurationsRoute
   '/app/growth': typeof AppGrowthRoute
   '/app/history': typeof AppHistoryRoute
@@ -757,6 +765,7 @@ export interface FileRoutesById {
   '/announcements/$announcementId': typeof AnnouncementsAnnouncementIdRoute
   '/app/achievements': typeof AppAchievementsRoute
   '/app/collection': typeof AppCollectionRoute
+  '/app/collection-index': typeof AppCollectionIndexRoute
   '/app/curations': typeof AppCurationsRoute
   '/app/growth': typeof AppGrowthRoute
   '/app/history': typeof AppHistoryRoute
@@ -850,6 +859,7 @@ export interface FileRouteTypes {
     | '/announcements/$announcementId'
     | '/app/achievements'
     | '/app/collection'
+    | '/app/collection-index'
     | '/app/curations'
     | '/app/growth'
     | '/app/history'
@@ -936,6 +946,7 @@ export interface FileRouteTypes {
     | '/announcements/$announcementId'
     | '/app/achievements'
     | '/app/collection'
+    | '/app/collection-index'
     | '/app/curations'
     | '/app/growth'
     | '/app/history'
@@ -1026,6 +1037,7 @@ export interface FileRouteTypes {
     | '/announcements/$announcementId'
     | '/app/achievements'
     | '/app/collection'
+    | '/app/collection-index'
     | '/app/curations'
     | '/app/growth'
     | '/app/history'
@@ -1353,6 +1365,13 @@ declare module '@tanstack/react-router' {
       path: '/collection'
       fullPath: '/app/collection'
       preLoaderRoute: typeof AppCollectionRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/collection-index': {
+      id: '/app/collection-index'
+      path: '/collection-index'
+      fullPath: '/app/collection-index'
+      preLoaderRoute: typeof AppCollectionIndexRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/curations': {
@@ -1821,6 +1840,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 interface AppRouteChildren {
   AppAchievementsRoute: typeof AppAchievementsRoute
   AppCollectionRoute: typeof AppCollectionRoute
+  AppCollectionIndexRoute: typeof AppCollectionIndexRoute
   AppCurationsRoute: typeof AppCurationsRoute
   AppGrowthRoute: typeof AppGrowthRoute
   AppHistoryRoute: typeof AppHistoryRoute
@@ -1850,6 +1870,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAchievementsRoute: AppAchievementsRoute,
   AppCollectionRoute: AppCollectionRoute,
+  AppCollectionIndexRoute: AppCollectionIndexRoute,
   AppCurationsRoute: AppCurationsRoute,
   AppGrowthRoute: AppGrowthRoute,
   AppHistoryRoute: AppHistoryRoute,

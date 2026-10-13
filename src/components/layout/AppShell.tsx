@@ -181,6 +181,12 @@ const PLAYER_NAV: NavItem[] = [
   { to: "/app/collection", label: "收藏進度與展示", Icon: IconCards, copyKey: "collection" },
   { to: "/app/planning", label: "私人收藏規劃", Icon: IconBook, copyKey: "collectionPlanning" },
   { to: "/app/notes", label: "私人收藏筆記", Icon: IconBook, copyKey: "collectionNotes" },
+  {
+    to: "/app/collection-index",
+    label: "私人收藏索引",
+    Icon: IconBook,
+    copyKey: "privateCollectionIndex",
+  },
   { to: "/app/mistakes", label: "本人練習錯題", Icon: IconBook, copyKey: "practiceMistakes" },
   {
     to: "/app/progress-compare",

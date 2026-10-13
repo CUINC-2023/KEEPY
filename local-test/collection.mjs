@@ -1,5 +1,6 @@
 import { validPlanningOrder } from "../src/lib/collection-planning.mjs";
 import { validCollectionNotes, noteSubjectAllowed } from "../src/lib/collection-notes.mjs";
+import { validPrivateIndexPreference } from "../src/lib/collection-private-index.mjs";
 import { validReadingGuide } from "../src/lib/collection-reading-guide.mjs";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
 import { validWorkbench } from "../src/lib/collection-workbench.mjs";
@@ -266,6 +267,11 @@ export function collectionMe(d, token) {
     const displayable = new Set(
       catalogue.cards.filter((c) => heldById.has(c.cardId)).map((c) => c.cardId),
     );
+    if (
+      profileData.collectionIndex !== undefined &&
+      !validPrivateIndexPreference(profileData.collectionIndex)
+    )
+      fail("Stored private index incompatible");
     if (profileData.notes !== undefined) {
       if (!validCollectionNotes(profileData.notes))
         fail("Stored notes incompatible; source cleared");
@@ -335,6 +341,7 @@ function validateProfile(d, u, p) {
             "readingGuide",
             "notes",
             "planningOrder",
+            "collectionIndex",
           ].includes(k),
       )
       .sort()
@@ -366,6 +373,8 @@ function validateProfile(d, u, p) {
   }
   if (p.planningOrder !== undefined && !validPlanningOrder(p.planningOrder))
     fail("Invalid controlled private planning order");
+  if (p.collectionIndex !== undefined && !validPrivateIndexPreference(p.collectionIndex))
+    fail("Invalid private unified index preference");
   if (p.collectionSearch !== undefined) {
     const cat = collectionCatalogue(d);
     if (
