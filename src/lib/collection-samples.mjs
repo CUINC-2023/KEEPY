@@ -678,6 +678,128 @@ export const COLLECTION_THEMES = [
       ],
     },
   ],
+  ...[
+    {
+      id: "local-demo-246-prism",
+      coverTone: "orbit",
+      title: {
+        "zh-TW": "折光舞台 · 虛構範本",
+        en: "Prism Stage · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "用多邊形與亮暗色面構想一座不存在的紙上舞台，觀看方向由讀者選擇。 這是本機CSS幾何與文字示意，沒有真人、合作、拍攝日期或營運成效。",
+        en: "Imagine a paper stage that does not exist through polygons and contrasting fields; readers choose their viewing direction. Local CSS geometry and text samples, with no real person, collaboration, shoot date or performance claim.",
+      },
+      guide: {
+        "zh-TW":
+          "先讀三章，再選自己的閱讀順序；完整／部分／空收藏只在隔離fixture呈現。不同款式與重複卡分開，不自動上架抽卡。",
+        en: "Read three chapters and choose a reading order. Full / partial / empty collections appear only in isolated fixtures. Distinct designs and duplicates stay separate; never automatically drawable.",
+      },
+      bio: {
+        "zh-TW": "用折光舞台留下自己的閱讀節奏。",
+        en: "Keep my reading rhythm through Prism Stage.",
+      },
+      badge: {
+        "zh-TW": "折光舞台 · 視覺範本，非正式成就",
+        en: "Prism Stage · Visual template, not a formal achievement",
+      },
+      cardStories: [
+        {
+          "zh-TW": "開場：一個三角形把視線引向舞台中心。",
+          en: "Opening: a triangle guides the eye toward the stage center.",
+        },
+        {
+          "zh-TW": "轉場：兩個色面在斜向邊界交會。",
+          en: "Transition: two fields meet along a diagonal boundary.",
+        },
+        {
+          "zh-TW": "落幕：縮小形狀，讓空白接住故事。",
+          en: "Closing: smaller forms leave space to hold the story.",
+        },
+      ],
+    },
+    {
+      id: "local-demo-246-map",
+      coverTone: "garden",
+      title: {
+        "zh-TW": "留白地圖 · 虛構範本",
+        en: "Maps of Space · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "以矩形、轉角與空白畫出想像中的閱讀路線，不表示真實道路或地理位置。 這是本機CSS幾何與文字示意，沒有真人、合作、拍攝日期或營運成效。",
+        en: "Rectangles, corners and intervals form an imagined reading route, without representing real roads or geographic locations. Local CSS geometry and text samples, with no real person, collaboration, shoot date or performance claim.",
+      },
+      guide: {
+        "zh-TW":
+          "先讀三章，再選自己的閱讀順序；完整／部分／空收藏只在隔離fixture呈現。不同款式與重複卡分開，不自動上架抽卡。",
+        en: "Read three chapters and choose a reading order. Full / partial / empty collections appear only in isolated fixtures. Distinct designs and duplicates stay separate; never automatically drawable.",
+      },
+      bio: {
+        "zh-TW": "用留白地圖留下自己的閱讀節奏。",
+        en: "Keep my reading rhythm through Maps of Space.",
+      },
+      badge: {
+        "zh-TW": "留白地圖 · 視覺範本，非正式成就",
+        en: "Maps of Space · Visual template, not a formal achievement",
+      },
+      cardStories: [
+        {
+          "zh-TW": "起點：一個短框標示閱讀入口。",
+          en: "Start: a short frame marks the reading entrance.",
+        },
+        {
+          "zh-TW": "路徑：兩條折線讓視線輪流轉向。",
+          en: "Path: two angled lines let the eye turn in sequence.",
+        },
+        {
+          "zh-TW": "停留：空白中心留下自己的註記。",
+          en: "Pause: an open center leaves room for personal notes.",
+        },
+      ],
+    },
+    {
+      id: "local-demo-246-ribbon",
+      coverTone: "tide",
+      title: {
+        "zh-TW": "緞帶書頁 · 虛構範本",
+        en: "Ribbon Pages · Fictional template",
+      },
+      story: {
+        "zh-TW":
+          "將色帶當作紙上排版的線索，而非宣稱使用真實織品或真人素材。 這是本機CSS幾何與文字示意，沒有真人、合作、拍攝日期或營運成效。",
+        en: "Color bands guide a paper-layout concept, without claiming real fabrics or portrait materials. Local CSS geometry and text samples, with no real person, collaboration, shoot date or performance claim.",
+      },
+      guide: {
+        "zh-TW":
+          "先讀三章，再選自己的閱讀順序；完整／部分／空收藏只在隔離fixture呈現。不同款式與重複卡分開，不自動上架抽卡。",
+        en: "Read three chapters and choose a reading order. Full / partial / empty collections appear only in isolated fixtures. Distinct designs and duplicates stay separate; never automatically drawable.",
+      },
+      bio: {
+        "zh-TW": "用緞帶書頁留下自己的閱讀節奏。",
+        en: "Keep my reading rhythm through Ribbon Pages.",
+      },
+      badge: {
+        "zh-TW": "緞帶書頁 · 視覺範本，非正式成就",
+        en: "Ribbon Pages · Visual template, not a formal achievement",
+      },
+      cardStories: [
+        {
+          "zh-TW": "展開：寬色帶連接頁面兩側。",
+          en: "Unfold: a broad band connects two page edges.",
+        },
+        {
+          "zh-TW": "交疊：細色帶分出前後閱讀層次。",
+          en: "Overlap: narrow bands separate reading layers.",
+        },
+        {
+          "zh-TW": "留邊：邊界外的空白保留下一章。",
+          en: "Margin: space beyond the boundary reserves the next chapter.",
+        },
+      ],
+    },
+  ],
 ].map((t) => ({
   ...t,
   synthetic: true,

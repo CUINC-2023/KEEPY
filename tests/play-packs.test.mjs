@@ -6,7 +6,7 @@ import { createLocalServer } from "../local-test/server.mjs";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-assert.equal(PLAY_CONTENT_PACKS.length, 12);
+assert.equal(PLAY_CONTENT_PACKS.length, 15);
 const corrupt = structuredClone(PLAY_CONTENT_PACKS[0]);
 corrupt.questions[0].options = [null, null];
 assert.ok(playPackIssues(corrupt).includes("answer-or-options"));
@@ -26,7 +26,7 @@ for (const code of [
 ])
   assert.ok(codes.includes(code));
 const geometric = PLAY_CONTENT_PACKS.filter((p) => p.puzzleMaterials);
-assert.equal(geometric.length, 6);
+assert.equal(geometric.length, 9);
 for (const p of geometric) {
   assert.deepEqual(
     p.puzzleMaterials.map((m) => m.size),
@@ -37,13 +37,13 @@ for (const p of geometric) {
   assert.ok(playPackIssues(bad).includes("puzzle-material"));
 }
 const health = playPackHealth();
-assert.equal(health.packs.length, 12);
+assert.equal(health.packs.length, 15);
 assert.ok(health.packs.every((p) => p.sharedQuestionLayouts >= 3 && p.sharedQuestionLayouts <= 6));
 assert.ok(!JSON.stringify(health).includes(PLAY_CONTENT_PACKS[0].questions[0].prompt.en));
-assert.equal(new Set(PLAY_CONTENT_PACKS.map((p) => p.id)).size, 12);
+assert.equal(new Set(PLAY_CONTENT_PACKS.map((p) => p.id)).size, 15);
 for (const p of PLAY_CONTENT_PACKS) {
   assert.deepEqual(playPackIssues(p), []);
-  assert.equal(p.questions.length, 6);
+  assert.equal(p.questions.length, p.id.includes("local-demo-246-") ? 8 : 6);
   assert.ok(
     p.questions.every(
       (q) => q.prompt.en && q.prompt["zh-TW"] && q.options.some((o) => o.id === q.answer),
@@ -71,7 +71,7 @@ try {
   assert.equal(r.status, 200);
   const body = await r.json();
   assert.equal(body.publicationApproval, false);
-  assert.equal(body.packs.length, 12);
+  assert.equal(body.packs.length, 15);
   const prefix =
     "http://127.0.0.1:" +
     server.address().port +
@@ -86,5 +86,23 @@ try {
   d.close();
 }
 console.log(
-  "PASS six bilingual versioned question packs, truthful shared-layout counts, chapter/geometry answers, controlled material references and server official scope; never auto-published",
+  "PASS fifteen bilingual versioned question packs, truthful shared-layout counts, sourced chapter/geometry answers and server official scope; never auto-published",
 );
+
+for (const p of PLAY_CONTENT_PACKS.filter((p) => p.id.includes("local-demo-246-"))) {
+  assert.equal(p.questions.length, 8);
+  assert.ok(
+    p.questions.some((q) => q.difficulty === "standard") &&
+      p.questions.some((q) => q.difficulty === "hard"),
+  );
+  for (const q of p.questions.filter((q) => q.id.includes("chapter-comparison")))
+    assert.deepEqual(
+      q.explanation,
+      p.questions.find(
+        (v) =>
+          v.sourceRef.chapter === q.sourceRef.chapter &&
+          v.difficulty === "easy" &&
+          v.mode === "knowledge",
+      ).explanation,
+    );
+}

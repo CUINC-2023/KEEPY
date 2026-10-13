@@ -5,7 +5,8 @@ export const PLAY_CONTENT_PACKS = COLLECTION_THEMES.filter(
     t.id.startsWith("local-demo-121-") ||
     t.id.startsWith("local-demo-156-") ||
     t.id.startsWith("local-demo-176-") ||
-    t.id.startsWith("local-demo-206-"),
+    t.id.startsWith("local-demo-206-") ||
+    t.id.startsWith("local-demo-246-"),
 ).map((t) => ({
   id: "play-pack-" + t.id,
   version: 1,
@@ -16,7 +17,9 @@ export const PLAY_CONTENT_PACKS = COLLECTION_THEMES.filter(
   websiteUse: "local-sample-only",
   socialUse: "unconfirmed",
   printUse: "unconfirmed",
-  ...(t.id.startsWith("local-demo-176-") || t.id.startsWith("local-demo-206-")
+  ...(t.id.startsWith("local-demo-176-") ||
+  t.id.startsWith("local-demo-206-") ||
+  t.id.startsWith("local-demo-246-")
     ? {
         puzzleMaterials: [2, 3, 4].map((size) => ({
           id: t.id + "-puzzle-" + size,
@@ -32,6 +35,29 @@ export const PLAY_CONTENT_PACKS = COLLECTION_THEMES.filter(
       }
     : {}),
   questions: [
+    ...(t.id.startsWith("local-demo-246-")
+      ? [1, 2].map((i) => ({
+          id: t.id + "-chapter-comparison-" + i,
+          mode: "knowledge",
+          difficulty: i === 1 ? "standard" : "hard",
+          prompt: bi(
+            t.title["zh-TW"] +
+              "：" +
+              (i === 1 ? "第二章的原文是哪一段？" : "依章節順序，最後一章是哪一段？"),
+            t.title.en +
+              ": " +
+              (i === 1
+                ? "Which passage is the second chapter?"
+                : "In chapter order, which passage comes last?"),
+          ),
+          options: t.cardStories.map((story, n) => ({ id: String(n + 1), label: story })),
+          answer: String(i + 1),
+          explanation: t.cardStories[i],
+          sourceRef: { templateId: t.id, version: t.version, chapter: i + 1 },
+          material: { ref: "text-only", count: 0 },
+        }))
+      : []),
+
     ...t.cardStories.map((s, i) => ({
       id: t.id + "-knowledge-" + i,
       mode: "knowledge",
