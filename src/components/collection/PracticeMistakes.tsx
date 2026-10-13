@@ -6,6 +6,7 @@ import { useDiscoveryText } from "@/lib/discovery-copy";
 import { useLocale } from "@/lib/keepy-i18n-shared";
 import { localApi, localSessionGeneration, useLocalTest } from "@/lib/local-test-client";
 import { isMistakesProjection, type MistakesProjection } from "@/lib/play-review.mjs";
+import { MistakePracticeNote } from "./MistakePracticeNote";
 export function PracticeMistakes() {
   const d = useCollection(),
     local = useLocalTest(),
@@ -212,6 +213,7 @@ function PracticeQuestion({ row }: { row: MistakesProjection["rows"][number] }) 
               : t("仍需複習", "Review again")}
           </p>
           <p>{q.explanation[locale]}</p>
+          <MistakePracticeNote row={row} answer={answer} />
           <Button onClick={() => setAnswer(null)}>
             {t("重新練習本題", "Practice this question again")}
           </Button>
