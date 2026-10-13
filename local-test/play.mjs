@@ -181,10 +181,21 @@ function practiceProjection(d, id, p, owner) {
 }
 export function playMe(d, token, params = {}) {
   const u = actor(d, token);
-  if (Object.keys(params).some((k) => !["page", "mode"].includes(k)))
+  if (Object.keys(params).some((k) => !["page", "mode", "start", "end"].includes(k)))
     fail(d, 422, "Unknown private query");
   const page = Number(params.page ?? 1),
     mode = params.mode ?? "all";
+  const start = params.start ?? "",
+    end = params.end ?? "";
+  if (
+    [start, end].some(
+      (v) => typeof v !== "string" || v.length > 40 || (v && !Number.isFinite(Date.parse(v))),
+    ) ||
+    (start && end && Date.parse(start) >= Date.parse(end))
+  )
+    fail(d, 422, "Invalid private comparison period");
+  const from = start ? new Date(start).toISOString() : "",
+    to = end ? new Date(end).toISOString() : "";
   if (
     !Number.isSafeInteger(page) ||
     page < 1 ||
@@ -196,8 +207,11 @@ export function playMe(d, token, params = {}) {
     allowed = JSON.stringify(owner.cards.map((c) => c.cardId)),
     where =
       "user_id=? AND json_array_length(json_extract(payload,'$.sourceIds'))>0 AND NOT EXISTS(SELECT 1 FROM json_each(play_results.payload,'$.sourceIds') s WHERE s.type!='text' OR s.value NOT IN (SELECT value FROM json_each(?)))",
-    selected = where + (mode === "all" ? "" : " AND json_extract(payload,'$.mode')=?"),
-    queryArgs = mode === "all" ? [u.id, allowed] : [u.id, allowed, mode],
+    selected =
+      where +
+      (mode === "all" ? "" : " AND json_extract(payload,'$.mode')=?") +
+      " AND (?='' OR at>=?) AND (?='' OR at<?)",
+    queryArgs = [...(mode === "all" ? [u.id, allowed] : [u.id, allowed, mode]), from, from, to, to],
     total = d.db
       .prepare("SELECT count(*) n FROM play_results WHERE " + selected)
       .get(...queryArgs).n;
@@ -244,9 +258,9 @@ export function playMe(d, token, params = {}) {
     }
   const statistics = d.db
     .prepare(
-      "SELECT json_extract(payload,'$.mode') mode,json_extract(payload,'$.difficulty') difficulty,json_extract(payload,'$.ruleVersion') ruleVersion,COALESCE(json_extract(payload,'$.memoryConfig.variant'),'original') configuration,COALESCE(json_extract(payload,'$.assistance.hintsUsed'),json_extract(payload,'$.hintsUsed'),-1) hints,COUNT(*) rounds,SUM(json_extract(payload,'$.correct')) correct,SUM(json_extract(payload,'$.total')) total,MIN(json_extract(payload,'$.moves')) bestMoves FROM play_results WHERE " +
+      "SELECT json_extract(payload,'$.mode') mode,json_extract(payload,'$.difficulty') difficulty,json_extract(payload,'$.ruleVersion') ruleVersion,COALESCE(json_extract(payload,'$.memoryConfig.variant'),'original') configuration,CASE WHEN json_extract(payload,'$.memoryConfig.allowHints')=1 THEN 'allowed' WHEN json_extract(payload,'$.memoryConfig.allowHints')=0 THEN 'none' WHEN json_extract(payload,'$.assistance.hintsUsed') IS NOT NULL THEN 'usage-only' ELSE 'legacy' END hintPolicy,COALESCE(json_extract(payload,'$.assistance.hintsUsed'),json_extract(payload,'$.hintsUsed'),-1) hints,COUNT(*) rounds,SUM(json_extract(payload,'$.correct')) correct,SUM(json_extract(payload,'$.total')) total,MIN(json_extract(payload,'$.moves')) bestMoves FROM play_results WHERE " +
         selected +
-        " GROUP BY mode,difficulty,ruleVersion,configuration,hints ORDER BY mode,difficulty,ruleVersion,configuration,hints LIMIT 101",
+        " GROUP BY mode,difficulty,ruleVersion,configuration,hintPolicy,hints ORDER BY mode,difficulty,ruleVersion,configuration,hintPolicy,hints LIMIT 101",
     )
     .all(...queryArgs);
   const analysis = {

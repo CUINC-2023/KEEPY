@@ -96,6 +96,9 @@ export function PracticeWorkbench({
         ))}
       </ul>
       <nav className="flex flex-wrap gap-4" aria-label={t("練習接續", "Continue practice")}>
+        <Link to="/app/progress-compare" className="text-primary underline">
+          {t("同規則進步比較", "Compare under matching rules")}
+        </Link>
         <Link to="/app/mistakes" className="text-primary underline">
           {t("本人有效錯題本", "Your valid mistakes")}
         </Link>

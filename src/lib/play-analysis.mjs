@@ -11,8 +11,13 @@ export function validPlayAnalysis(v) {
     v.groups.every(
       (g) =>
         g &&
-        Object.keys(g).sort().join() ===
+        Object.keys(g)
+          .filter((k) => k !== "hintPolicy")
+          .sort()
+          .join() ===
           "bestMoves,configuration,correct,difficulty,hintsUsed,mode,rounds,ruleVersion,total" &&
+        (g.hintPolicy === undefined ||
+          ["allowed", "none", "legacy", "usage-only"].includes(g.hintPolicy)) &&
         PLAY_MODES.includes(g.mode) &&
         PLAY_DIFFICULTIES.includes(g.difficulty) &&
         typeof g.ruleVersion === "string" &&

@@ -51,6 +51,7 @@ import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppParticipationLevelRouteImport } from './routes/app.participation-level'
 import { Route as AppPlanningRouteImport } from './routes/app.planning'
 import { Route as AppPlayRouteImport } from './routes/app.play'
+import { Route as AppProgressCompareRouteImport } from './routes/app.progress-compare'
 import { Route as AppRankingsRouteImport } from './routes/app.rankings'
 import { Route as AppReadingRouteImport } from './routes/app.reading'
 import { Route as AppRecapRouteImport } from './routes/app.recap'
@@ -307,6 +308,11 @@ const AppPlanningRoute = AppPlanningRouteImport.update({
 const AppPlayRoute = AppPlayRouteImport.update({
   id: '/play',
   path: '/play',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProgressCompareRoute = AppProgressCompareRouteImport.update({
+  id: '/progress-compare',
+  path: '/progress-compare',
   getParentRoute: () => AppRoute,
 } as any)
 const AppRankingsRoute = AppRankingsRouteImport.update({
@@ -583,6 +589,7 @@ export interface FileRoutesByFullPath {
   '/app/participation-level': typeof AppParticipationLevelRoute
   '/app/planning': typeof AppPlanningRoute
   '/app/play': typeof AppPlayRoute
+  '/app/progress-compare': typeof AppProgressCompareRoute
   '/app/rankings': typeof AppRankingsRoute
   '/app/reading': typeof AppReadingRoute
   '/app/recap': typeof AppRecapRoute
@@ -668,6 +675,7 @@ export interface FileRoutesByTo {
   '/app/participation-level': typeof AppParticipationLevelRoute
   '/app/planning': typeof AppPlanningRoute
   '/app/play': typeof AppPlayRoute
+  '/app/progress-compare': typeof AppProgressCompareRoute
   '/app/rankings': typeof AppRankingsRoute
   '/app/reading': typeof AppReadingRoute
   '/app/recap': typeof AppRecapRoute
@@ -758,6 +766,7 @@ export interface FileRoutesById {
   '/app/participation-level': typeof AppParticipationLevelRoute
   '/app/planning': typeof AppPlanningRoute
   '/app/play': typeof AppPlayRoute
+  '/app/progress-compare': typeof AppProgressCompareRoute
   '/app/rankings': typeof AppRankingsRoute
   '/app/reading': typeof AppReadingRoute
   '/app/recap': typeof AppRecapRoute
@@ -850,6 +859,7 @@ export interface FileRouteTypes {
     | '/app/participation-level'
     | '/app/planning'
     | '/app/play'
+    | '/app/progress-compare'
     | '/app/rankings'
     | '/app/reading'
     | '/app/recap'
@@ -935,6 +945,7 @@ export interface FileRouteTypes {
     | '/app/participation-level'
     | '/app/planning'
     | '/app/play'
+    | '/app/progress-compare'
     | '/app/rankings'
     | '/app/reading'
     | '/app/recap'
@@ -1024,6 +1035,7 @@ export interface FileRouteTypes {
     | '/app/participation-level'
     | '/app/planning'
     | '/app/play'
+    | '/app/progress-compare'
     | '/app/rankings'
     | '/app/reading'
     | '/app/recap'
@@ -1404,6 +1416,13 @@ declare module '@tanstack/react-router' {
       path: '/play'
       fullPath: '/app/play'
       preLoaderRoute: typeof AppPlayRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/progress-compare': {
+      id: '/app/progress-compare'
+      path: '/progress-compare'
+      fullPath: '/app/progress-compare'
+      preLoaderRoute: typeof AppProgressCompareRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/rankings': {
@@ -1811,6 +1830,7 @@ interface AppRouteChildren {
   AppParticipationLevelRoute: typeof AppParticipationLevelRoute
   AppPlanningRoute: typeof AppPlanningRoute
   AppPlayRoute: typeof AppPlayRoute
+  AppProgressCompareRoute: typeof AppProgressCompareRoute
   AppRankingsRoute: typeof AppRankingsRoute
   AppReadingRoute: typeof AppReadingRoute
   AppRecapRoute: typeof AppRecapRoute
@@ -1839,6 +1859,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppParticipationLevelRoute: AppParticipationLevelRoute,
   AppPlanningRoute: AppPlanningRoute,
   AppPlayRoute: AppPlayRoute,
+  AppProgressCompareRoute: AppProgressCompareRoute,
   AppRankingsRoute: AppRankingsRoute,
   AppReadingRoute: AppReadingRoute,
   AppRecapRoute: AppRecapRoute,

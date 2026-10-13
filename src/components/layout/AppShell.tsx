@@ -182,6 +182,12 @@ const PLAYER_NAV: NavItem[] = [
   { to: "/app/planning", label: "私人收藏規劃", Icon: IconBook, copyKey: "collectionPlanning" },
   { to: "/app/notes", label: "私人收藏筆記", Icon: IconBook, copyKey: "collectionNotes" },
   { to: "/app/mistakes", label: "本人練習錯題", Icon: IconBook, copyKey: "practiceMistakes" },
+  {
+    to: "/app/progress-compare",
+    label: "練習進步比較",
+    Icon: IconBook,
+    copyKey: "practiceComparison",
+  },
   { to: "/app/recap", label: "本人期間回顧", Icon: IconBook, copyKey: "collectionRecap" },
   { to: "/app/curations", label: "私人收藏策展", Icon: IconCards, copyKey: "curations" },
   { to: "/app/levels", label: "玩家成長預覽", Icon: IconSparkle, copyKey: "playerLevelPreview" },

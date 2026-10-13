@@ -12,6 +12,7 @@ export const copy = {
   collectionPlanning: { "zh-TW": "私人收藏規劃", en: "Private collection planning" },
   collectionNotes: { "zh-TW": "私人收藏筆記", en: "Private collection notes" },
   practiceMistakes: { "zh-TW": "本人練習錯題", en: "Your practice mistakes" },
+  practiceComparison: { "zh-TW": "練習進步比較", en: "Practice comparison" },
   collectionRecap: { "zh-TW": "本人期間回顧", en: "Your period recap" },
   collectionAdmin: { "zh-TW": "收藏規則管理", en: "Collection rules" },
   journal: { "zh-TW": "收藏誌", en: "Collection journal" },

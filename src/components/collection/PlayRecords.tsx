@@ -560,12 +560,18 @@ export function PlayRecords({
                 <ul>
                   {snapshot.analysis.groups.map((g) => (
                     <li
-                      key={[g.mode, g.difficulty, g.ruleVersion, g.configuration, g.hintsUsed].join(
-                        ":",
-                      )}
+                      key={[
+                        g.mode,
+                        g.difficulty,
+                        g.ruleVersion,
+                        g.configuration,
+                        g.hintPolicy,
+                        g.hintsUsed,
+                      ].join(":")}
                     >
                       {modeLabel(g.mode)} / {g.difficulty} · {g.ruleVersion} / {g.configuration} ·{" "}
-                      {t("提示", "Hints")}: {g.hintsUsed ?? t("未記錄", "Unrecorded")} · {g.rounds}
+                      {t("提示", "Hints")}: {g.hintsUsed ?? t("未記錄", "Unrecorded")} /{" "}
+                      {g.hintPolicy ?? "legacy"} · {g.rounds}
                       {t("局", " rounds")} · {g.correct}/{g.total} ·{" "}
                       {t("最少操作", "Fewest actions")}: {g.bestMoves ?? "—"}
                     </li>
