@@ -82,6 +82,7 @@ export function DiscoveryAdmin() {
     }
   }, [official, actor]);
   useEffect(() => {
+    const requestGeneration = generation;
     setDirty(false);
     setEditorPending(false);
     setDiscard(null);
@@ -91,7 +92,7 @@ export function DiscoveryAdmin() {
     setFilter("all");
     void load();
     return () => {
-      generation.current++;
+      requestGeneration.current++;
     };
   }, [load, actor]);
   if (!official)

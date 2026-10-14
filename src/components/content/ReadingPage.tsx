@@ -1,11 +1,8 @@
+import { useReadingFilters } from "@/lib/reading-filters";
 import { useEffect, useState } from "react";
 import { ContentPagination } from "./ContentPagination";
 import { ReadingBatch } from "./ReadingBatch";
-import {
-  ReadingOrganization,
-  ReadingItemOrganization,
-  useReadingFilters,
-} from "./ReadingOrganization";
+import { ReadingOrganization, ReadingItemOrganization } from "./ReadingOrganization";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useDiscovery, useLocalHead } from "@/lib/content-store";
 import { useReadingList, refreshReading } from "@/lib/discovery-store";
@@ -21,15 +18,14 @@ export function ReadingPage() {
     { locale } = useLocale(),
     search = useSearch({ from: "/app/reading" }),
     navigate = useNavigate();
-  const view = useReadingFilters();
-  const actor = view.actor;
+  const { actor, group, status, change: changeFilters } = useReadingFilters();
   const context = JSON.stringify([
     actor,
     search.q ?? "",
     search.category ?? "",
     search.readingSort ?? "latest",
-    view.group,
-    view.status,
+    group,
+    status,
   ]);
   const [position, setPosition] = useState({ context: "", page: 1 }),
     [selection, setSelection] = useState<{ scope: string; ids: string[] }>({ scope: "", ids: [] });
@@ -62,14 +58,9 @@ export function ReadingPage() {
     }
   };
   useEffect(() => {
-    if (
-      r.reading &&
-      view.group !== "all" &&
-      view.group &&
-      !r.reading.groups.some((g) => g.id === view.group)
-    )
-      view.change("all", view.status);
-  }, [r.reading, view.group, view.status, view.change]);
+    if (r.reading && group !== "all" && group && !r.reading.groups.some((g) => g.id === group))
+      changeFilters("all", status);
+  }, [r.reading, group, status, changeFilters]);
   useLocalHead(
     t("稍後閱讀 — KEEPY", "Read later — KEEPY"),
     t(
@@ -89,8 +80,8 @@ export function ReadingPage() {
         }))
         .filter(
           ({ row }) =>
-            (view.group === "all" || row.groupId === view.group) &&
-            (view.status === "all" || row.state === view.status),
+            (group === "all" || row.groupId === group) &&
+            (status === "all" || row.state === status),
         )
         .filter(
           ({ article }) =>
@@ -146,7 +137,7 @@ export function ReadingPage() {
       </p>
       <DiscoveryStatus />
       <ReadingRecovery />
-      <ReadingOrganization group={view.group} status={view.status} change={view.change} />
+      <ReadingOrganization group={group} status={status} change={changeFilters} />
       {!r.allowed ? (
         <p>
           {t("請選擇有效本機玩家測試身分。", "Select a valid local player test identity.")}{" "}
@@ -231,7 +222,7 @@ export function ReadingPage() {
             variant="outline"
             onClick={() => {
               change({ q: "", type: "all" });
-              view.change("all", "all");
+              changeFilters("all", "all");
             }}
           >
             {t("清除閱讀篩選", "Clear reading filters")}
