@@ -6,7 +6,8 @@ export const PLAY_CONTENT_PACKS = COLLECTION_THEMES.filter(
     t.id.startsWith("local-demo-156-") ||
     t.id.startsWith("local-demo-176-") ||
     t.id.startsWith("local-demo-206-") ||
-    t.id.startsWith("local-demo-246-"),
+    t.id.startsWith("local-demo-246-") ||
+    t.id.startsWith("local-demo-p10-"),
 ).map((t) => ({
   id: "play-pack-" + t.id,
   version: 1,

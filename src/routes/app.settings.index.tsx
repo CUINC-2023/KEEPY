@@ -5,6 +5,10 @@ import { usePlayerSettings, type PlayerSettings } from "@/lib/player-store-share
 import { useDemoState } from "@/components/ui/state-demo-shared";
 import { StatePlaceholder, StateSwitcher } from "@/components/ui/state-demo";
 import { useToast } from "@/components/ui/toast-shared";
+import { useLocalTest } from "@/lib/local-test-client";
+import { CollectionPrivacy } from "@/components/collection/CollectionViews";
+import { AccountWorkspace } from "@/components/player/AccountWorkspace";
+import { useDiscoveryText } from "@/lib/discovery-copy";
 
 export const Route = createFileRoute("/app/settings/")({
   head: () => ({
@@ -55,6 +59,37 @@ function Toggle({
 }
 
 function SettingsPage() {
+  const local = useLocalTest(),
+    t = useDiscoveryText();
+  if (!local.enabled) return <MockSettingsPage />;
+  return (
+    <div className="space-y-5">
+      <AccountWorkspace />
+      <section className="panel p-4">
+        <h2 className="font-bold">{t("本裝置顯示偏好", "Display preferences on this device")}</h2>
+        <Toggle
+          label="Reduce Motion"
+          desc={t(
+            "僅影響本裝置動畫，不會修改公開設定或帳號資料。",
+            "Affects this device's animation only, not account data or public settings.",
+          )}
+          field="reduceMotion"
+        />
+        <Toggle
+          label={t("略過抽卡動畫", "Skip draw animation")}
+          desc={t(
+            "此瀏覽器偏好，不宣稱跨裝置同步。",
+            "Browser preference; no cross-device synchronization.",
+          )}
+          field="skipDrawAnimation"
+        />
+      </section>
+      {local.summary?.user.role === "member" && <CollectionPrivacy key={local.summary.user.id} />}
+    </div>
+  );
+}
+
+function MockSettingsPage() {
   const tx = usePlayerUiText();
   const [state, setState] = useDemoState();
   const { settings, update } = usePlayerSettings();

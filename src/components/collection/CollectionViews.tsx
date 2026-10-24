@@ -31,7 +31,11 @@ import {
   useLocalTest,
   localSessionGeneration,
 } from "@/lib/local-test-client";
-import { discoveryCommand, retryDiscoveryCommand } from "@/lib/discovery-store";
+import {
+  discoveryCommand,
+  retryDiscoveryCommand,
+  hasPendingDiscovery,
+} from "@/lib/discovery-store";
 import {
   useCollection,
   refreshCollection,
@@ -256,6 +260,7 @@ export function CollectionPrivacy() {
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
   const epoch = localSessionGeneration();
+  const pendingSave = hasPendingDiscovery("/collection/profile");
   useEffect(() => {
     setBusy(false);
     setMessage("");
@@ -272,9 +277,9 @@ export function CollectionPrivacy() {
     revision.current.actor === local.summary?.user.id &&
     JSON.stringify(draft) !== JSON.stringify(revision.current.data);
   const blocker = useBlocker({
-    shouldBlockFn: () => dirty || busy,
-    disabled: !dirty && !busy,
-    enableBeforeUnload: dirty || busy,
+    shouldBlockFn: () => dirty || busy || pendingSave,
+    disabled: !dirty && !busy && !pendingSave,
+    enableBeforeUnload: dirty || busy || pendingSave,
     withResolver: true,
   });
   useEffect(() => {
@@ -326,7 +331,7 @@ export function CollectionPrivacy() {
         className="panel space-y-4 p-4"
         onSubmit={async (e) => {
           e.preventDefault();
-          if (busy) return;
+          if (busy || hasPendingDiscovery("/collection/profile")) return;
           const actor = local.summary?.user.id,
             serial = localSessionGeneration();
           setBusy(true);
@@ -347,7 +352,7 @@ export function CollectionPrivacy() {
           }
         }}
       >
-        <fieldset disabled={busy} className="space-y-4">
+        <fieldset disabled={busy || pendingSave} className="space-y-4">
           <ShowcaseEditor draft={draft} change={setDraft} pools={d.me.progress} />
           <Button
             type="button"
@@ -525,7 +530,15 @@ export function CollectionPrivacy() {
         version={revision.current?.version ?? d.me.profile.version}
       />
       <p role="status">{message}</p>
-      {message && (
+      {pendingSave && (
+        <p role="alert">
+          {t(
+            "保存結果尚未確認，修改已鎖定。請確認原操作，不要建立新請求。",
+            "Save outcome is unconfirmed; editing is locked. Confirm the original operation without creating a new request.",
+          )}
+        </p>
+      )}
+      {(message || pendingSave) && (
         <Button
           disabled={busy}
           variant="outline"
@@ -549,7 +562,11 @@ export function CollectionPrivacy() {
           {t("重試待確認的保存", "Retry unconfirmed save")}
         </Button>
       )}
-      <Button variant="outline" onClick={() => void refreshCollectionMe()} disabled={busy || dirty}>
+      <Button
+        variant="outline"
+        onClick={() => void refreshCollectionMe()}
+        disabled={busy || dirty || pendingSave}
+      >
         {t("重新載入保存設定", "Reload saved settings")}
       </Button>
       <Link

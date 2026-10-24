@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { creatorProfile, saveCreatorProfile } from "./creator-profile.mjs";
 import { supplyPreview } from "./supply.mjs";
 import {
   previewCollectionProfile,
@@ -85,6 +86,16 @@ export function createLocalServer(database, { port = 8787, webPort = 8083 } = {}
           persistent: "SQLite",
           productionAuth: false,
         });
+      if (path === "/creator/profile") {
+        if (url.search)
+          throw new ApiError(422, "creator-profile", "No actor or query selectors allowed");
+        if (req.method === "GET") return send(200, creatorProfile(database, token));
+        if (req.method === "POST")
+          return send(
+            200,
+            saveCreatorProfile(database, token, body, req.headers["idempotency-key"]),
+          );
+      }
       if (req.method === "GET" && path === "/participation")
         return send(200, database.publicParticipation());
       if (req.method === "GET" && path === "/play/me")

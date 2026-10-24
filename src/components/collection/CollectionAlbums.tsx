@@ -5,6 +5,8 @@ import { useDiscoveryText } from "@/lib/discovery-copy";
 import { useLocale } from "@/lib/keepy-i18n-shared";
 import type { CollectionMe } from "@/lib/collection-store";
 import { ContentPagination } from "@/components/content/ContentPagination";
+import { PoolCover } from "@/components/ui/pool-cover";
+import { poolById } from "@/data/mock";
 export function CollectionAlbums({ me }: { me: CollectionMe }) {
   const t = useDiscoveryText(),
     { locale } = useLocale();
@@ -18,6 +20,7 @@ export function CollectionAlbums({ me }: { me: CollectionMe }) {
     [positionStatus, setPositionStatus] = useState<"saved" | "cleared" | "unavailable" | null>(
       null,
     );
+  const [view, setView] = useState<"list" | "covers">("list");
   const restoredActor = useRef("");
   useEffect(() => {
     if (restoredActor.current === me.actorId) return;
@@ -58,6 +61,21 @@ export function CollectionAlbums({ me }: { me: CollectionMe }) {
   return (
     <section id="collection-albums" data-collection-albums className="panel min-w-0 space-y-4 p-5">
       <h2 className="text-xl font-bold">{t("我的卡冊", "My albums")}</h2>
+      <fieldset className="flex flex-wrap gap-3">
+        <legend className="text-sm">
+          {t("閱讀模式（僅本頁）", "Reading mode (this page only)")}
+        </legend>
+        {(["list", "covers"] as const).map((mode) => (
+          <Button
+            key={mode}
+            variant="outline"
+            aria-pressed={view === mode}
+            onClick={() => setView(mode)}
+          >
+            {mode === "list" ? t("精簡清單", "Compact list") : t("封面閱讀", "Cover reading")}
+          </Button>
+        ))}
+      </fieldset>
       <div className="flex flex-wrap gap-3">
         <label>
           {t("搜尋卡冊", "Search albums")}
@@ -210,16 +228,20 @@ export function CollectionAlbums({ me }: { me: CollectionMe }) {
         <div data-album-list className="space-y-3">
           <div className="grid gap-3 md:grid-cols-2">
             {rows.slice((currentPage - 1) * 6, currentPage * 6).map((p) => (
-              <Button
-                key={p.poolId}
-                id={"album-return-" + p.poolId}
-                variant="outline"
-                className="h-auto whitespace-normal text-left"
-                onClick={() => selectAlbum(p.poolId)}
-              >
-                {p.title[locale]} · {p.owned}/{p.total} · {p.pct}%{" "}
-                {p.complete && t("完成", "Complete")}
-              </Button>
+              <article key={p.poolId} className="min-w-0 space-y-2" data-album-reading-mode={view}>
+                {view === "covers" && poolById(p.poolId) && (
+                  <PoolCover pool={poolById(p.poolId)!} />
+                )}
+                <Button
+                  id={"album-return-" + p.poolId}
+                  variant="outline"
+                  className="h-auto whitespace-normal text-left"
+                  onClick={() => selectAlbum(p.poolId)}
+                >
+                  {p.title[locale]} · {p.owned}/{p.total} · {p.pct}%{" "}
+                  {p.complete && t("完成", "Complete")}
+                </Button>
+              </article>
             ))}
           </div>
           <ContentPagination page={currentPage} pages={pages} onChange={setPage} />

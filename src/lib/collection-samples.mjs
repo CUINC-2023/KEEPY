@@ -925,6 +925,84 @@ export const COLLECTION_THEMES = [
       ],
     },
   ],
+  {
+    id: "local-demo-p10-prism",
+    composition: "triangles",
+    coverTone: "orbit",
+    title: bi("稜鏡紙劇場 · 虛構範本", "Prism Paper Theatre · Fictional template"),
+    story: bi(
+      "以靛色三角紙片構想一座小劇場。第一幕讓單一三角形留在左側，第二幕讓兩片紙相互呼應，第三幕用三片紙建立橫向節奏。這些都是本機向量構圖，沒有真人拍攝、合作日期或正式授權宣告。",
+      "Indigo triangular paper pieces imagine a small theatre. One triangle rests at the left in the first scene, two answer each other in the second, and three form a horizontal rhythm in the third. These are local vector compositions, with no real shoot, collaboration date or formal license claim.",
+    ),
+    guide: bi(
+      "先比較一、二、三片紙的構圖，再依自己的閱讀順序整理卡冊；情境不授予卡牌或成就。",
+      "Compare compositions with one, two and three pieces, then arrange your own reading order. Scenarios grant no cards or achievements.",
+    ),
+    bio: bi("把紙片之間的空白收藏起來。", "Collect the space between paper pieces."),
+    badge: bi("稜鏡 · 視覺範本", "Prism · Visual template"),
+    cardStories: [
+      bi(
+        "獨幕：一個三角形靠左，保留右側空間。",
+        "Solo: one triangle sits left, leaving space on the right.",
+      ),
+      bi("對幕：兩個三角形分別形成閱讀停點。", "Duet: two triangles form separate reading pauses."),
+      bi(
+        "合幕：三個三角形排列成橫向節奏。",
+        "Ensemble: three triangles create a horizontal rhythm.",
+      ),
+    ],
+  },
+  {
+    id: "local-demo-p10-meter",
+    composition: "bars",
+    coverTone: "garden",
+    title: bi("色階節拍 · 虛構範本", "Tonal Meter · Fictional template"),
+    story: bi(
+      "以三根不同高度的色柱閱讀節奏：先觀察由高到低，再比較中央留空，最後把重心移向右側。柱形只是幾何文字示意，不代表聲音測量、實際音樂作品或營運數據。",
+      "Read rhythm through three bars of varying height: first from high to low, then with a central opening, finally with weight shifted right. Bars are geometric text illustrations, not sound measurements, real music or operational data.",
+    ),
+    guide: bi(
+      "比較高度、間距與重心，不把圖形當成分數。完整、部分與空情境均為隔離預覽。",
+      "Compare height, spacing and balance without treating shapes as scores. Full, partial and empty scenarios are isolated previews.",
+    ),
+    bio: bi("用間距記住安靜的節奏。", "Remember quiet rhythms through spacing."),
+    badge: bi("節拍 · 視覺範本", "Meter · Visual template"),
+    cardStories: [
+      bi("起拍：最高的色柱在左側。", "Opening: the tallest bar stands on the left."),
+      bi(
+        "換拍：色柱高度轉換，視線向中段移動。",
+        "Change: bar heights shift, moving attention toward the center.",
+      ),
+      bi(
+        "收拍：重心向右移，留下下一頁。",
+        "Close: balance shifts right, leaving room for another page.",
+      ),
+    ],
+  },
+  {
+    id: "local-demo-p10-points",
+    composition: "dots",
+    coverTone: "tide",
+    title: bi("點點航線 · 虛構範本", "Point Routes · Fictional template"),
+    story: bi(
+      "以三個圓點構想不存在的航線。先讓圓點水平排列，再改成斜向，最後用大小建立遠近感；不指涉真實地點、旅行紀錄或個人位置。素材只有本機向量與雙語故事。",
+      "Three dots imagine routes that do not exist. First they align horizontally, then diagonally, then use size to suggest depth. They refer to no real place, travel history or personal location. Materials consist only of local vectors and bilingual stories.",
+    ),
+    guide: bi(
+      "先看排列方向，再比較大小。公開款式與持有數量仍分開；本範本不建立可抽卡池。",
+      "Observe direction before comparing size. Public designs remain separate from held quantities; this template creates no drawable pool.",
+    ),
+    bio: bi("把想像的路徑保留在紙上。", "Keep imagined routes on paper."),
+    badge: bi("航線 · 視覺範本", "Routes · Visual template"),
+    cardStories: [
+      bi("平行：三個同尺寸圓點排成一行。", "Level: three equal dots form a row."),
+      bi("斜向：三個圓點依序向右下移。", "Diagonal: three dots descend toward the right."),
+      bi(
+        "遠近：圓點由小到大，排列方向不變。",
+        "Depth: dots grow from small to large while retaining their direction.",
+      ),
+    ],
+  },
 ].map((t) => ({
   ...t,
   synthetic: true,

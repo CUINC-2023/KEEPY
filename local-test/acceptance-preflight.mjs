@@ -46,6 +46,7 @@ export function selectAcceptanceCommands(commands, suite) {
     "test:acceptance-preflight",
   ]);
   const permissions = new Set([
+    "test:creator-profile",
     "test:actor-boundary",
     "test:new-private-reliability",
     "test:collection-contract",

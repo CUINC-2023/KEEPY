@@ -5,11 +5,12 @@ import { useLocale } from "@/lib/keepy-i18n-shared";
 import { Progress } from "@/components/ui/progress";
 import { BadgeMark } from "@/components/player/BadgeMark";
 import { CreatorContentTemplate } from "@/components/content/CreatorContentTemplate";
+import { ContentPagination } from "@/components/content/ContentPagination";
 function Composition({
   pattern,
   variant = 0,
 }: {
-  pattern: "round" | "steps" | "waves";
+  pattern: "round" | "steps" | "waves" | "triangles" | "bars" | "dots";
   variant?: number;
 }) {
   return (
@@ -19,7 +20,37 @@ function Composition({
       className="h-20 w-28 max-w-full text-primary"
       data-template-composition={pattern}
     >
-      {pattern === "round" ? (
+      {pattern === "triangles" ? (
+        <g fill="currentColor" fillOpacity=".3" stroke="currentColor">
+          {[0, 1, 2].slice(0, variant + 1).map((i) => (
+            <path key={i} d={`M ${10 + i * 27} 60 l 12 -35 l 12 35 Z`} />
+          ))}
+        </g>
+      ) : pattern === "bars" ? (
+        <g fill="currentColor">
+          {[0, 1, 2].map((i) => (
+            <rect
+              key={i}
+              x={10 + i * 30}
+              y={20 + ((i + variant) % 3) * 10}
+              width="18"
+              height={40 - ((i + variant) % 3) * 10}
+              opacity={0.3 + i * 0.2}
+            />
+          ))}
+        </g>
+      ) : pattern === "dots" ? (
+        <g fill="currentColor">
+          {[0, 1, 2].map((i) => (
+            <circle
+              key={i}
+              cx={20 + i * 30}
+              cy={variant === 1 ? 20 + i * 20 : 40}
+              r={variant === 2 ? 5 + i * 4 : 8}
+            />
+          ))}
+        </g>
+      ) : pattern === "round" ? (
         variant === 1 ? (
           <g fill="currentColor" fillOpacity=".25" stroke="currentColor">
             <circle cx="40" cy="40" r="25" />
@@ -64,7 +95,14 @@ function Composition({
 export function CollectionTemplateGallery() {
   const t = useDiscoveryText(),
     { locale } = useLocale(),
-    [scenario, setScenario] = useState("partial");
+    [scenario, setScenario] = useState("partial"),
+    [page, setPage] = useState(1),
+    [query, setQuery] = useState("");
+  const rows = COLLECTION_THEMES.filter((x) =>
+      x.title[locale].toLocaleLowerCase().includes(query.toLocaleLowerCase()),
+    ),
+    pages = Math.max(1, Math.ceil(rows.length / 6)),
+    currentPage = Math.min(page, pages);
   const count = scenario === "full" ? 3 : scenario === "partial" ? 1 : 0;
   return (
     <section className="space-y-5" data-collection-templates>
@@ -89,8 +127,25 @@ export function CollectionTemplateGallery() {
           <option value="empty">{t("空收藏", "Empty collection")}</option>
         </select>
       </label>
+      <label className="block">
+        {t("查找示意範本", "Find sample templates")}
+        <input
+          aria-label="Find sample templates"
+          maxLength={100}
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setPage(1);
+          }}
+          className="mt-1 min-h-11 w-full rounded border bg-background p-2"
+        />
+      </label>
+      <ContentPagination page={currentPage} pages={pages} onChange={setPage} />
+      {!rows.length && (
+        <p role="status">{t("沒有符合條件的示意範本。", "No sample templates match.")}</p>
+      )}
       <div className="grid gap-4 lg:grid-cols-3">
-        {COLLECTION_THEMES.map((x) => (
+        {rows.slice((currentPage - 1) * 6, currentPage * 6).map((x) => (
           <article className="panel min-w-0 space-y-3 p-4" key={x.id}>
             <div
               aria-hidden="true"

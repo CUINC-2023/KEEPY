@@ -9,6 +9,8 @@ import { useToast } from "@/components/ui/toast-shared";
 import { RarityBadge } from "@/components/ui/rarity-badge";
 import { useDemoState } from "@/components/ui/state-demo-shared";
 import { StateSwitcher, StatePlaceholder } from "@/components/ui/state-demo";
+import { useLocalTest } from "@/lib/local-test-client";
+import { CreatorProfileEditor } from "@/components/supply/CreatorProfileEditor";
 
 export const Route = createFileRoute("/goddess/profile")({
   head: () => ({
@@ -31,6 +33,10 @@ export const Route = createFileRoute("/goddess/profile")({
 });
 
 function GoddessProfilePage() {
+  const local = useLocalTest();
+  return local.enabled ? <CreatorProfileEditor /> : <MockGoddessProfilePage />;
+}
+function MockGoddessProfilePage() {
   const [state, setState] = useDemoState();
   const self = goddessSelf();
   const [name, setName] = useState(GODDESS_PROFILE_DRAFT.displayName);

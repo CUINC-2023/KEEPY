@@ -23,8 +23,8 @@ for (const t of CREATOR_CONTENT_TEMPLATES) {
   assert.equal(t.shootDate, null);
 }
 assert.equal(JSON.stringify(base), before);
-assert.equal(COLLECTION_THEMES.length, 30);
-assert.equal(new Set(COLLECTION_THEMES.map((t) => t.id)).size, 30);
+assert.equal(COLLECTION_THEMES.length, 33);
+assert.equal(new Set(COLLECTION_THEMES.map((t) => t.id)).size, 33);
 assert.ok(
   COLLECTION_THEMES.slice(12, 15).every(
     (t) => t.id.startsWith("local-demo-121-") && t.cardStories.length === 3,
@@ -147,15 +147,21 @@ assert.ok(
 );
 
 assert.ok(
-  COLLECTION_THEMES.slice(27).every(
+  COLLECTION_THEMES.slice(27, 30).every(
     (t) =>
       t.id.startsWith("local-demo-270-") &&
       t.cardStories.length === 3 &&
       ["round", "steps", "waves"].includes(t.composition),
   ),
 );
-for (const t of COLLECTION_THEMES.slice(27)) {
+for (const t of COLLECTION_THEMES.slice(27, 30)) {
   assert.equal(t.materialReferences.length, 0);
   for (const text of [t.title, t.story, t.guide, t.bio, t.badge, ...t.cardStories])
     assert.ok(text["zh-TW"] && text.en);
+}
+for (const t of COLLECTION_THEMES.slice(30)) {
+  assert.ok(t.id.startsWith("local-demo-p10-"));
+  assert.ok(["triangles", "bars", "dots"].includes(t.composition));
+  assert.equal(t.cardStories.length, 3);
+  assert.ok(t.cardStories.every((s) => s["zh-TW"] && s.en));
 }

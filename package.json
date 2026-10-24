@@ -87,7 +87,8 @@
     "test:collection-private-index": "node tests/collection-private-index.test.mjs",
     "test:collection-note-tags": "node tests/collection-note-tags.test.mjs",
     "test:new-content-health": "node tests/new-content-health.test.mjs",
-    "test:practice-presets": "node tests/practice-presets.test.mjs"
+    "test:practice-presets": "node tests/practice-presets.test.mjs",
+    "test:creator-profile": "node tests/creator-profile.test.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -165,5 +166,5 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
   },
-  "version": "0.22.271"
+  "version": "0.22.275"
 }

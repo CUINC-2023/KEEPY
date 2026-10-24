@@ -3,6 +3,7 @@ import { usePlayerUiText } from "@/lib/player-ui-text";
 import { DemoFlowNote } from "@/components/player/DemoFlowNote";
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { PLAYER, POINT_DEDUCT_NOTE } from "@/data/player";
+import { PlayerTaskNavigation } from "@/components/player/PlayerTaskNavigation";
 
 export const Route = createFileRoute("/app")({
   head: () => ({
@@ -81,27 +82,31 @@ function PlayerLayout() {
         </div>
       </div>
 
-      <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
-        {SUB_NAV.map((n) => {
-          const active = n.exact
-            ? pathname === "/app" || pathname === "/app/"
-            : pathname.startsWith(n.prefix);
-          return (
-            <Link
-              key={tx(n.label)}
-              to={n.to}
-              params={n.params as never}
-              className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
-                active
-                  ? "border-primary/50 bg-primary/15 text-foreground"
-                  : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
-            >
-              {tx(n.label)}
-            </Link>
-          );
-        })}
-      </div>
+      {local.enabled ? (
+        <PlayerTaskNavigation />
+      ) : (
+        <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
+          {SUB_NAV.map((n) => {
+            const active = n.exact
+              ? pathname === "/app" || pathname === "/app/"
+              : pathname.startsWith(n.prefix);
+            return (
+              <Link
+                key={tx(n.label)}
+                to={n.to}
+                params={n.params as never}
+                className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                  active
+                    ? "border-primary/50 bg-primary/15 text-foreground"
+                    : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {tx(n.label)}
+              </Link>
+            );
+          })}
+        </div>
+      )}
 
       {!local.enabled && <DemoFlowNote />}
       <Outlet />
